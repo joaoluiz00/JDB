@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 26-Fev-2025 às 21:37
+-- Tempo de geração: 12-Mar-2025 às 21:22
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -58,6 +58,18 @@ CREATE TABLE `pacote` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `pacote_cartas`
+--
+
+CREATE TABLE `pacote_cartas` (
+  `id` int(11) NOT NULL,
+  `id_pacote` int(11) NOT NULL,
+  `id_carta` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `usuario`
 --
 
@@ -65,7 +77,8 @@ CREATE TABLE `usuario` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `email` varchar(200) NOT NULL,
-  `senha` varchar(40) NOT NULL
+  `senha` varchar(40) NOT NULL,
+  `coin` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -83,6 +96,14 @@ ALTER TABLE `cartas`
 --
 ALTER TABLE `pacote`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices para tabela `pacote_cartas`
+--
+ALTER TABLE `pacote_cartas`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_pacote` (`id_pacote`),
+  ADD KEY `id_carta` (`id_carta`);
 
 --
 -- Índices para tabela `usuario`
@@ -107,10 +128,27 @@ ALTER TABLE `pacote`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `pacote_cartas`
+--
+ALTER TABLE `pacote_cartas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para despejos de tabelas
+--
+
+--
+-- Limitadores para a tabela `pacote_cartas`
+--
+ALTER TABLE `pacote_cartas`
+  ADD CONSTRAINT `pacote_cartas_ibfk_1` FOREIGN KEY (`id_pacote`) REFERENCES `pacote` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pacote_cartas_ibfk_2` FOREIGN KEY (`id_carta`) REFERENCES `cartas` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
