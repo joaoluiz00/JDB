@@ -3,7 +3,6 @@ require_once "../Controller/Controller.php";
 $controller = new Controller();
 session_start();
 
-
 if (isset($_POST['action'])) {
     $action = $_POST['action'];
 
@@ -14,7 +13,7 @@ if (isset($_POST['action'])) {
                 $password = $_POST['senha'];
                 $email = $_POST['email'];
                 $coins = 0;
-                $controller->createUser($name, $password, $email, $coins);
+                $controller->createUser($name, $email, $password, $coins);
                 header("Location: ../../home.php");
                 die();
             }
@@ -30,13 +29,13 @@ if (isset($_POST['action'])) {
             break;
 
         case 'update':
-            if (isset($_POST['id'], $_POST['nome'], $_POST['senha'], $_POST['email'], $_POST['moedas'])) {
+            if (isset($_POST['id'], $_POST['nome'], $_POST['senha'], $_POST['email'], $_POST['coin'])) {
                 $id = $_POST['id'];
                 $name = $_POST['nome'];
                 $password = $_POST['senha'];
                 $email = $_POST['email'];
-                $coins = $_POST['moedas'];
-                $controller->updateUser($id, $name, $password, $email, $coins);
+                $coins = $_POST['coin'];
+                $controller->updateUser($id, $name, $email, $password, $coins);
                 header("Location: success.php");
                 die();
             }
@@ -51,8 +50,6 @@ if (isset($_POST['action'])) {
                     die();
                 } else {
                     $_SESSION['res'] = "<span style='color: red;'>Senha invalida</span>";
-                    header("Location: ../../");
-
                     header("Location: ../../");
                     die();
                 }
@@ -71,43 +68,9 @@ if (isset($_POST['action'])) {
             }
             break;
 
-        case 'completeClass':
-            if (isset($_POST['id'], $_POST['class'])) {
-                $id = $_POST['id'];
-                $class = $_POST['class'];
-                $controller->completeClass($id, $class);
-                // header("Location: ../../quiz/index.php");
-                die();
-            }
-            break;
-
-        case 'buyItem':
-            if (isset($_POST['userId'], $_POST['itemId'], $_POST['itemPrice'])) {
-                $userId = $_POST['userId'];
-                $itemId = $_POST['itemId'];
-                $itemPrice = $_POST['itemPrice'];
-                $controller->buyItem($userId, $itemId, $itemPrice);
-                header("Location: ../../usuario/char.php");
-                die();
-            }
-
-            break;
-
-        case 'equipItem':
-            if (isset($_POST['userId'], $_POST['itemId'])) {
-                $userId = $_POST['userId'];
-                $itemId = $_POST['itemId'];
-                $controller->equipItem($userId, $itemId);
-                header("Location: ../../usuario/char.php");
-                die();
-            }
-            break;
-
         default:
             header("Location: error.php");
             die();
-
-            
     }
 } else {
     header("Location: error.php");

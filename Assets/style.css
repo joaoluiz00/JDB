@@ -1,0 +1,53 @@
+body {
+    background-color: #e0f7fa; /* Light cyan background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+
+.card {
+    margin-top: 50px;
+    border: 2px solid #4caf50; /* Green border */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #4caf50; /* Green background */
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.card-body {
+    background-color: #ffffff; /* White background */
+}
+
+.btn-primary {
+    background-color: #4caf50; /* Green button */
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #388e3c; /* Darker green on hover */
+}
+
+.btn-secondary {
+    background-color: #8bc34a; /* Light green button */
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #689f38; /* Darker light green on hover */
+}
+
+.form-control {
+    border: 1px solid #4caf50; /* Green border for inputs */
+}
+
+.form-control:focus {
+    border-color: #388e3c; /* Darker green on focus */
+    box-shadow: none;
+}

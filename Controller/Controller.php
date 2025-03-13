@@ -11,28 +11,26 @@ class Controller
         $this->database = new BancoDeDados("127.0.0.1", "root", "", "banco");
     }
 
-    public function createUser($name, $email, $senha)
+    public function createUser($name, $email, $password, $coins = 0)
     {
-        $user = new Usuario($name, $password, $email);
+        $user = new Usuario(null, $name, $email, $password, $coins);
         $userId = $this->database->insertUser($user);
-        $this->database->insertUserItems($userId, $user->getItems());
         session_start();
         $createdUser = $this->database->getUserByEmail($user->getEmail());
         $_SESSION['id'] = $createdUser['id'];
-        $_SESSION['user'] = $createdUser['name'];
+        $_SESSION['user'] = $createdUser['nome'];
     }
 
     public function readUser($id)
     {
         $row = $this->database->getUserById($id);
-        $classes = $this->database->getClassesByUserId($id);
-        $user = new Usuario($row['name'], $row['password'], $row['email'], $classes);
+        $user = new Usuario($row['id'], $row['nome'], $row['email'], $row['senha'], $row['coin']);
         return $user;
     }
 
-    public function updateUser($id, $name, $password, $senha,  $classes = null)
+    public function updateUser($id, $name, $email, $password, $coins)
     {
-        $user = new Usuario($name, $password, $email, $coins, $classes);
+        $user = new Usuario($id, $name, $email, $password, $coins);
         $this->database->updateUser($user, $id);
     }
 
@@ -44,97 +42,20 @@ class Controller
     public function loginUser($email, $password)
     {
         $user = $this->database->getUserByEmail($email);
-        if ($user && $user['password'] == $password) {
+        if ($user && $user['senha'] == $password) {
             session_start();
             $_SESSION['id'] = $user['id'];
-            $_SESSION['user'] = $user['name'];
+            $_SESSION['user'] = $user['nome'];
             return true;
         }
         return false;
     }
 
-    public function completeClass($id, $class)
-    {
-        $result = $this->database->getUserById($id);
-        $classes = $this->database->getClassesByUserId($id);
-        $user = new User($result['name'], $result['password'], $result['email'], $result['coins'], $classes);
-        $user->addClass($class);
-        $this->database->updateUser($user, $id);
-    }
-
-    public function hasPassedClass($id, $class)
-    {
-        $result = $this->database->getUserById($id);
-        $classes = $this->database->getClassesByUserId($id);
-        $user = new User($result['name'], $result['password'], $result['email'], $result['coins'], $classes);
-        return in_array($class, $user->getClasses());
-    }
-
     public function gainMoney($amount, $id)
     {
         $result = $this->database->getUserById($id);
-        $user = new User($result['name'], $result['password'], $result['email'], $result['coins'], null);
-        $user->setCoins($user->getCoins() + $amount);
+        $user = new Usuario($result['id'], $result['nome'], $result['email'], $result['senha'], $result['coin']);
+        $user->setCoin($user->getCoin() + $amount);
         $this->database->updateUser($user, $id);
-    }
-
-    public function getItems() {
-        return $this->database->getItems();
-    }
-
-    public function getUserItems($userId) {
-        return $this->database->getUserItems($userId);
-    }
-
-    public function buyItem($userId, $itemId, $itemPrice) {
-        $user = $this->readUser($userId);
-        if ($user->getCoins() < $itemPrice) {
-            return false;
-        }
-        return $this->database->buyItem($userId, $itemId, $itemPrice);
-    }
-
-    public function equipItem($userId, $itemId) {
-        return $this->database->equipItem($userId, $itemId);
-    }
-
-    public function getQuestions($classId)
-    {
-        $result = $this->database->getQuestions($classId);
-        $questions = [];
-        while ($row = $result->fetch_assoc()) {
-            $questions[] = new Question($row['question'], $row['a'], $row['b'], $row['c'], $row['d'], $row['correct'], $row['tip']);
-        }
-
-        if (count($questions) > 3) {
-            $randomKeys = array_rand($questions, 4);
-            $randomQuestions = [];
-            foreach ($randomKeys as $key) {
-                $randomQuestions[] = $questions[$key];
-            }
-            return $randomQuestions;
-        }
-
-        return $questions;
-    }
-
-    public function getNewQuestion($classId)
-    {
-        $result = $this->database->getQuestions($classId);
-        $questions = [];
-        while ($row = $result->fetch_assoc()) {
-            $questions[] = new Question($row['question'], $row['a'], $row['b'], $row['c'], $row['d'], $row['correct'],$row['tip']);
-        }
-
-        if (count($questions) > 1) {
-            $randomKeys = array_rand($questions, 1);
-            $randomQuestions = [];
-            foreach ($randomKeys as $key) {
-                $randomQuestions[] = $questions[$key];
-            }
-            return $randomQuestions;
-        }
-
-        return $questions;
     }
 }
