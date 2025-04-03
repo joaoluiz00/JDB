@@ -1,3 +1,18 @@
+<?php
+require_once "../Controller/ControllerUsuario.php";
+session_start();
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['id'])) {
+    header("Location: index.php");
+    die();
+}
+
+$controller = new ControllerUsuario();
+$userId = $_SESSION['id'];
+$user = $controller->readUser($userId);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +20,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
-    <title>Home</title>
+    <title>Perfil</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -27,10 +42,20 @@
             </ul>
         </div>
     </nav>
+
     <div class="container mt-4">
-        <h1>Bem-vindo à Home</h1>
-        <p>Escolha uma das opções no menu acima para navegar.</p>
+        <h1>Perfil do Usuário</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Nome: <?php echo htmlspecialchars($user->getNome()); ?></h5>
+                <p class="card-text">Email: <?php echo htmlspecialchars($user->getEmail()); ?></p>
+                <p class="card-text">Moedas: <?php echo htmlspecialchars($user->getCoin()); ?></p>
+                <a href="Home.php" class="btn btn-primary">Voltar</a>
+                <a href="Index.php" class="btn btn-primary">Sair</a>
+            </div>
+        </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

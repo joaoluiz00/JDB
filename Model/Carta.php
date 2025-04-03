@@ -5,25 +5,23 @@ class Carta {
     private $nome;
     private $imagem;
     private $vida;
-    private $ataque_basico_nome;
-    private $ataque_basico_dano;
-    private $ataque_forte_nome;
-    private $ataque_forte_dano;
-    private $habilidade_recuperacao_nome;
-    private $habilidade_recuperacao_valor;
+    private $ataque1;
+    private $ataque1_dano;
+    private $ataque2;
+    private $ataque2_dano;
+    private $esquiva_critico;
     private $preco;
 
-    public function __construct($id, $nome, $imagem, $vida, $ataque_basico_nome, $ataque_basico_dano, $ataque_forte_nome, $ataque_forte_dano, $habilidade_recuperacao_nome, $habilidade_recuperacao_valor, $preco) {
+    public function __construct($id, $nome, $imagem, $vida, $ataque1, $ataque1_dano, $ataque2, $ataque2_dano, $esquiva_critico, $preco) {
         $this->id = $id;
         $this->nome = $nome;
         $this->imagem = $imagem;
         $this->vida = $vida;
-        $this->ataque_basico_nome = $ataque_basico_nome;
-        $this->ataque_basico_dano = $ataque_basico_dano;
-        $this->ataque_forte_nome = $ataque_forte_nome;
-        $this->ataque_forte_dano = $ataque_forte_dano;
-        $this->habilidade_recuperacao_nome = $habilidade_recuperacao_nome;
-        $this->habilidade_recuperacao_valor = $habilidade_recuperacao_valor;
+        $this->ataque1 = $ataque1;
+        $this->ataque1_dano = $ataque1_dano;
+        $this->ataque2 = $ataque2;
+        $this->ataque2_dano = $ataque2_dano;
+        $this->esquiva_critico = $esquiva_critico;
         $this->preco = $preco;
     }
 
@@ -44,28 +42,24 @@ class Carta {
         return $this->vida;
     }
 
-    public function getAtaqueBasicoNome() {
-        return $this->ataque_basico_nome;
+    public function getAtaque1() {
+        return $this->ataque1;
     }
 
-    public function getAtaqueBasicoDano() {
-        return $this->ataque_basico_dano;
+    public function getAtaque1Dano() {
+        return $this->ataque1_dano;
     }
 
-    public function getAtaqueForteNome() {
-        return $this->ataque_forte_nome;
+    public function getAtaque2() {
+        return $this->ataque2;
     }
 
-    public function getAtaqueForteDano() {
-        return $this->ataque_forte_dano;
+    public function getAtaque2Dano() {
+        return $this->ataque2_dano;
     }
 
-    public function getHabilidadeRecuperacaoNome() {
-        return $this->habilidade_recuperacao_nome;
-    }
-
-    public function getHabilidadeRecuperacaoValor() {
-        return $this->habilidade_recuperacao_valor;
+    public function getEsquivaCritico() {
+        return $this->esquiva_critico;
     }
 
     public function getPreco() {
@@ -85,28 +79,24 @@ class Carta {
         $this->vida = $vida;
     }
 
-    public function setAtaqueBasicoNome($ataque_basico_nome) {
-        $this->ataque_basico_nome = $ataque_basico_nome;
+    public function setAtaque1($ataque1) {
+        $this->ataque1 = $ataque1;
     }
 
-    public function setAtaqueBasicoDano($ataque_basico_dano) {
-        $this->ataque_basico_dano = $ataque_basico_dano;
+    public function setAtaque1Dano($ataque1_dano) {
+        $this->ataque1_dano = $ataque1_dano;
     }
 
-    public function setAtaqueForteNome($ataque_forte_nome) {
-        $this->ataque_forte_nome = $ataque_forte_nome;
+    public function setAtaque2($ataque2) {
+        $this->ataque2 = $ataque2;
     }
 
-    public function setAtaqueForteDano($ataque_forte_dano) {
-        $this->ataque_forte_dano = $ataque_forte_dano;
+    public function setAtaque2Dano($ataque2_dano) {
+        $this->ataque2_dano = $ataque2_dano;
     }
 
-    public function setHabilidadeRecuperacaoNome($habilidade_recuperacao_nome) {
-        $this->habilidade_recuperacao_nome = $habilidade_recuperacao_nome;
-    }
-
-    public function setHabilidadeRecuperacaoValor($habilidade_recuperacao_valor) {
-        $this->habilidade_recuperacao_valor = $habilidade_recuperacao_valor;
+    public function setEsquivaCritico($esquiva_critico) {
+        $this->esquiva_critico = $esquiva_critico;
     }
 
     public function setPreco($preco) {

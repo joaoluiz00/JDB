@@ -2,7 +2,7 @@
 require_once(__DIR__ . "/../Model/BancoDeDados.php");
 require_once(__DIR__ . "/../Model/Usuario.php");
 
-class Controller
+class ControllerUsuario
 {
     private $database;
 

@@ -16,7 +16,7 @@
                         <h3>Login</h3>
                     </div>
                     <div class="card-body">
-                        <form id="loginForm" action="../Processamento/Process.php" method="POST">
+                        <form id="loginForm" action="../Processamento/ProcessUsuario.php" method="POST">
                             <input type="hidden" name="action" value="login">
                             <div class="form-group">
                                 <label for="email">Email</label>
@@ -27,22 +27,7 @@
                                 <input type="password" class="form-control" id="password" name="senha" required>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Login</button>
-                        </form>
-                        <form id="registerForm" action="../Processamento/Process.php" method="POST" class="mt-3">
-                            <input type="hidden" name="action" value="register">
-                            <div class="form-group">
-                                <label for="nome">Nome</label>
-                                <input type="text" class="form-control" id="nome" name="nome" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Senha</label>
-                                <input type="password" class="form-control" id="password" name="senha" required>
-                            </div>
-                            <button type="submit" class="btn btn-secondary btn-block">Cadastrar</button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="window.location.href='Cadastro.php'">Cadastro</button>
                         </form>
                     </div>
                 </div>

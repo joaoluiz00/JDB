@@ -1,6 +1,6 @@
 <?php
-require_once "../Controller/Controller.php";
-$controller = new Controller();
+require_once "../Controller/ControllerUsuario.php";
+$controller = new ControllerUsuario();
 session_start();
 
 if (isset($_POST['action'])) {
@@ -14,7 +14,7 @@ if (isset($_POST['action'])) {
                 $email = $_POST['email'];
                 $coins = 0;
                 $controller->createUser($name, $email, $password, $coins);
-                header("Location: ../../home.php");
+                header("Location: ../View/home.php");
                 die();
             }
             break;
@@ -46,16 +46,16 @@ if (isset($_POST['action'])) {
                 $email = $_POST['email'];
                 $password = $_POST['senha'];
                 if ($controller->loginUser($email, $password)) {
-                    header("Location: ../../home.php");
+                    header("Location: ../View/home.php");
                     die();
                 } else {
                     $_SESSION['res'] = "<span style='color: red;'>Senha invalida</span>";
-                    header("Location: ../../");
+                    header("Location: ../View/");
                     die();
                 }
             } else {
                 $_SESSION['res'] = "Insira todos os valores";
-                header("Location: ../../");
+                header("Location: ../View/");
                 die();
             }
             break;
@@ -63,7 +63,7 @@ if (isset($_POST['action'])) {
         case 'logout':
             if (isset($_SESSION['user'])) {
                 $_SESSION['user'] = null;
-                header("Location: ../../");
+                header("Location: ../View/");
                 die();
             }
             break;
