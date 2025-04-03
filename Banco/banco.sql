@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 12-Mar-2025 às 21:22
+-- Tempo de geração: 03-Abr-2025 às 19:22
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -30,14 +30,13 @@ SET time_zone = "+00:00";
 CREATE TABLE `cartas` (
   `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
-  `imagem` varchar(255) NOT NULL,
+  `imagem` longblob NOT NULL,
   `vida` int(11) NOT NULL,
-  `ataque_basico_nome` varchar(50) NOT NULL,
-  `ataque_basico_dano` int(11) NOT NULL,
-  `ataque_forte_nome` varchar(50) NOT NULL,
-  `ataque_forte_dano` int(11) NOT NULL,
-  `habilidade_recuperacao_nome` varchar(50) NOT NULL,
-  `habilidade_recuperacao_valor` int(11) NOT NULL,
+  `ataque1` varchar(50) NOT NULL,
+  `ataque1_dano` int(11) NOT NULL,
+  `ataque2` varchar(50) NOT NULL,
+  `ataque2_dano` int(11) NOT NULL,
+  `esquiva_critico` int(11) NOT NULL,
   `preco` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -51,7 +50,7 @@ CREATE TABLE `pacote` (
   `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
   `descricao` text NOT NULL,
-  `imagem` varchar(255) NOT NULL,
+  `imagem` longblob NOT NULL,
   `preco` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -80,6 +79,15 @@ CREATE TABLE `usuario` (
   `senha` varchar(40) NOT NULL,
   `coin` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `usuario`
+--
+
+INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `coin`) VALUES
+(1, 'Gustavo', 'gu@gmail.com', '123', 0),
+(2, 'João', 'joao@gmail.com', '123', 0),
+(3, 'Victor', 'Vic@gmail.com', '123', 0);
 
 --
 -- Índices para tabelas despejadas
@@ -137,7 +145,7 @@ ALTER TABLE `pacote_cartas`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restrições para despejos de tabelas
