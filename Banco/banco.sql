@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 03-Abr-2025 às 19:22
+-- Tempo de geração: 04-Abr-2025 às 19:02
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `cartas` (
   `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
-  `imagem` longblob NOT NULL,
+  `path` varchar(255) NOT NULL,
   `vida` int(11) NOT NULL,
   `ataque1` varchar(50) NOT NULL,
   `ataque1_dano` int(11) NOT NULL,
@@ -38,6 +38,26 @@ CREATE TABLE `cartas` (
   `ataque2_dano` int(11) NOT NULL,
   `esquiva_critico` int(11) NOT NULL,
   `preco` int(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `cartas`
+--
+
+INSERT INTO `cartas` (`id`, `nome`, `path`, `vida`, `ataque1`, `ataque1_dano`, `ataque2`, `ataque2_dano`, `esquiva_critico`, `preco`) VALUES
+(1, 'la cucaracha', '/JDB/Assets/img/barata.jpg', 30, 'terror psicologico', 50, '', 0, 10, 50);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cartas_usuario`
+--
+
+CREATE TABLE `cartas_usuario` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_carta` int(11) NOT NULL,
+  `equipada` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -50,7 +70,7 @@ CREATE TABLE `pacote` (
   `id` int(11) NOT NULL,
   `nome` varchar(50) NOT NULL,
   `descricao` text NOT NULL,
-  `imagem` longblob NOT NULL,
+  `path` varchar(255) NOT NULL,
   `preco` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -100,6 +120,14 @@ ALTER TABLE `cartas`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Índices para tabela `cartas_usuario`
+--
+ALTER TABLE `cartas_usuario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `id_carta` (`id_carta`);
+
+--
 -- Índices para tabela `pacote`
 --
 ALTER TABLE `pacote`
@@ -127,6 +155,12 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de tabela `cartas`
 --
 ALTER TABLE `cartas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `cartas_usuario`
+--
+ALTER TABLE `cartas_usuario`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -150,6 +184,13 @@ ALTER TABLE `usuario`
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `cartas_usuario`
+--
+ALTER TABLE `cartas_usuario`
+  ADD CONSTRAINT `cartas_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
+  ADD CONSTRAINT `cartas_usuario_ibfk_2` FOREIGN KEY (`id_carta`) REFERENCES `cartas` (`id`);
 
 --
 -- Limitadores para a tabela `pacote_cartas`

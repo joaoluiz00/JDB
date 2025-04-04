@@ -50,6 +50,7 @@ $user = $controller->readUser($userId);
                 <h5 class="card-title">Nome: <?php echo htmlspecialchars($user->getNome()); ?></h5>
                 <p class="card-text">Email: <?php echo htmlspecialchars($user->getEmail()); ?></p>
                 <p class="card-text">Moedas: <?php echo htmlspecialchars($user->getCoin()); ?></p>
+                <a href="Inventario.php" class="btn-primary">Ver Inventário</a>
                 <a href="Home.php" class="btn btn-primary">Voltar</a>
                 <a href="Index.php" class="btn btn-primary">Sair</a>
             </div>

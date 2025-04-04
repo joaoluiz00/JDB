@@ -113,4 +113,121 @@ class BancoDeDados
         }
         $conn->close();
     }
+
+        public function getItems() {
+            $conn = $this->connect();
+            $sql = "SELECT id, nome, descricao, path, preco FROM pacote";
+            $result = $conn->query($sql);
+            $conn->close();
+            return $result;
+        }
+
+        public function getUserItems($userId) {
+            $conn = $this->connect();
+            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva_critico, c.preco
+                    FROM cartas c
+                    JOIN cartas_usuario cu ON cu.id_carta = c.id
+                    WHERE cu.id_usuario = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
+            $conn->close();
+            return $result;
+        }
+
+        public function buyItem($userId, $pacoteId, $preco) {
+            $conn = $this->connect();
+            $sql = "UPDATE usuario SET coin = coin - " . $preco . " WHERE id = " . $userId . " AND coin >= " . $preco;
+            if ($conn->query($sql) === TRUE) {
+                $sql = "INSERT INTO pacote_cartas (id_pacote, id_carta) 
+                        SELECT " . $pacoteId . ", c.id FROM cartas c WHERE c.id IN 
+                        (SELECT id_carta FROM pacote_cartas WHERE id_pacote = " . $pacoteId . ")";
+                if ($conn->query($sql) === TRUE) {
+                    $conn->close();
+                    return true;
+                }
+            }
+            $conn->close();
+            return false;
+        }
+
+        public function getCartas() {
+            $conn = $this->connect();
+            $sql = "SELECT id, nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva_critico, preco FROM cartas";
+            $result = $conn->query($sql);
+            $conn->close();
+            return $result;
+        }
+
+        public function getPacoteCartas($pacoteId) {
+            $conn = $this->connect();
+            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva_critico, c.preco
+                    FROM cartas c
+                    JOIN pacote_cartas pc ON pc.id_carta = c.id
+                    WHERE pc.id_pacote = " . $pacoteId;
+            $result = $conn->query($sql);
+            $conn->close();
+            return $result;
+        }
+
+        public function addCoins($userId, $amount) {
+            $conn = $this->connect();
+            $sql = "UPDATE usuario SET coin = coin + " . $amount . " WHERE id = " . $userId;
+            $result = $conn->query($sql);
+            $conn->close();
+            return $result;
+        }
+
+    public function equipItem($userId, $itemId) {
+        $conn = $this->connect();
+        $query = "UPDATE users_items ui
+                  JOIN items i ON ui.items_id = i.id
+                  SET ui.eqquiped = FALSE
+                  WHERE ui.users_id = ? AND i.type = (SELECT type FROM items WHERE id = ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ii", $userId, $itemId);
+        $stmt->execute();
+    
+        $query = "UPDATE users_items SET eqquiped = TRUE WHERE users_id = ? AND items_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ii", $userId, $itemId);
+        return $stmt->execute();
+    }
+
+    public function comprarCarta($idUsuario, $idCarta, $preco) {
+        $conn = $this->connect();
+    
+        // Verifica se o usuário tem moedas suficientes
+        $sql = "SELECT coin FROM usuario WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $idUsuario);
+        $stmt->execute();
+        $stmt->bind_result($coin);
+        $stmt->fetch();
+        $stmt->close();
+    
+        if ($coin >= $preco) {
+            // Deduz o preço da carta
+            $sql = "UPDATE usuario SET coin = coin - ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $preco, $idUsuario);
+            $stmt->execute();
+            $stmt->close();
+    
+            // Adiciona a carta à tabela cartas_usuario
+            $sql = "INSERT INTO cartas_usuario (id_usuario, id_carta) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $idUsuario, $idCarta);
+            $result = $stmt->execute();
+            $stmt->close();
+            $conn->close();
+    
+            return $result;
+        } else {
+            $conn->close();
+            return false; // Moedas insuficientes
+        }
+    }
 }
