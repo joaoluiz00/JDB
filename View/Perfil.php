@@ -23,6 +23,11 @@ $user = $controller->readUser($userId);
     <title>Perfil</title>
 </head>
 <body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    <audio id="bgMusic" loop hidden>
+        <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">
+    </audio>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="Home.php">JDB</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
