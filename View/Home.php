@@ -35,7 +35,7 @@
     </nav>
     <div class="container mt-4">
         <h1>Bem-vindo à Home</h1>
-        <p>Escolha uma das opções no menu acima para navegar.</p>
+        <!-- <p>Escolha uma das opções no menu acima para navegar.</p> -->
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

@@ -40,16 +40,25 @@ class ControllerUsuario
     }
 
     public function loginUser($email, $password)
-    {
-        $user = $this->database->getUserByEmail($email);
-        if ($user && $user['senha'] == $password) {
-            session_start();
-            $_SESSION['id'] = $user['id'];
-            $_SESSION['user'] = $user['nome'];
-            return true;
+{
+    $user = $this->database->getUserByEmail($email);
+    if ($user && $user['senha'] == $password) {
+        // Certifique-se de limpar qualquer sessão anterior
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            session_unset();
+            session_destroy();
         }
-        return false;
+        
+        // Inicie uma nova sessão
+        session_start();
+        
+        // Configure as variáveis de sessão para o novo usuário
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['user'] = $user['nome'];
+        return true;
     }
+    return false;
+}
 
     public function gainMoney($amount, $id)
     {
