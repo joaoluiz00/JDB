@@ -23,7 +23,7 @@
         <div class="card">
             <h2 class="mb-4">LOGIN</h2>
             
-            <form id="loginForm" action="../Processamento/ProcessUsuario.php" method="POST">
+            <form id="loginForm" action="../Processamento/ProcessAdmin.php" method="POST">
                 <input type="hidden" name="action" value="login">
                 
                 <div class="form-group">
@@ -37,8 +37,8 @@
                 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">START GAME</button>
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='Cadastro.php'">NEW PLAYER</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='LoginAdmin.php'">ADMIN</button>
+                    <button type="button" class="btn btn-primary" onclick="window.location.href='CadastroAdmin.php'">NEW ADMIN</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='index.php'">USER</button>
                 </div>
                 
             </form>

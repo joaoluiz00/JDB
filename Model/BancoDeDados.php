@@ -230,4 +230,17 @@ class BancoDeDados
             return false; // Moedas insuficientes
         }
     }
+
+    public function getUsersList()
+{
+    $conn = $this->connect();
+    $sql = "SELECT id, nome, email, coin FROM usuario";
+    $result = $conn->query($sql);
+    $usuarios = [];
+    while ($row = $result->fetch_assoc()) {
+        $usuarios[] = $row;
+    }
+    $conn->close();
+    return $usuarios;
+}
 }

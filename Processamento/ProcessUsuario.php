@@ -23,20 +23,15 @@ if (isset($_POST['action'])) {
             if (isset($_POST['id'])) {
                 $id = $_POST['id'];
                 $controller->deleteUser($id);
-                header("Location: success.php");
+                header("Location: ../View/GerenciarUsuario.php");
                 die();
             }
             break;
 
         case 'update':
-            if (isset($_POST['id'], $_POST['nome'], $_POST['senha'], $_POST['email'], $_POST['coin'])) {
+            if (isset($_POST['id'])) {
                 $id = $_POST['id'];
-                $name = $_POST['nome'];
-                $password = $_POST['senha'];
-                $email = $_POST['email'];
-                $coins = $_POST['coin'];
-                $controller->updateUser($id, $name, $email, $password, $coins);
-                header("Location: success.php");
+                header("Location: ../View/AtualizarUsuario.php?id=$id");
                 die();
             }
             break;
@@ -60,32 +55,23 @@ if (isset($_POST['action'])) {
             }
             break;
 
-            case 'logout':
-                // Iniciar a sessão (apenas se ainda não estiver iniciada)
-                if (session_status() == PHP_SESSION_NONE) {
-                    session_start();
-                }
-                
-                // Remove todas as variáveis de sessão
-                $_SESSION = array();
-                
-                // Remove o cookie de sessão
-                if (ini_get("session.use_cookies")) {
-                    $params = session_get_cookie_params();
-                    setcookie(session_name(), '', time() - 42000,
-                        $params["path"], $params["domain"],
-                        $params["secure"], $params["httponly"]
-                    );
-                }
-                
-                // Destroi a sessão
-                session_destroy();
-                
-                // Redireciona para a página inicial
-                header("Location: ../View/");
-                die();
+        case 'logout':
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION = array();
+            if (ini_get("session.use_cookies")) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000,
+                    $params["path"], $params["domain"],
+                    $params["secure"], $params["httponly"]
+                );
+            }
+            session_destroy();
+            header("Location: ../View/");
+            die();
             break;
-        
+
         default:
             header("Location: error.php");
             die();
