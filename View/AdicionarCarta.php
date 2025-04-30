@@ -40,8 +40,12 @@
                 <input type="number" class="form-control" id="ataque2_dano" name="ataque2_dano">
             </div>
             <div class="form-group">
-                <label for="esquiva_critico">Esquiva Crítico</label>
-                <input type="number" class="form-control" id="esquiva_critico" name="esquiva_critico" required>
+                <label for="esquiva">Esquiva</label>
+                <input type="number" class="form-control" id="esquiva" name="esquiva" required>
+            </div>
+            <div class="form-group">
+                <label for="critico">Crítico</label>
+                <input type="number" class="form-control" id="critico" name="critico" required>
             </div>
             <div class="form-group">
                 <label for="preco">Preço</label>

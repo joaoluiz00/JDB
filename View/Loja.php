@@ -66,24 +66,39 @@ if ($showError) unset($_SESSION['error']);
         </div>
 
         <div class="cards-grid">
-            <?php while ($carta = $cartas->fetch_assoc()): ?>
-                <div class="card-item">
-                    <div class="card-image-container">
-                        <img src="<?php echo $carta['path']; ?>" alt="<?php echo $carta['nome']; ?>" class="card-image">
-                    </div>
-                    <div class="card-details">
-                        <h2><?php echo $carta['nome']; ?></h2>
-                        <p class="price">💰 <?php echo $carta['preco']; ?> moedas</p>
-                        <form method="POST" action="../Processamento/ProcessCartas.php">
-                            <input type="hidden" name="action" value="comprar">
-                            <input type="hidden" name="id_carta" value="<?php echo $carta['id']; ?>">
-                            <input type="hidden" name="preco" value="<?php echo $carta['preco']; ?>">
-                            <button type="submit" name="comprar" class="btn-buy">Comprar</button>
-                        </form>
-                    </div>
-                </div>
-            <?php endwhile; ?>
+    <?php while ($carta = $cartas->fetch_assoc()): ?>
+        <div class="card-item">
+            <div class="card-image-container">
+                <img src="<?php echo $carta['path']; ?>" alt="<?php echo $carta['nome']; ?>" class="card-image">
+            </div>
+            <div class="card-details">
+                <h2><?php echo $carta['nome']; ?></h2>
+                <p>Vida: <?php echo $carta['vida']; ?></p>
+                <p>Ataque 1: <?php echo $carta['ataque1']; ?> (<?php echo $carta['ataque1_dano']; ?> dano)</p>
+                <p>Ataque 2: <?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?> dano)</p>
+                <p>Esquiva: <?php echo $carta['esquiva']; ?></p>
+                <p>Crítico: <?php echo $carta['critico']; ?></p>
+                <p class="price">💰 <?php echo $carta['preco']; ?> moedas</p>
+                <p class="price">💵 R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
+                
+                <!-- Botão para comprar com moedas -->
+                <form action="../Processamento/ProcessCartas.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar esta carta com moedas do jogo?');">
+                    <input type="hidden" name="id_carta" value="<?php echo $carta['id']; ?>">
+                    <input type="hidden" name="preco" value="<?php echo $carta['preco']; ?>">
+                    <input type="hidden" name="action" value="comprar_moedas">
+                    <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
+                </form>
+
+                <!-- Botão para comprar com dinheiro -->
+                <form action="../View/ConfirmarEndereco.php" method="GET">
+                    <input type="hidden" name="id_carta" value="<?php echo $carta['id']; ?>">
+                    <input type="hidden" name="preco_dinheiro" value="<?php echo $carta['preco_dinheiro']; ?>">
+                    <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
+                </form>
+            </div>
         </div>
+    <?php endwhile; ?>
+</div>
     </div>
     <script src="../Assets/script.js"></script>
 </body>

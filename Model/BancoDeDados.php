@@ -124,7 +124,7 @@ class BancoDeDados
 
         public function getUserItems($userId) {
             $conn = $this->connect();
-            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva_critico, c.preco
+            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva, c.critico, c.preco
                     FROM cartas c
                     JOIN cartas_usuario cu ON cu.id_carta = c.id
                     WHERE cu.id_usuario = ?";
@@ -153,9 +153,10 @@ class BancoDeDados
             return false;
         }
 
+        
         public function getCartas() {
             $conn = $this->connect();
-            $sql = "SELECT id, nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva_critico, preco FROM cartas";
+            $sql = "SELECT id, nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva, critico, preco, preco_dinheiro FROM cartas";
             $result = $conn->query($sql);
             $conn->close();
             return $result;
@@ -163,11 +164,15 @@ class BancoDeDados
 
         public function getPacoteCartas($pacoteId) {
             $conn = $this->connect();
-            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva_critico, c.preco
+            $sql = "SELECT c.id, c.nome, c.path, c.vida, c.ataque1, c.ataque1_dano, c.ataque2, c.ataque2_dano, c.esquiva, c.critico, c.preco
                     FROM cartas c
                     JOIN pacote_cartas pc ON pc.id_carta = c.id
-                    WHERE pc.id_pacote = " . $pacoteId;
-            $result = $conn->query($sql);
+                    WHERE pc.id_pacote = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $pacoteId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $stmt->close();
             $conn->close();
             return $result;
         }

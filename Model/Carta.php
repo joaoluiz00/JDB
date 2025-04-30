@@ -9,10 +9,12 @@ class Carta {
     private $ataque1_dano;
     private $ataque2;
     private $ataque2_dano;
-    private $esquiva_critico;
+    private $esquiva;
+    private $critico;
     private $preco;
+    private $preco_dinheiro; // Novo campo
 
-    public function __construct($id, $nome, $imagem, $vida, $ataque1, $ataque1_dano, $ataque2, $ataque2_dano, $esquiva_critico, $preco) {
+    public function __construct($id, $nome, $imagem, $vida, $ataque1, $ataque1_dano, $ataque2, $ataque2_dano, $esquiva, $critico, $preco, $preco_dinheiro) {
         $this->id = $id;
         $this->nome = $nome;
         $this->imagem = $imagem;
@@ -21,8 +23,10 @@ class Carta {
         $this->ataque1_dano = $ataque1_dano;
         $this->ataque2 = $ataque2;
         $this->ataque2_dano = $ataque2_dano;
-        $this->esquiva_critico = $esquiva_critico;
+        $this->esquiva = $esquiva;
+        $this->critico = $critico;
         $this->preco = $preco;
+        $this->preco_dinheiro = $preco_dinheiro; // Novo campo
     }
 
     // Getters
@@ -66,6 +70,18 @@ class Carta {
         return $this->preco;
     }
 
+    public function getEsquiva() {
+        return $this->esquiva;
+    }
+
+    public function getCritico() {
+        return $this->critico;
+    }
+
+    public function getPrecoDinheiro() {
+        return $this->preco_dinheiro;
+    }
+
     // Setters
     public function setNome($nome) {
         $this->nome = $nome;
@@ -101,5 +117,17 @@ class Carta {
 
     public function setPreco($preco) {
         $this->preco = $preco;
+    }
+
+    public function setEsquiva($esquiva) {
+        $this->esquiva = $esquiva;
+    }
+
+    public function setCritico($critico) {
+        $this->critico = $critico;
+    }
+
+    public function setPrecoDinheiro($preco_dinheiro) {
+        $this->preco_dinheiro = $preco_dinheiro;
     }
 }

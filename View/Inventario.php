@@ -67,8 +67,12 @@ if (!$cartas instanceof mysqli_result) {
                                     <span><?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?>)</span>
                                 </div>
                                 <div class="stat-item">
+                                    <span class="stat-icon">🐱‍🏍</span>
+                                    <span><?php echo $carta['esquiva']; ?>%</span>
+                                </div>
+                                <div class="stat-item">
                                     <span class="stat-icon">🎯</span>
-                                    <span><?php echo $carta['esquiva_critico']; ?>%</span>
+                                    <span><?php echo $carta['critico']; ?>%</span>
                                 </div>
                             </div>
                         </div>
