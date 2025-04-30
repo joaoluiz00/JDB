@@ -71,12 +71,29 @@ $precoDinheiro = $_GET['preco_dinheiro'];
         <div class="form-group">
             <label for="pagamento">Forma de Pagamento:</label>
             <select id="pagamento" name="pagamento" required>
-                <option value="cartao">Cartão de Crédito</option>
-                <option value="boleto">Boleto Bancário</option>
                 <option value="pix">PIX</option>
+                <option value="boleto">Boleto Bancário</option>
+                <option value="cartao">Cartão de Crédito</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Confirmar Compra</button>
     </form>
 </body>
+<script>
+    document.getElementById('pagamento').addEventListener('change', function() {
+        if (this.value === 'cartao') {
+            const idCarta = "<?php echo $idCarta; ?>";
+            const precoDinheiro = "<?php echo $precoDinheiro; ?>";
+            window.location.href = `AdicionarCartão.php?id_carta=${idCarta}&preco_dinheiro=${precoDinheiro}`;
+        }
+    });
+
+    // Impede o envio do formulário se o método de pagamento for "Cartão de Crédito"
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const pagamento = document.getElementById('pagamento').value;
+        if (pagamento === 'cartao') {
+            event.preventDefault(); // Impede o envio do formulário
+        }
+    });
+</script>
 </html>

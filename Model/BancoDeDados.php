@@ -248,4 +248,23 @@ class BancoDeDados
     $conn->close();
     return $usuarios;
 }
+
+public function getPacotesMoedas() {
+    $conn = $this->connect();
+    $sql = "SELECT id_pacote, nome_pacote, quantidade_moedas, valor_dinheiro FROM pacotes_moedas";
+    $result = $conn->query($sql);
+    $conn->close();
+    return $result;
+}
+
+public function salvarCartao($idUsuario, $numero, $portador, $validade, $cvv) {
+    $conn = $this->connect();
+    $sql = "INSERT INTO cartoes (id_usuario, numero, portador, validade, cvv) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("issss", $idUsuario, $numero, $portador, $validade, $cvv);
+    $result = $stmt->execute();
+    $stmt->close();
+    $conn->close();
+    return $result;
+}
 }

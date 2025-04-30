@@ -39,6 +39,9 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="../Assets/style.css">
 </head>
 <body>
+<div class="navigation">
+    <a href="LojaMoedas.php" class="btn btn-primary">Comprar Moedas</a>
+</div>
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <audio id="bgMusic" loop hidden>
         <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">
