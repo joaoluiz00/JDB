@@ -1,0 +1,34 @@
+@media (max-width: 576px) {
+    .logo img {
+        max-width: 180px;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 1440px) {
+    .inventory-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .inventory-grid {
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .inventory-grid {
+        grid-template-columns: 1fr;
+        margin-top: 3rem;
+    }
+
+    .inventory-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}

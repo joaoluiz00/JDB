@@ -1,0 +1,29 @@
+[data-theme="dark"] {
+    --color1: #0a0a12;
+    --color2: #1a1a3f;
+    --color3: #3d4f8a;
+    --color4: #567edd;
+    --color5: #00e1ff;
+    --color6: #e6f1ff;
+
+    --text: #000000;
+    --border: var(--color4);
+    --card-bg: rgba(15, 15, 35, 0.98);
+    --bg: linear-gradient(160deg, var(--color1) 0%, var(--color2) 100%);
+    --neon-glow: 0 0 20px rgba(86, 126, 221, 0.6);
+    --metalic-border: 2px solid var(--color5);
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: var(--color5);
+    border: 2px solid var(--color2);
+    color: var(--text);
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
