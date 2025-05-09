@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 30-Abr-2025 às 21:31
+-- Tempo de geração: 09-Maio-2025 às 21:34
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -115,6 +115,50 @@ CREATE TABLE `cartoes` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `icones_usuario`
+--
+
+CREATE TABLE `icones_usuario` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_icone` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `icones_usuario`
+--
+
+INSERT INTO `icones_usuario` (`id`, `id_usuario`, `id_icone`) VALUES
+(1, 1, 2),
+(2, 1, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `img_perfil`
+--
+
+CREATE TABLE `img_perfil` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(200) NOT NULL,
+  `path` varchar(200) NOT NULL,
+  `preco` int(100) NOT NULL,
+  `preco_dinheiro` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `img_perfil`
+--
+
+INSERT INTO `img_perfil` (`id`, `nome`, `path`, `preco`, `preco_dinheiro`) VALUES
+(1, 'Red', '/JDB/Assets/img/red.gif', 900, '25.00'),
+(2, 'Gavião j5', '/JDB/Assets/img/gaviaoj5.jfif', 500, '10.00'),
+(3, 'Cachorro de Juliete', '/JDB/Assets/img/cachorrojuliete.PNG', 600, '12.00'),
+(4, 'Pikachurros', '/JDB/Assets/img/pikachu.gif', 750, '16.00');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `pacote`
 --
 
@@ -163,18 +207,19 @@ CREATE TABLE `usuario` (
   `nome` varchar(100) NOT NULL,
   `email` varchar(200) NOT NULL,
   `senha` varchar(40) NOT NULL,
-  `coin` int(11) NOT NULL DEFAULT 0
+  `coin` int(11) NOT NULL DEFAULT 0,
+  `id_icone_perfil` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `usuario`
 --
 
-INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `coin`) VALUES
-(1, 'Gustavo', 'gu@gmail.com', '123', 950),
-(2, 'João', 'joao@gmail.com', '123', 0),
-(3, 'Victor', 'Vic@gmail.com', '123', 0),
-(4, 'Gustavo', 'gu@gmail.com', '123', 5000);
+INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `coin`, `id_icone_perfil`) VALUES
+(1, 'Gustavo', 'gu@gmail.com', '123', 3900, 2),
+(2, 'João', 'joao@gmail.com', '123', 0, NULL),
+(3, 'Victor', 'Vic@gmail.com', '123', 0, NULL),
+(4, 'Gustavo', 'gu@gmail.com', '123', 5000, NULL);
 
 --
 -- Índices para tabelas despejadas
@@ -207,6 +252,20 @@ ALTER TABLE `cartas_usuario`
 ALTER TABLE `cartoes`
   ADD PRIMARY KEY (`id_cartao`),
   ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Índices para tabela `icones_usuario`
+--
+ALTER TABLE `icones_usuario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `id_icone` (`id_icone`);
+
+--
+-- Índices para tabela `img_perfil`
+--
+ALTER TABLE `img_perfil`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices para tabela `pacote`
@@ -263,6 +322,18 @@ ALTER TABLE `cartoes`
   MODIFY `id_cartao` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `icones_usuario`
+--
+ALTER TABLE `icones_usuario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de tabela `img_perfil`
+--
+ALTER TABLE `img_perfil`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de tabela `pacote`
 --
 ALTER TABLE `pacote`
@@ -302,6 +373,13 @@ ALTER TABLE `cartas_usuario`
 --
 ALTER TABLE `cartoes`
   ADD CONSTRAINT `cartoes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`);
+
+--
+-- Limitadores para a tabela `icones_usuario`
+--
+ALTER TABLE `icones_usuario`
+  ADD CONSTRAINT `icones_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
+  ADD CONSTRAINT `icones_usuario_ibfk_2` FOREIGN KEY (`id_icone`) REFERENCES `img_perfil` (`id`);
 
 --
 -- Limitadores para a tabela `pacote_cartas`

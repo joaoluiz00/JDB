@@ -267,4 +267,14 @@ public function salvarCartao($idUsuario, $numero, $portador, $validade, $cvv) {
     $conn->close();
     return $result;
 }
+
+public function getIcons() {
+    $conn = $this->connect();
+    $sql = "SELECT id, nome, path, preco, preco_dinheiro FROM img_perfil";
+    $result = $conn->query($sql);
+    $conn->close();
+    return $result;
+}
+
+
 }

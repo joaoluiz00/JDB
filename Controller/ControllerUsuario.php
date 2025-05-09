@@ -11,6 +11,17 @@ class ControllerUsuario
         $this->database = new BancoDeDados("127.0.0.1", "root", "", "banco");
     }
 
+    public function setProfileIcon($idUsuario, $idIcone) {
+        $conn = $this->database->connect(); // Corrigido: Alterado de $this->db para $this->database
+        $sql = "UPDATE usuario SET id_icone_perfil = ? WHERE id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $idIcone, $idUsuario);
+        $result = $stmt->execute();
+        $stmt->close();
+        $conn->close();
+        return $result;
+    }
+
     public function createUser($name, $email, $password, $coins = 0)
     {
         $user = new Usuario(null, $name, $email, $password, $coins);

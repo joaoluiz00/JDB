@@ -3,6 +3,22 @@ require_once "../Controller/ControllerUsuario.php";
 $controller = new ControllerUsuario();
 session_start();
 
+if (isset($_POST['action']) && $_POST['action'] === 'set_profile_icon' && isset($_POST['id_icone'])) {
+    $idUsuario = $_SESSION['id'];
+    $idIcone = $_POST['id_icone'];
+
+    $controllerUsuario = new ControllerUsuario();
+    $result = $controllerUsuario->setProfileIcon($idUsuario, $idIcone);
+
+    if ($result) {
+        $_SESSION['success'] = "Foto de perfil atualizada com sucesso!";
+    } else {
+        $_SESSION['error'] = "Erro ao atualizar a foto de perfil.";
+    }
+    header("Location: ../View/Inventario.php");
+    die();
+}
+
 if (isset($_POST['action'])) {
     $action = $_POST['action'];
 
@@ -76,7 +92,9 @@ if (isset($_POST['action'])) {
             header("Location: error.php");
             die();
     }
+    
 } else {
     header("Location: error.php");
     die();
+
 }
