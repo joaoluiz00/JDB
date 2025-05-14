@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Carta</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../Assets/style.css">
 </head>
 <body>
     <div class="container">
@@ -51,6 +52,12 @@
                 <label for="preco">Preço</label>
                 <input type="number" class="form-control" id="preco" name="preco" required>
             </div>
+
+            <div class="form-group">
+                <label for="preco_dinheiro">Preço em Dinheiro</label>
+                <input type="number" class="form-control" id="preco_dinheiro" name="preco_dinheiro" required>
+
+
             <button type="submit" class="btn btn-primary">Adicionar Carta</button>
             <a href="HomeAdmin.php" class="btn btn-secondary">Cancelar</a>
         </form>

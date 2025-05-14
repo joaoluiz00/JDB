@@ -24,7 +24,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="Perfil.php">Perfil</a>
@@ -36,7 +36,7 @@
                     <a class="nav-link" href="Loja.php">Loja</a>
                 </li>
             </ul>
-        </div>
+        </div> -->
         <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     </nav>
 
@@ -44,7 +44,7 @@
     <div class="container mt-5 text-center">
         <div class="row">
             <div class="col-12">
-                <h1 class="display-4">Bem-vindo ao JDB!</h1>
+                <h1 class="display-4">Bem-vindo ao JOGO DOS BICHOS!</h1>
                 <p class="lead">Explore o mundo das cartas, personalize seu perfil e participe de batalhas épicas!</p>
             </div>
         </div>
@@ -53,9 +53,9 @@
         <div class="row mt-4">
             <div class="col-md-4">
                 <a href="Perfil.php" class="text-decoration-none">
-                    <div class="card shadow-sm">
+                    <div class="card-custom shadow-sm">
                         <div class="card-body">
-                            <img src="../Assets/img/perfil-icon.png" alt="Perfil" class="img-fluid mb-3" style="max-width: 100px;">
+                            <img src="../Assets/img/garra.png" alt="Perfil" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Perfil</h5>
                             <p class="card-text">Gerencie suas informações e personalize seu avatar.</p>
                         </div>
@@ -67,7 +67,7 @@
                 <div class="container main-content">
                     <div class="card-custom shadow-sm">
                         <div class="card-body">
-                            <img src="../Assets/img/batalha-icon.png" alt="Batalha" class="img-fluid mb-3" style="max-width: 100px;">
+                            <img src="../Assets/img/espada.png" alt="Batalha" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Batalha</h5>
                             <p class="card-text">Enfrente outros jogadores e prove sua força.</p>
                         </div>
@@ -77,9 +77,9 @@
             </div>
             <div class="col-md-4">
                 <a href="Loja.php" class="text-decoration-none">
-                    <div class="card shadow-sm">
+                    <div class="card-custom shadow-sm">
                         <div class="card-body">
-                            <img src="../Assets/img/loja-icon.png" alt="Loja" class="img-fluid mb-3" style="max-width: 100px;">
+                            <img src="../Assets/img/loja.png" alt="Loja" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Loja</h5>
                             <p class="card-text">Compre cartas, ícones e muito mais.</p>
                         </div>
