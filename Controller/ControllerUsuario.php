@@ -8,17 +8,46 @@ class ControllerUsuario
 
     public function __construct()
     {
-        $this->database = new BancoDeDados("127.0.0.1", "root", "", "banco");
+        // Obtém a instância Singleton do BancoDeDados
+        $this->database = BancoDeDados::getInstance("127.0.0.1", "root", "", "banco");
     }
 
-    public function setProfileIcon($idUsuario, $idIcone) {
-        $conn = $this->database->connect(); // Corrigido: Alterado de $this->db para $this->database
+    public function loginUser($email, $password)
+{
+    // Busca o usuário pelo e-mail
+    $user = $this->database->getUserByEmail($email);
+    var_dump($user); // Verifica se os dados do usuário estão sendo retornados
+
+    if ($user) {
+        // Verifica se a senha está correta (criptografada ou não)
+        $senhaCorreta = password_verify($password, $user['senha']) || $password === $user['senha'];
+        var_dump($senhaCorreta); // Verifica se a senha foi validada
+    }
+
+    // Verifica se o usuário existe e se a senha está correta
+    if ($user && $senhaCorreta) {
+        // Verifica se a sessão já está ativa
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['nome'] = $user['nome'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['coin'] = $user['coin'];
+        return true;
+    }
+
+    return false;
+}
+
+    public function setProfileIcon($idUsuario, $idIcone)
+    {
+        $conn = $this->database->getConnection(); // Usa getConnection() para obter a conexão
         $sql = "UPDATE usuario SET id_icone_perfil = ? WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $idIcone, $idUsuario);
         $result = $stmt->execute();
         $stmt->close();
-        $conn->close();
         return $result;
     }
 
@@ -33,11 +62,14 @@ class ControllerUsuario
     }
 
     public function readUser($id)
-    {
-        $row = $this->database->getUserById($id);
-        $user = new Usuario($row['id'], $row['nome'], $row['email'], $row['senha'], $row['coin']);
-        return $user;
+{
+    $row = $this->database->getUserById($id);
+    if ($row) {
+        // Retorna um objeto da classe Usuario
+        return new Usuario($row['id'], $row['nome'], $row['email'], $row['senha'], $row['coin']);
     }
+    return null; // Retorna null se o usuário não for encontrado
+}
 
     public function updateUser($id, $name, $email, $password, $coins)
     {
@@ -50,32 +82,25 @@ class ControllerUsuario
         $this->database->deleteUser($id);
     }
 
-    public function loginUser($email, $password)
-{
-    $user = $this->database->getUserByEmail($email);
-    if ($user && $user['senha'] == $password) {
-        // Certifique-se de limpar qualquer sessão anterior
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            session_unset();
-            session_destroy();
-        }
-        
-        // Inicie uma nova sessão
-        session_start();
-        
-        // Configure as variáveis de sessão para o novo usuário
-        $_SESSION['id'] = $user['id'];
-        $_SESSION['user'] = $user['nome'];
-        return true;
-    }
-    return false;
-}
-
-    public function gainMoney($amount, $id)
+    public function getUserItems($userId)
     {
-        $result = $this->database->getUserById($id);
-        $user = new Usuario($result['id'], $result['nome'], $result['email'], $result['senha'], $result['coin']);
-        $user->setCoin($user->getCoin() + $amount);
-        $this->database->updateUser($user, $id);
+        $result = $this->database->getUserItems($userId);
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        return $items;
     }
+
+    public function buyItem($userId, $pacoteId, $preco)
+    {
+        return $this->database->buyItem($userId, $pacoteId, $preco);
+    }
+
+    public function addCoins($userId, $amount)
+    {
+        return $this->database->addCoins($userId, $amount);
+    }
+
+    
 }

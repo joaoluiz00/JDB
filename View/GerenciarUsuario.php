@@ -1,7 +1,8 @@
 <?php
 require_once '../Model/BancoDeDados.php';
 
-$db = new BancoDeDados('localhost', 'root', '', 'banco');
+// Use o método getInstance() para obter a instância Singleton do BancoDeDados
+$db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
 $usuarios = $db->getUsersList(); // Método que retorna todos os usuários
 ?>
 
@@ -36,21 +37,20 @@ $usuarios = $db->getUsersList(); // Método que retorna todos os usuários
                         <td><?= $usuario['coin'] ?></td>
                         <td>
                             <form method="POST" action="../Processamento/ProcessUsuario.php" style="display: inline;">
-                                <input type="hidden" name="action" value="update">
-                                <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
-                                <button type="submit" class="btn btn-warning btn-sm">Atualizar</button>
-                            </form>
-                            <form method="POST" action="../Processamento/ProcessUsuario.php" style="display: inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">Excluir</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                            <form method="POST" action="../Processamento/ProcessUsuario.php" style="display: inline;">
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
+                                <button type="submit" class="btn btn-primary btn-sm">Editar</button>
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="HomeAdmin.php" class="btn btn-secondary">Voltar</a>
     </div>
 </body>
 </html>

@@ -48,17 +48,19 @@ if (!$icones instanceof mysqli_result) {
         <h1>Inventário</h1>
 
         <!-- Exibe as cartas -->
-        <h2>Cartas</h2>
-        <div class="cards-grid">
-            <?php while ($carta = $cartas->fetch_assoc()): ?>
-                <div class="card-item">
-                    <h3><?php echo $carta['nome']; ?></h3>
-                    <p>Vida: <?php echo $carta['vida']; ?></p>
-                    <p>Ataque 1: <?php echo $carta['ataque1']; ?> (<?php echo $carta['ataque1_dano']; ?> dano)</p>
-                    <p>Ataque 2: <?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?> dano)</p>
-                </div>
-            <?php endwhile; ?>
+        <!-- Exibe as cartas -->
+<h2>Cartas</h2>
+<div class="cards-grid">
+    <?php while ($carta = $cartas->fetch_assoc()): ?>
+        <div class="card-item">
+            <img src="<?php echo $carta['path']; ?>" alt="<?php echo $carta['nome']; ?>" class="card-image">
+            <h3><?php echo $carta['nome']; ?></h3>
+            <p>Vida: <?php echo $carta['vida']; ?></p>
+            <p>Ataque 1: <?php echo $carta['ataque1']; ?> (<?php echo $carta['ataque1_dano']; ?> dano)</p>
+            <p>Ataque 2: <?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?> dano)</p>
         </div>
+    <?php endwhile; ?>
+</div>
 
         <!-- Exibe os ícones -->
         <h2>Ícones</h2>

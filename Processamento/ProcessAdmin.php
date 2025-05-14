@@ -5,7 +5,7 @@ require_once '../Model/BancoDeDados.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $controller = new ControllerAdmin();
-    $db = new BancoDeDados('localhost', 'root', '', 'banco');
+    $db = BancoDeDados::getInstance('localhost', 'root', '', 'banco'); // Corrigido para usar getInstance()
 
     if ($_POST['action'] === 'register') {
         $nome = $_POST['nome'];
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $esquiva_critico = $_POST['esquiva_critico'];
         $preco = $_POST['preco'];
 
-        $conn = $db->connect();
+        $conn = $db->getConnection(); // Corrigido para usar getConnection()
         $sql = "INSERT INTO cartas (nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva_critico, preco) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
@@ -50,6 +50,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         $stmt->close();
-        $conn->close();
     }
 }
