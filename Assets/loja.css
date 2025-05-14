@@ -1,0 +1,223 @@
+/* style.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+:root {
+    --color1: #FCC499;
+    --color2: #FAAA6D;
+    --color3: #419EAE;
+    --color4: #FFEEB0;
+    --color5: #F2684A;
+    --color6: #000000;
+    --dark: #000000;
+    --retro-border: 3px solid var(--color6);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(160deg, var(--color1) 0%, var(--color2) 100%);
+    min-height: 100vh;
+    color: var(--color6);
+    padding-top: 80px;
+}
+
+/* Navbar corrigida */
+.navbar {
+    width: 100%;
+    background: var(--color5);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    border-bottom: var(--retro-border);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-primary {
+    background: var(--color5);
+    border: var(--retro-border);
+    color: var(--color4);
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    text-shadow: 1px 1px 0 var(--color6);
+}
+
+.btn-primary:hover {
+    background: var(--color2);
+    transform: translateY(2px);
+}
+
+.user-coins {
+    font-size: 0.9rem;
+    color: var(--color4);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Container principal corrigido */
+.store-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.store-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.store-title {
+    font-size: 2rem;
+    color: var(--color6);
+    text-shadow: 2px 2px 0 var(--color4);
+    margin: 1rem 0;
+}
+
+/* Grid de cartas ajustado */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.card-item {
+    background: var(--color4);
+    border: var(--retro-border);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 4px 4px 0 var(--color6);
+}
+
+.card-image-container {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: var(--retro-border);
+    background: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.card-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.card-details {
+    margin-top: 15px;
+}
+
+.card-details h2 {
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
+.card-details p {
+    font-size: 0.7rem;
+    line-height: 1.4;
+    margin: 5px 0;
+}
+
+.price {
+    font-size: 0.9rem;
+    margin: 10px 0;
+    color: var(--color5);
+}
+
+/* Alertas ajustados */
+.alert {
+    padding: 10px;
+    border: var(--retro-border);
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 0.8rem;
+}
+
+.success {
+    background: #d4edda;
+    border-color: #28a745;
+}
+
+.error {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
+/* Tema escuro corrigido */
+[data-theme="dark"] {
+    --color1: #0a0a12;
+    --color2: #1a1a3f;
+    --color4: #567edd;
+    --color5: #00e1ff;
+    --color6: #e6f1ff;
+    
+    .card-item {
+        background: var(--color1);
+    }
+    
+    .btn-primary {
+        background: var(--color5);
+        color: var(--color6);
+    }
+}
+
+/* Responsivo melhorado */
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+    
+    .nav-left, .nav-right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .store-container {
+        padding: 10px;
+        margin-top: 80px;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-image-container {
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-primary {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+    }
+    
+    .user-coins {
+        font-size: 0.7rem;
+    }
+    
+    .store-title {
+        font-size: 1.5rem;
+    }
+}

@@ -38,18 +38,18 @@ if ($showError) unset($_SESSION['error']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loja de Cartas</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../Assets/style.css">
+    <link rel="stylesheet" href="../Assets/loja.css">
 </head>
 <body>
     <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
-            <a href="Home.php" class="btn btn-primary">🏠 Voltar para Home</a>
-            <a href="LojaMoedas.php" class="btn btn-primary">💰 Comprar Moedas</a>
-            <a href="LojaIcone.php" class="btn btn-primary">😃 Comprar Icones</a>
+            <a href="Home.php" class="btn btn-primary"> Voltar para Home</a>
+            <a href="LojaMoedas.php" class="btn btn-primary"> Comprar Moedas</a>
+            <a href="LojaIcone.php" class="btn btn-primary"> Comprar Icones</a>
         </div>
         <div class="nav-right">
-            <p class="user-coins">Suas moedas: 💰 <?php echo $user->getCoin(); ?></p>
+            <p class="user-coins">Suas moedas:  <?php echo $user->getCoin(); ?></p>
             <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
         </div>
     </nav>
@@ -62,7 +62,7 @@ if ($showError) unset($_SESSION['error']);
     <!-- Container principal da loja -->
     <div class="store-container">
         <div class="store-header">
-            <h1 class="store-title">🏪 Loja de Cartas</h1>
+            <h1 class="store-title"> Loja de Cartas</h1>
         </div>
 
         <!-- Mensagens de sucesso ou erro -->
@@ -86,8 +86,8 @@ if ($showError) unset($_SESSION['error']);
                         <p>Ataque 2: <?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?> dano)</p>
                         <p>Esquiva: <?php echo $carta['esquiva']; ?></p>
                         <p>Crítico: <?php echo $carta['critico']; ?></p>
-                        <p class="price">💰 <?php echo $carta['preco']; ?> moedas</p>
-                        <p class="price">💵 R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
+                        <p class="price"> <?php echo $carta['preco']; ?> moedas</p>
+                        <p class="price"> R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
                         
                         <!-- Botão para comprar com moedas -->
                         <form action="../Processamento/ProcessCartas.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar esta carta com moedas do jogo?');">

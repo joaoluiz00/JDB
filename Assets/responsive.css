@@ -1,34 +1,25 @@
-@media (max-width: 576px) {
-    .logo img {
-        max-width: 180px;
-    }
-
-    .card {
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 1440px) {
-    .inventory-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 1024px) {
-    .inventory-grid {
-        grid-template-columns: repeat(2, 1fr);
-        margin-top: 4rem;
-    }
-}
-
+/* responsive.css - Versão Corrigida */
 @media (max-width: 768px) {
-    .inventory-grid {
-        grid-template-columns: 1fr;
-        margin-top: 3rem;
+    .navbar-brand {
+        font-size: 0.8rem;
     }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-custom {
+        margin: 10px 0;
+        padding: 1rem;
+    }
+}
 
-    .inventory-card {
-        width: 100%;
-        max-width: 400px;
+@media (max-width: 576px) {
+    .container {
+        padding-top: 80px;
+    }
+    
+    .lead {
+        font-size: 0.8rem;
     }
 }

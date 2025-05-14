@@ -28,6 +28,7 @@ $iconePerfil = $controllerIcone->getIconePerfil($userId);
     <title>Perfil</title>
 </head>
 <body>
+<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <div class="container mt-4">
         <h1>Perfil do Usuário</h1>
         <div class="card">
