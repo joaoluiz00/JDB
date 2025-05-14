@@ -24,24 +24,22 @@
             <h2 class="mb-4">LOGIN</h2>
             
             <form id="loginForm" action="../Processamento/ProcessUsuario.php" method="POST">
-                <input type="hidden" name="action" value="login">
-                
-                <div class="form-group">
-                <input type="email" class="form-control" id="email" placeholder="EMAIL" name="email" required>
-                </div>
+    <input type="hidden" name="action" value="login">
+    
+    <div class="form-group">
+        <input type="email" class="form-control" id="email" placeholder="EMAIL" name="email" required>
+    </div>
 
-                <div class="form-group">
-                <input type="password" class="form-control" id="password" placeholder="SENHA" name="senha" required>
-                </div>
-                
-                
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">START GAME</button>
-                    <button type="button" class="btn btn-primary" onclick="window.location.href='Cadastro.php'">NEW PLAYER</button>
-                    <button type="button" class="btn btn-secondary" onclick="window.location.href='LoginAdmin.php'">ADMIN</button>
-                </div>
-                
-            </form>
+    <div class="form-group">
+        <input type="password" class="form-control" id="password" placeholder="SENHA" name="senha" required>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">START GAME</button>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='Cadastro.php'">NEW PLAYER</button>
+        <button type="button" class="btn btn-secondary" onclick="window.location.href='LoginAdmin.php'">ADMIN</button>
+    </div>
+</form>
         </div>
     </div>
 

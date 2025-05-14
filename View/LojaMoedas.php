@@ -7,7 +7,8 @@ if (!isset($_SESSION['id'])) {
 
 require_once '../Model/BancoDeDados.php';
 
-$db = new BancoDeDados('localhost', 'root', '', 'banco');
+// Use o método getInstance() para obter a instância Singleton do BancoDeDados
+$db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
 $pacotesMoedas = $db->getPacotesMoedas();
 ?>
 

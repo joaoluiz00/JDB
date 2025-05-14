@@ -17,8 +17,8 @@ $userController = new ControllerUsuario();
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
 
-// Obtenha os ícones do banco de dados
-$banco = new BancoDeDados('localhost', 'root', '', 'banco');
+// Use o método getInstance() para obter a instância Singleton do BancoDeDados
+$banco = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
 $icones = $banco->getIcons();
 
 // Verifica mensagens da sessão

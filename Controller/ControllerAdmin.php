@@ -1,37 +1,37 @@
 <?php
 require_once '../Model/BancoDeDados.php';
+
 class ControllerAdmin
 {
     private $db;
 
     public function __construct()
     {
-        $this->db = new BancoDeDados('localhost', 'root', '', 'banco');
+        // Use o método getInstance() para obter a instância Singleton do BancoDeDados
+        $this->db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
     }
 
     public function registerAdmin($nome, $email, $senha)
     {
+        $conn = $this->db->getConnection();
         $sql = "INSERT INTO admin (nome, email, senha, coin) VALUES (?, ?, ?, 0)";
-        $conn = $this->db->connect();
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $nome, $email, $senha);
 
         if ($stmt->execute()) {
             $stmt->close();
-            $conn->close();
             return true;
         } else {
             echo "Erro: " . $stmt->error;
             $stmt->close();
-            $conn->close();
             return false;
         }
     }
 
     public function loginAdmin($email, $senha)
     {
+        $conn = $this->db->getConnection();
         $sql = "SELECT * FROM admin WHERE email = ? AND senha = ?";
-        $conn = $this->db->connect();
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $email, $senha);
         $stmt->execute();
@@ -39,11 +39,9 @@ class ControllerAdmin
 
         if ($result->num_rows > 0) {
             $stmt->close();
-            $conn->close();
             return true;
         } else {
             $stmt->close();
-            $conn->close();
             return false;
         }
     }

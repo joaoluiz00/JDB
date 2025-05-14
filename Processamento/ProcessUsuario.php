@@ -52,23 +52,25 @@ if (isset($_POST['action'])) {
             }
             break;
 
-        case 'login':
-            if (isset($_POST['email'], $_POST['senha'])) {
-                $email = $_POST['email'];
-                $password = $_POST['senha'];
-                if ($controller->loginUser($email, $password)) {
-                    header("Location: ../View/home.php");
-                    die();
+            case 'login':
+                if (isset($_POST['email'], $_POST['senha'])) {
+                    $email = $_POST['email'];
+                    $password = $_POST['senha'];
+            
+                    // Chama o método loginUser
+                    if ($controller->loginUser($email, $password)) {
+                        header("Location: ../View/home.php");
+                        die();
+                    } else {
+                        $_SESSION['res'] = "<span style='color: red;'>E-mail ou senha inválidos</span>";
+                        header("Location: ../View/index.php");
+                        die();
+                    }
                 } else {
-                    $_SESSION['res'] = "<span style='color: red;'>Senha invalida</span>";
-                    header("Location: ../View/");
+                    $_SESSION['res'] = "<span style='color: red;'>Por favor, preencha todos os campos</span>";
+                    header("Location: ../View/index.php");
                     die();
                 }
-            } else {
-                $_SESSION['res'] = "Insira todos os valores";
-                header("Location: ../View/");
-                die();
-            }
             break;
 
         case 'logout':
