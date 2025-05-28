@@ -41,6 +41,12 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="../Assets/loja.css">
 </head>
 <body>
+
+        <div id="imageViewer" class="image-viewer">
+            <span class="close">&times;</span>
+            <img id="viewerImage" class="viewer-content">
+        </div>
+        
     <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
@@ -72,6 +78,8 @@ if ($showError) unset($_SESSION['error']);
         <?php elseif (isset($_GET['error']) || $showError): ?>
             <div class="alert error">❌ Erro: <?php echo isset($_GET['error']) ? htmlspecialchars($_GET['error']) : (isset($_SESSION['error']) ? htmlspecialchars($_SESSION['error']) : ''); ?></div>
         <?php endif; ?>
+        
+        
 
         <!-- Exibe as cartas disponíveis -->
         <div class="cards-grid">

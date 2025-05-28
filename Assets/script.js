@@ -16,6 +16,29 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.addEventListener('click', startMusic);
         });
     }
+
+    const imageViewer = document.getElementById('imageViewer');
+    const viewerImage = document.getElementById('viewerImage');
+
+    // Adiciona evento de clique em todas as imagens de carta
+    document.querySelectorAll('.card-image').forEach(img => {
+        img.onclick = function() {
+            viewerImage.src = this.src;
+            imageViewer.style.display = "flex";
+        }
+    });
+
+    // Fecha o viewer ao clicar no X
+    document.querySelector('.close').onclick = function() {
+        imageViewer.style.display = "none";
+    }
+
+    // Fecha o viewer ao clicar fora da imagem
+    imageViewer.onclick = function(event) {
+        if (event.target === imageViewer) {
+            imageViewer.style.display = "none";
+        }
+    }
 });
 
 // Efeitos dos Botões
