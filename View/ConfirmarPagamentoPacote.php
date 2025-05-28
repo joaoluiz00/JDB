@@ -9,12 +9,13 @@ if (!isset($_SESSION['id'])) {
 }
 
 // Verifica se os parâmetros necessários foram enviados
-if (!isset($_GET['id_pacote']) || !isset($_GET['valor_dinheiro'])) {
-    header("Location: LojaMoedas.php?error=Parâmetros inválidos");
+if (!isset($_GET['id_pacote']) || !isset($_GET['preco_dinheiro'])) {
+    header("Location: LojaPacote.php?error=Parâmetros inválidos");
     die();
 }
 
 require_once '../Controller/ControllerUsuario.php';
+require_once '../Model/BancoDeDados.php';
 
 // Obtém os dados do usuário
 $userController = new ControllerUsuario();
@@ -23,16 +24,16 @@ $user = $userController->readUser($userId);
 
 // Obtém os dados do pacote
 $idPacote = $_GET['id_pacote'];
-$valorDinheiro = $_GET['valor_dinheiro'];
+$precoDinheiro = $_GET['preco_dinheiro'];
 
-// Obtém o nome do pacote e quantidade de moedas
-require_once '../Model/BancoDeDados.php';
+// Obtém os detalhes do pacote
 $banco = BancoDeDados::getInstance();
-$query = "SELECT nome_pacote, quantidade_moedas FROM pacotes_moedas WHERE id_pacote = ?";
-$stmt = $banco->getConnection()->prepare($query);
+$conn = $banco->getConnection();
+$sql = "SELECT nome, descricao FROM pacote WHERE id = ?";
+$stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $idPacote);
 $stmt->execute();
-$stmt->bind_result($nomePacote, $quantidadeMoedas);
+$stmt->bind_result($nomePacote, $descricaoPacote);
 $stmt->fetch();
 $stmt->close();
 ?>
@@ -106,7 +107,7 @@ $stmt->close();
     <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
-            <a href="LojaMoedas.php" class="btn btn-primary">Voltar para Loja de Moedas</a>
+            <a href="LojaPacote.php" class="btn btn-primary">Voltar para Loja de Pacotes</a>
         </div>
         <div class="nav-right">
             <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>
@@ -121,14 +122,15 @@ $stmt->close();
         <div class="payment-details">
             <h3>Resumo da compra</h3>
             <p><strong>Pacote:</strong> <?php echo htmlspecialchars($nomePacote); ?></p>
-            <p><strong>Quantidade de moedas:</strong> <?php echo $quantidadeMoedas; ?></p>
-            <p><strong>Valor:</strong> R$ <?php echo number_format($valorDinheiro, 2, ',', '.'); ?></p>
+            <p><strong>Descrição:</strong> <?php echo htmlspecialchars($descricaoPacote); ?></p>
+            <p><strong>Valor:</strong> R$ <?php echo number_format($precoDinheiro, 2, ',', '.'); ?></p>
         </div>
         
-        <form action="../Processamento/ProcessMoedas.php" method="POST">
-            <input type="hidden" name="id_pacote" value="<?php echo $idPacote; ?>">
-            <input type="hidden" name="valor_dinheiro" value="<?php echo $valorDinheiro; ?>">
-            
+        <form action="../Processamento/ProcessPacotes.php" method="POST">
+    <input type="hidden" name="id_pacote" value="<?php echo $idPacote; ?>">
+    <input type="hidden" name="preco_dinheiro" value="<?php echo $precoDinheiro; ?>">
+    <input type="hidden" name="cor" value="<?php echo isset($_GET['cor']) ? $_GET['cor'] : 'todos'; ?>">
+    
             <h3>Selecione a forma de pagamento</h3>
             <div class="payment-options">
                 <div class="payment-option" id="card-option">

@@ -119,13 +119,6 @@ class BancoDeDados
         }
     }
 
-    public function getItems()
-    {
-        $conn = $this->getConnection();
-        $sql = "SELECT id, nome, descricao, path, preco FROM pacote";
-        $result = $conn->query($sql);
-        return $result;
-    }
 
     // ... (restante dos métodos permanece o mesmo, utilizando $this->getConnection() para obter a conexão)
 
@@ -257,20 +250,8 @@ class BancoDeDados
 
 public function getPacotesMoedas() {
     $conn = $this->getConnection();
-    $sql = "SELECT id_pacote, nome_pacote, quantidade_moedas, valor_dinheiro FROM pacotes_moedas";
+    $sql = "SELECT id_pacote, path , nome_pacote, quantidade_moedas, valor_dinheiro FROM pacotes_moedas";
     $result = $conn->query($sql);
-    $conn->close();
-    return $result;
-}
-
-public function salvarCartao($idUsuario, $numero, $portador, $validade, $cvv) {
-    $conn = $this->getConnection();
-    $sql = "INSERT INTO cartoes (id_usuario, numero, portador, validade, cvv) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("issss", $idUsuario, $numero, $portador, $validade, $cvv);
-    $result = $stmt->execute();
-    $stmt->close();
-    $conn->close();
     return $result;
 }
 
@@ -280,6 +261,100 @@ public function getIcons() {
     $result = $conn->query($sql);
     return $result; // Não feche a conexão aqui
 }
+
+public function sortearCartasAleatoriasPorCor($idUsuario, $cor = null, $quantidade = 1) {
+    $conn = $this->getConnection();
+    
+    try {
+        // Montar a consulta SQL baseada na cor da carta
+        $sql = "SELECT id FROM cartas";
+        if ($cor != null && $cor != 'todos') {
+            $sql .= " WHERE cor = ?";
+        }
+        
+        $stmt = $conn->prepare($sql);
+        
+        // Se tiver filtro por cor, bind o parâmetro
+        if ($cor != null && $cor != 'todos') {
+            $stmt->bind_param("s", $cor);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $cartasIds = [];
+        while ($row = $result->fetch_assoc()) {
+            $cartasIds[] = $row['id'];
+        }
+        $stmt->close();
+        
+        // Se não houver cartas suficientes, retorna falso
+        if (count($cartasIds) < $quantidade) {
+            // Registrar log para debug
+            error_log("Não há cartas suficientes para sorteio. Cor: $cor, Quantidade necessária: $quantidade, Disponíveis: " . count($cartasIds));
+            return false;
+        }
+        
+        // Embaralhar os IDs das cartas
+        shuffle($cartasIds);
+        
+        // Selecionar os primeiros X IDs (onde X é a quantidade)
+        $cartasSorteadas = array_slice($cartasIds, 0, $quantidade);
+        
+        // Adicionar cada carta ao inventário do usuário
+        $sucesso = true;
+        foreach ($cartasSorteadas as $idCarta) {
+            $sql = "INSERT INTO cartas_usuario (id_usuario, id_carta) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $idUsuario, $idCarta);
+            if (!$stmt->execute()) {
+                error_log("Erro ao adicionar carta ID $idCarta ao usuário ID $idUsuario: " . $stmt->error);
+                $sucesso = false;
+            }
+            $stmt->close();
+        }
+        
+        return $sucesso;
+    } catch (Exception $e) {
+        error_log("Exceção ao sortear cartas: " . $e->getMessage());
+        return false;
+    }
+}
+
+
+public function getItems()
+{
+    $conn = $this->getConnection();
+    $sql = "SELECT id, nome, descricao, path, preco, preco_dinheiro, cor FROM pacote";
+    $result = $conn->query($sql);
+    return $result;
+}
+
+public function salvarCartao($idUsuario, $numero, $portador, $validade, $cvv) {
+    $conn = $this->getConnection();
+    
+    // Inserir na tabela cartoes existente
+    $sql = "INSERT INTO cartoes (id_usuario, numero, portador, validade, cvv) 
+            VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("issss", $idUsuario, $numero, $portador, $validade, $cvv);
+    $resultado = $stmt->execute();
+    $stmt->close();
+    return $resultado;
+}
+
+public function registrarTransacaoPacote($idUsuario, $idPacote, $valor, $metodoPagamento) {
+    $conn = $this->getConnection();
+    $sql = "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) 
+            VALUES (?, 'pacote', ?, ?, ?, NOW())";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iids", $idUsuario, $idPacote, $valor, $metodoPagamento);
+    $resultado = $stmt->execute();
+    $stmt->close();
+    return $resultado;
+}
+
+
 
 
 }

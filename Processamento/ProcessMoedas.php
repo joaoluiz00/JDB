@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $valorDinheiro = $_POST['valor_dinheiro'];
     $pagamento = $_POST['pagamento'];
 
-    $db = new BancoDeDados('localhost', 'root', '', 'banco');
+    $db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
 
     if ($pagamento === 'cartao') {
         $numero = $_POST['numero'];
@@ -25,10 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->salvarCartao($idUsuario, $numero, $portador, $validade, $cvv);
     }
 
-    // Adicionar moedas ao usuário
-    $pacote = $db->getPacotesMoedas()->fetch_assoc();
-    $quantidadeMoedas = $pacote['quantidade_moedas'];
+    // Buscar o pacote específico
+    $conn = $db->getConnection();
+    $query = "SELECT quantidade_moedas FROM pacotes_moedas WHERE id_pacote = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $idPacote);
+    $stmt->execute();
+    $stmt->bind_result($quantidadeMoedas);
+    $stmt->fetch();
+    $stmt->close();
 
+    // Adicionar moedas ao usuário
     $db->addCoins($idUsuario, $quantidadeMoedas);
 
     $_SESSION['success'] = "Compra de moedas realizada com sucesso!";
