@@ -49,11 +49,13 @@ if ($showError) unset($_SESSION['error']);
         
     <!-- Navegação fixa -->
     <nav class="navbar">
+  
         <div class="nav-left">
             <a href="Home.php" class="btn btn-primary"> Voltar para Home</a>
             <a href="LojaMoedas.php" class="btn btn-primary"> Comprar Moedas</a>
             <a href="LojaIcone.php" class="btn btn-primary"> Comprar Icones</a>
             <a href="LojaPacote.php" class="btn btn-primary"> Pacotes</a>
+            <a href="Carrinho.php" class="btn btn-warning"> 🛒 Carrinho</a>
         </div>
         <div class="nav-right">
         <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>
@@ -104,6 +106,16 @@ if ($showError) unset($_SESSION['error']);
                             <input type="hidden" name="preco" value="<?php echo $carta['preco']; ?>">
                             <input type="hidden" name="action" value="comprar_moedas">
                             <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
+                        </form>
+
+                        <!-- Botão para adicionar ao carrinho -->
+                        <form action="../Processamento/ProcessCarrinho.php" method="POST">
+                            <input type="hidden" name="tipo_item" value="carta">
+                            <input type="hidden" name="id_item" value="<?php echo $carta['id']; ?>">
+                            <input type="hidden" name="preco_unitario" value="<?php echo $carta['preco_dinheiro']; ?>">
+                            <input type="hidden" name="preco_moedas" value="<?php echo $carta['preco']; ?>">
+                            <input type="hidden" name="action" value="adicionar">
+                            <button type="submit" class="btn btn-success">🛒 Adicionar ao Carrinho</button>
                         </form>
 
                         <!-- Botão para comprar com dinheiro -->

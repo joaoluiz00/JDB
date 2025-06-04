@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 28-Maio-2025 às 22:07
+-- Tempo de geração: 04-Jun-2025 às 22:01
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -33,6 +33,24 @@ CREATE TABLE `admin` (
   `email` varchar(100) NOT NULL,
   `senha` varchar(255) NOT NULL,
   `coin` int(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `carrinho`
+--
+
+CREATE TABLE `carrinho` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `tipo_item` enum('carta','pacote','moeda','icone') NOT NULL,
+  `id_item` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL DEFAULT 1,
+  `preco_unitario` decimal(10,2) NOT NULL,
+  `tipo_pagamento` enum('moedas','dinheiro') DEFAULT 'dinheiro',
+  `preco_moedas` int(11) DEFAULT 0,
+  `data_adicao` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -106,7 +124,10 @@ INSERT INTO `cartas_usuario` (`id`, `id_usuario`, `id_carta`, `equipada`, `preco
 (8, 1, 12, 0, '0.00'),
 (9, 1, 8, 0, '0.00'),
 (10, 1, 15, 0, '0.00'),
-(11, 1, 11, 0, '0.00');
+(11, 1, 11, 0, '0.00'),
+(12, 1, 2, 0, '0.00'),
+(13, 1, 6, 0, '0.00'),
+(14, 1, 2, 0, '0.00');
 
 -- --------------------------------------------------------
 
@@ -120,7 +141,76 @@ CREATE TABLE `cartoes` (
   `numero` varchar(20) NOT NULL,
   `portador` varchar(100) NOT NULL,
   `validade` varchar(7) NOT NULL,
-  `cvv` varchar(4) NOT NULL
+  `cvv` varchar(4) NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ativo` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `cartoes`
+--
+
+INSERT INTO `cartoes` (`id_cartao`, `id_usuario`, `numero`, `portador`, `validade`, `cvv`, `data_cadastro`, `ativo`) VALUES
+(1, 1, '050f83ccd07c54b02765', 'Bruno', '12/32', '9999', '2025-06-04 19:58:47', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cupons`
+--
+
+CREATE TABLE `cupons` (
+  `id` int(11) NOT NULL,
+  `codigo` varchar(50) NOT NULL,
+  `descricao` varchar(200) NOT NULL,
+  `tipo_desconto` enum('percentual','valor_fixo') NOT NULL,
+  `valor_desconto` decimal(10,2) NOT NULL,
+  `valor_minimo` decimal(10,2) DEFAULT 0.00,
+  `data_inicio` datetime NOT NULL,
+  `data_fim` datetime NOT NULL,
+  `ativo` tinyint(1) DEFAULT 1,
+  `uso_maximo` int(11) DEFAULT NULL,
+  `uso_atual` int(11) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `cupons`
+--
+
+INSERT INTO `cupons` (`id`, `codigo`, `descricao`, `tipo_desconto`, `valor_desconto`, `valor_minimo`, `data_inicio`, `data_fim`, `ativo`, `uso_maximo`, `uso_atual`) VALUES
+(1, 'BEMVINDO10', 'Desconto de boas-vindas', 'percentual', '10.00', '50.00', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 1, NULL, 0),
+(2, 'DESCONTO20', 'Desconto de 20 reais', 'valor_fixo', '20.00', '100.00', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 1, NULL, 0),
+(3, 'NATAL25', 'Desconto de Natal', 'percentual', '25.00', '200.00', '2025-12-01 00:00:00', '2025-12-31 23:59:59', 1, NULL, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cupons_usuario`
+--
+
+CREATE TABLE `cupons_usuario` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `id_cupom` int(11) NOT NULL,
+  `data_uso` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `enderecos_entrega`
+--
+
+CREATE TABLE `enderecos_entrega` (
+  `id` int(11) NOT NULL,
+  `id_pedido` int(11) NOT NULL,
+  `cep` varchar(10) NOT NULL,
+  `rua` varchar(255) NOT NULL,
+  `numero` varchar(20) NOT NULL,
+  `complemento` varchar(255) DEFAULT NULL,
+  `bairro` varchar(100) NOT NULL,
+  `cidade` varchar(100) NOT NULL,
+  `estado` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -157,7 +247,8 @@ CREATE TABLE `icones_usuario` (
 
 INSERT INTO `icones_usuario` (`id`, `id_usuario`, `id_icone`) VALUES
 (1, 1, 2),
-(2, 1, 3);
+(2, 1, 3),
+(3, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -251,6 +342,51 @@ CREATE TABLE `pacote_cartas` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `pedidos`
+--
+
+CREATE TABLE `pedidos` (
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `total` decimal(10,2) NOT NULL,
+  `status` enum('pendente','processando','enviado','entregue','cancelado') DEFAULT 'pendente',
+  `metodo_pagamento` enum('cartao','pix') NOT NULL,
+  `data_pedido` datetime DEFAULT current_timestamp(),
+  `hash_transacao` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `pedidos`
+--
+
+INSERT INTO `pedidos` (`id`, `id_usuario`, `total`, `status`, `metodo_pagamento`, `data_pedido`, `hash_transacao`) VALUES
+(1, 1, '6.00', 'pendente', 'cartao', '2025-06-04 16:58:47', '5a17d6eb246f738299b504578abd2fb2');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pedido_itens`
+--
+
+CREATE TABLE `pedido_itens` (
+  `id` int(11) NOT NULL,
+  `id_pedido` int(11) NOT NULL,
+  `tipo_item` enum('carta','icone','pacote') NOT NULL,
+  `id_item` int(11) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `preco_unitario` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `pedido_itens`
+--
+
+INSERT INTO `pedido_itens` (`id`, `id_pedido`, `tipo_item`, `id_item`, `quantidade`, `preco_unitario`) VALUES
+(1, 1, 'carta', 2, 1, '6.00');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `usuario`
 --
 
@@ -268,7 +404,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `coin`, `id_icone_perfil`) VALUES
-(1, 'Gustavo', 'gu@gmail.com', '123', 2300, 2),
+(1, 'Gustavo', 'gu@gmail.com', '123', 1350, 2),
 (2, 'João', 'joao@gmail.com', '123', 0, NULL),
 (3, 'Victor', 'Vic@gmail.com', '123', 0, NULL),
 (4, 'Gustavo', 'gu@gmail.com', '123', 5000, NULL);
@@ -283,6 +419,13 @@ INSERT INTO `usuario` (`id`, `nome`, `email`, `senha`, `coin`, `id_icone_perfil`
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Índices para tabela `carrinho`
+--
+ALTER TABLE `carrinho`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`);
 
 --
 -- Índices para tabela `cartas`
@@ -304,6 +447,28 @@ ALTER TABLE `cartas_usuario`
 ALTER TABLE `cartoes`
   ADD PRIMARY KEY (`id_cartao`),
   ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Índices para tabela `cupons`
+--
+ALTER TABLE `cupons`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `codigo` (`codigo`);
+
+--
+-- Índices para tabela `cupons_usuario`
+--
+ALTER TABLE `cupons_usuario`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`),
+  ADD KEY `id_cupom` (`id_cupom`);
+
+--
+-- Índices para tabela `enderecos_entrega`
+--
+ALTER TABLE `enderecos_entrega`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_pedido` (`id_pedido`);
 
 --
 -- Índices para tabela `historico_transacoes`
@@ -347,6 +512,20 @@ ALTER TABLE `pacote_cartas`
   ADD KEY `id_carta` (`id_carta`);
 
 --
+-- Índices para tabela `pedidos`
+--
+ALTER TABLE `pedidos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
+-- Índices para tabela `pedido_itens`
+--
+ALTER TABLE `pedido_itens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_pedido` (`id_pedido`);
+
+--
 -- Índices para tabela `usuario`
 --
 ALTER TABLE `usuario`
@@ -363,6 +542,12 @@ ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `carrinho`
+--
+ALTER TABLE `carrinho`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
 -- AUTO_INCREMENT de tabela `cartas`
 --
 ALTER TABLE `cartas`
@@ -372,13 +557,31 @@ ALTER TABLE `cartas`
 -- AUTO_INCREMENT de tabela `cartas_usuario`
 --
 ALTER TABLE `cartas_usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `cartoes`
 --
 ALTER TABLE `cartoes`
-  MODIFY `id_cartao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_cartao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `cupons`
+--
+ALTER TABLE `cupons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `cupons_usuario`
+--
+ALTER TABLE `cupons_usuario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `enderecos_entrega`
+--
+ALTER TABLE `enderecos_entrega`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `historico_transacoes`
@@ -390,7 +593,7 @@ ALTER TABLE `historico_transacoes`
 -- AUTO_INCREMENT de tabela `icones_usuario`
 --
 ALTER TABLE `icones_usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `img_perfil`
@@ -417,6 +620,18 @@ ALTER TABLE `pacote_cartas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `pedidos`
+--
+ALTER TABLE `pedidos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `pedido_itens`
+--
+ALTER TABLE `pedido_itens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
@@ -425,6 +640,12 @@ ALTER TABLE `usuario`
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `carrinho`
+--
+ALTER TABLE `carrinho`
+  ADD CONSTRAINT `carrinho_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `cartas_usuario`
@@ -438,6 +659,19 @@ ALTER TABLE `cartas_usuario`
 --
 ALTER TABLE `cartoes`
   ADD CONSTRAINT `cartoes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`);
+
+--
+-- Limitadores para a tabela `cupons_usuario`
+--
+ALTER TABLE `cupons_usuario`
+  ADD CONSTRAINT `cupons_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cupons_usuario_ibfk_2` FOREIGN KEY (`id_cupom`) REFERENCES `cupons` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `enderecos_entrega`
+--
+ALTER TABLE `enderecos_entrega`
+  ADD CONSTRAINT `enderecos_entrega_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE;
 
 --
 -- Limitadores para a tabela `historico_transacoes`
@@ -458,6 +692,18 @@ ALTER TABLE `icones_usuario`
 ALTER TABLE `pacote_cartas`
   ADD CONSTRAINT `pacote_cartas_ibfk_1` FOREIGN KEY (`id_pacote`) REFERENCES `pacote` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `pacote_cartas_ibfk_2` FOREIGN KEY (`id_carta`) REFERENCES `cartas` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `pedidos`
+--
+ALTER TABLE `pedidos`
+  ADD CONSTRAINT `pedidos_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`);
+
+--
+-- Limitadores para a tabela `pedido_itens`
+--
+ALTER TABLE `pedido_itens`
+  ADD CONSTRAINT `pedido_itens_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
