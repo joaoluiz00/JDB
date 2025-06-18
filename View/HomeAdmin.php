@@ -57,6 +57,52 @@
                     </div>
                 </a>
             </div>
+            <div class="col-md-4">
+                <a href="AdicionarIcone.php" class="text-decoration-none">
+                    <div class="card-custom shadow-sm">
+                        <div class="card-body">
+                            <img src="../Assets/img/logofoto2.png" alt="Adicionar Ícone" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h5 class="card-title">Adicionar Ícone</h5>
+                            <p class="card-text">Adicione novos ícones de perfil.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="AdicionarPacote.php" class="text-decoration-none">
+                    <div class="card-custom shadow-sm">
+                        <div class="card-body">
+                            <img src="../Assets/img/pacoteGeral.png" alt="Adicionar Pacote" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h5 class="card-title">Adicionar Pacote</h5>
+                            <p class="card-text">Crie novos pacotes de cartas.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="AdicionarPapelParede.php" class="text-decoration-none">
+                    <div class="card-custom shadow-sm">
+                        <div class="card-body">
+                            <img src="../Assets/img/papelfundo.jpg" alt="Adicionar Papel de Parede" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h5 class="card-title">Adicionar Papel de Parede</h5>
+                            <p class="card-text">Adicione novos papéis de parede para perfis.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="CuponsAdmin.php" class="text-decoration-none">
+                    <div class="card-custom shadow-sm">
+                        <div class="card-body">
+                            <img src="../Assets/img/moeda.png" alt="Gerenciar Cupons" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h5 class="card-title">Gerenciar Cupons</h5>
+                            <p class="card-text">Crie, edite e exclua cupons de desconto.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 

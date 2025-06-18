@@ -51,7 +51,7 @@ $usuarios = $db->getUsersList(); // Método que retorna todos os usuários
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="Home.php" class="btn btn-primary mt-3">Voltar para Home</a>
+        <a href="HomeAdmin.php" class="btn btn-primary mt-3">Voltar para Home</a>
     </div>
 </body>
 </html>
