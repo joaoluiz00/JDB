@@ -6,7 +6,8 @@ if (!isset($_SESSION['id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $idCarta = $_POST['id_carta'];
+    $tipoItem = $_POST['tipo_item'] ?? 'carta';
+    $idItem = $_POST['id_item'] ?? ($_POST['id_carta'] ?? null);
     $precoDinheiro = $_POST['preco_dinheiro'];
     $cep = $_POST['cep'];
     $rua = $_POST['rua'];
@@ -17,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Aqui você pode integrar com um gateway de pagamento ou salvar os dados no banco
     // Exemplo: Salvar o pedido no banco de dados
+    // Você pode usar $tipoItem e $idItem para saber o que foi comprado
 
     $_SESSION['success'] = "Compra com dinheiro real realizada com sucesso!";
     header("Location: ../View/Loja.php?success=1");

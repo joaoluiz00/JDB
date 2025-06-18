@@ -80,8 +80,9 @@ if ($showError) unset($_SESSION['error']);
         <div class="nav-left">
             <a href="Home.php" class="btn btn-primary"> Voltar para Home</a>
             <a href="Loja.php" class="btn btn-primary"> Comprar Cartas</a>
+            <a href="LojaPacote.php" class="btn btn-primary"> Comprar Pacotes</a>
             <a href="LojaIcone.php" class="btn btn-primary"> Comprar Icones</a>
-            <a href="LojaPacote.php" class="btn btn-primary"> Pacotes</a>
+            <a href="LojaPapelParede.php" class="btn btn-primary"> Papel de Parede</a>
         </div>
         <div class="nav-right">
             <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>

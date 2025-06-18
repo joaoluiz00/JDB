@@ -70,16 +70,19 @@ class ControllerCarrinho {
                     WHEN c.tipo_item = 'carta' THEN ca.nome
                     WHEN c.tipo_item = 'icone' THEN ip.nome
                     WHEN c.tipo_item = 'pacote' THEN p.nome
+                    WHEN c.tipo_item = 'papel_fundo' THEN pf.nome
                 END as nome,
                 CASE 
                     WHEN c.tipo_item = 'carta' THEN ca.path
                     WHEN c.tipo_item = 'icone' THEN ip.path
                     WHEN c.tipo_item = 'pacote' THEN p.path
+                    WHEN c.tipo_item = 'papel_fundo' THEN pf.path
                 END as path
                 FROM carrinho c
                 LEFT JOIN cartas ca ON c.tipo_item = 'carta' AND c.id_item = ca.id
                 LEFT JOIN img_perfil ip ON c.tipo_item = 'icone' AND c.id_item = ip.id
                 LEFT JOIN pacote p ON c.tipo_item = 'pacote' AND c.id_item = p.id
+                LEFT JOIN papel_fundo pf ON c.tipo_item = 'papel_fundo' AND c.id_item = pf.id
                 WHERE c.id_usuario = ?
                 ORDER BY c.data_adicao DESC";
         
@@ -130,7 +133,6 @@ class ControllerCarrinho {
         return $resultado;
     }
 
-    // ... resto dos métodos permanecem iguais ...
     public function calcularTotal($idUsuario, $tipoPagamento = 'dinheiro') {
         $conn = $this->db->getConnection();
         

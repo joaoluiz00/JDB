@@ -2,6 +2,7 @@
 require_once '../Controller/ControllerCartas.php';
 require_once '../Controller/ControllerIcone.php';
 require_once '../Controller/ControllerUsuario.php';
+require_once __DIR__ . '/../Controller/ControllerPapelParede.php';
 session_start();
 
 if (!isset($_SESSION['id'])) {
@@ -13,14 +14,22 @@ $idUsuario = $_SESSION['id'];
 $controllerCartas = new ControllerCartas();
 $controllerIcone = new ControllerIcone();
 $controllerUsuario = new ControllerUsuario();
+$controllerPapel = new ControllerPapelParede();
 
 // Inicializa as variáveis
 $cartas = null;
 $icones = null;
+$papeisUsuario = [];
 
 try {
     $cartas = $controllerCartas->getCartasUsuario($idUsuario);
     $icones = $controllerIcone->getIconesUsuario($idUsuario);
+
+    $conn = BancoDeDados::getInstance()->getConnection();
+    $result = $conn->query("SELECT pf.* FROM papel_fundo_usuario pfu JOIN papel_fundo pf ON pf.id = pfu.id_papel WHERE pfu.id_usuario = $idUsuario");
+    while ($row = $result->fetch_assoc()) {
+        $papeisUsuario[] = PapelParede::factory($row);
+    }
 } catch (Exception $e) {
     $error = $e->getMessage();
 }
@@ -77,6 +86,23 @@ if (!$icones instanceof mysqli_result) {
                 </div>
             <?php endwhile; ?>
         </div>
+
+        <!-- Exibe os papéis de parede -->
+        <h2>Papéis de Parede</h2>
+        <div class="inventario-papeis">
+            <?php foreach ($papeisUsuario as $papel): ?>
+                <div class="papel-item">
+                    <img src="<?= $papel->getPath() ?>" alt="<?= $papel->getNome() ?>" width="150">
+                    <h4><?= $papel->getNome() ?></h4>
+                    <form method="post" action="../Processamento/ProcessPapelParede.php">
+                        <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
+                        <button type="submit" name="equipar">Equipar</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <a href="Home.php" class="btn btn-primary mt-3">Voltar para Home</a>
     </div>
 </body>
 </html>

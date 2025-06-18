@@ -72,7 +72,9 @@ if ($showError) unset($_SESSION['error']);
         <div class="nav-left">
             <a href="Home.php" class="btn btn-primary"> Voltar para Home</a>
             <a href="Loja.php" class="btn btn-primary"> Comprar Cartas</a>
+            <a href="LojaPacote.php" class="btn btn-primary"> Comprar Pacotes</a>
             <a href="LojaMoedas.php" class="btn btn-primary"> Comprar Moedas</a>
+            <a href="LojaPapelParede.php" class="btn btn-primary"> Papel de Parede</a>
             <a href="Carrinho.php" class="btn btn-warning"> 🛒 Carrinho</a>
         </div>
         <div class="nav-right">
@@ -133,7 +135,8 @@ if ($showError) unset($_SESSION['error']);
 
                                 <!-- Botão para comprar com dinheiro -->
                                 <form action="../View/ConfirmarEndereco.php" method="GET">
-                                    <input type="hidden" name="id_icone" value="<?php echo $icone['id']; ?>">
+                                    <input type="hidden" name="tipo_item" value="icone">
+                                    <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
                                     <input type="hidden" name="preco_dinheiro" value="<?php echo $icone['preco_dinheiro']; ?>">
                                     <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
                                 </form>

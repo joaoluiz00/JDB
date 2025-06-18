@@ -32,10 +32,11 @@ if ($isCarrinho) {
     }
 } else {
     // Compra de item individual
-    $idCarta = $_GET['id_carta'] ?? null;
+    $tipoItem = $_GET['tipo_item'] ?? 'carta';
+    $idItem = $_GET['id_item'] ?? ($_GET['id_carta'] ?? null);
     $precoDinheiro = $_GET['preco_dinheiro'] ?? null;
     
-    if (!$idCarta || !$precoDinheiro) {
+    if (!$idItem || !$precoDinheiro) {
         $_SESSION['error'] = "Dados de compra inválidos!";
         header("Location: Loja.php");
         die();
@@ -134,7 +135,8 @@ if ($isCarrinho) {
                 <input type="hidden" name="tipo_compra" value="carrinho">
             <?php else: ?>
                 <input type="hidden" name="tipo_compra" value="individual">
-                <input type="hidden" name="id_carta" value="<?php echo $idCarta; ?>">
+                <input type="hidden" name="tipo_item" value="<?php echo $tipoItem; ?>">
+                <input type="hidden" name="id_item" value="<?php echo $idItem; ?>">
                 <input type="hidden" name="preco_dinheiro" value="<?php echo $precoDinheiro; ?>">
             <?php endif; ?>
 
@@ -232,9 +234,10 @@ if ($isCarrinho) {
                 <?php if ($isCarrinho): ?>
                     window.location.href = 'AdicionarCartão.php?carrinho=1';
                 <?php else: ?>
-                    const idCarta = "<?php echo $idCarta ?? ''; ?>";
+                    const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
+                    const idItem = "<?php echo $idItem ?? ''; ?>";
                     const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    window.location.href = `AdicionarCartão.php?id_carta=${idCarta}&preco_dinheiro=${precoDinheiro}`;
+                    window.location.href = `AdicionarCartão.php?tipo_item=${tipoItem}&id_item=${idItem}&preco_dinheiro=${precoDinheiro}`;
                 <?php endif; ?>
             }
         });
@@ -252,9 +255,10 @@ if ($isCarrinho) {
                 <?php if ($isCarrinho): ?>
                     window.location.href = 'AdicionarCartão.php?carrinho=1';
                 <?php else: ?>
-                    const idCarta = "<?php echo $idCarta ?? ''; ?>";
+                    const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
+                    const idItem = "<?php echo $idItem ?? ''; ?>";
                     const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    window.location.href = `AdicionarCartão.php?id_carta=${idCarta}&preco_dinheiro=${precoDinheiro}`;
+                    window.location.href = `AdicionarCartão.php?tipo_item=${tipoItem}&id_item=${idItem}&preco_dinheiro=${precoDinheiro}`;
                 <?php endif; ?>
             }
         });
@@ -319,10 +323,16 @@ if ($isCarrinho) {
                     tipoInput.value = 'individual';
                     form.appendChild(tipoInput);
                     
+                    const tipoItemInput = document.createElement('input');
+                    tipoItemInput.type = 'hidden';
+                    tipoItemInput.name = 'tipo_item';
+                    tipoItemInput.value = '<?php echo $tipoItem; ?>';
+                    form.appendChild(tipoItemInput);
+                    
                     const idInput = document.createElement('input');
                     idInput.type = 'hidden';
                     idInput.name = 'id_item';
-                    idInput.value = '<?php echo $idCarta; ?>';
+                    idInput.value = '<?php echo $idItem; ?>';
                     form.appendChild(idInput);
                     
                     const precoInput = document.createElement('input');
@@ -330,12 +340,6 @@ if ($isCarrinho) {
                     precoInput.name = 'preco_dinheiro';
                     precoInput.value = '<?php echo $precoDinheiro; ?>';
                     form.appendChild(precoInput);
-                    
-                    const tipoItemInput = document.createElement('input');
-                    tipoItemInput.type = 'hidden';
-                    tipoItemInput.name = 'tipo_item';
-                    tipoItemInput.value = 'carta';
-                    form.appendChild(tipoItemInput);
                     
                     // Adicionar dados do endereço
                     const enderecoDados = {

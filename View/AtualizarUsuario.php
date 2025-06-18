@@ -38,6 +38,7 @@ $usuario = $db->getUserById($id);
             </div>
             <button type="submit" class="btn btn-primary">Salvar</button>
             <a href="GerenciarUsuario.php" class="btn btn-secondary">Cancelar</a>
+            <a href="Home.php" class="btn btn-primary mt-3">Voltar para Home</a>
         </form>
     </div>
 </body>

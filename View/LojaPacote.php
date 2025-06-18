@@ -47,6 +47,7 @@ if ($showError) unset($_SESSION['error']);
             <a href="Loja.php" class="btn btn-primary"> Comprar Cartas</a>
             <a href="LojaMoedas.php" class="btn btn-primary"> Comprar Moedas</a>
             <a href="LojaIcone.php" class="btn btn-primary"> Comprar Icones</a>
+            <a href="LojaPapelParede.php" class="btn btn-primary"> Papel de Parede</a>
         </div>
         <div class="nav-right">
             <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>

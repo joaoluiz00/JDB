@@ -1,3 +1,24 @@
+<?php
+session_start();
+require_once __DIR__ . '/../Model/BancoDeDados.php';
+require_once __DIR__ . '/../Model/PapelParede.php';
+
+$backgroundUrl = '';
+if (isset($_SESSION['id'])) {
+    $idUsuario = $_SESSION['id'];
+    $conn = BancoDeDados::getInstance()->getConnection();
+    $sql = "SELECT pf.path FROM usuario u LEFT JOIN papel_fundo pf ON u.id_papel_fundo = pf.id WHERE u.id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $idUsuario);
+    $stmt->execute();
+    $stmt->bind_result($bgPath);
+    $stmt->fetch();
+    $stmt->close();
+    if ($bgPath) {
+        $backgroundUrl = $bgPath;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +27,18 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <title>Document</title>
+    <style>
+        body.custom-bg {
+            <?php if ($backgroundUrl): ?>
+            background-image: url('<?= $backgroundUrl ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            <?php endif; ?>
+        }
+    </style>
 </head>
-<body>
+<body class="<?php if ($backgroundUrl) echo 'custom-bg'; ?>">
 <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <audio id="bgMusic" loop hidden>
         <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">
