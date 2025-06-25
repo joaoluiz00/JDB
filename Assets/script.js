@@ -1,46 +1,56 @@
-// Controle de Música
+// No início do script.js
+console.log("script.js carregado.");
+
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOMContentLoaded disparado.");
+
     const bgMusic = document.getElementById('bgMusic');
-    bgMusic.loop = true;
-    
-    // Tenta iniciar automaticamente
-    const playPromise = bgMusic.play();
-    
-    // Se falhar, inicia no primeiro clique
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            const startMusic = () => {
-                bgMusic.play();
-                document.body.removeEventListener('click', startMusic);
-            };
-            document.body.addEventListener('click', startMusic);
+    if (bgMusic) { // Adicionei verificação para garantir que o elemento existe
+        bgMusic.loop = true;
+        bgMusic.play().catch(error => {
+            console.log("Erro ao tentar tocar música automaticamente:", error);
         });
+    } else {
+        console.warn("Elemento #bgMusic não encontrado.");
     }
+
 
     const imageViewer = document.getElementById('imageViewer');
     const viewerImage = document.getElementById('viewerImage');
 
-    // Adiciona evento de clique em todas as imagens de carta
-    document.querySelectorAll('.card-image').forEach(img => {
-        img.onclick = function() {
-            viewerImage.src = this.src;
-            imageViewer.style.display = "flex";
-        }
-    });
+    if (imageViewer) {
+        console.log("Estado inicial do imageViewer:", imageViewer.style.display);
+        // Certifique-se de que está oculto por padrão (CSS deve fazer isso)
+        // imageViewer.style.display = 'none'; // Descomente esta linha APENAS para forçar, se nada mais funcionar.
+                                                // O ideal é que o CSS já o oculte.
 
-    // Fecha o viewer ao clicar no X
-    document.querySelector('.close').onclick = function() {
-        imageViewer.style.display = "none";
-    }
+        document.querySelectorAll('.card-image').forEach(img => {
+            img.onclick = function() {
+                console.log("Imagem clicada:", this.src);
+                viewerImage.src = this.src;
+                imageViewer.style.display = "flex";
+                console.log("imageViewer display após clique:", imageViewer.style.display);
+            }
+        });
 
-    // Fecha o viewer ao clicar fora da imagem
-    imageViewer.onclick = function(event) {
-        if (event.target === imageViewer) {
+        document.querySelector('.close').onclick = function() {
+            console.log("Botão fechar clicado.");
             imageViewer.style.display = "none";
+            console.log("imageViewer display após fechar:", imageViewer.style.display);
         }
-    }
-});
 
+        imageViewer.onclick = function(event) {
+            if (event.target === imageViewer) {
+                console.log("Clicado fora da imagem no viewer.");
+                imageViewer.style.display = "none";
+                console.log("imageViewer display após clique fora:", imageViewer.style.display);
+            }
+        }
+    } else {
+        console.warn("Elemento #imageViewer não encontrado.");
+    }
+
+});
 // Efeitos dos Botões
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('mousedown', () => {
@@ -52,36 +62,49 @@ document.querySelectorAll('button').forEach(button => {
     });
 });
 
-// Controle do Formulário (Correção dos IDs)
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    console.log('Dados do Formulário:', Object.fromEntries(formData));
-    this.submit();
+// Controle do Formulário (Correção dos IDs) - Verifique se 'loginForm' existe em todas as páginas que usam este script
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) { // Verifica se o formulário existe na página
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            console.log('Dados do Formulário:', Object.fromEntries(formData));
+            this.submit();
+        });
+    }
 });
 
 
 function toggleTheme() {
     const html = document.documentElement;
     const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    const logo = document.getElementById('themeLogo');
+    const logo = document.getElementById('themeLogo'); // Certifique-se de que este elemento existe na página
     
     // Alternar tema
     html.setAttribute('data-theme', newTheme);
     
-    // Alternar logo
-    logo.src = newTheme === 'dark' 
-        ? '../Assets/img/logofoto2.png' 
-        : '../Assets/img/logofoto1.png';
+    // Alternar logo (apenas se o logo existir)
+    if (logo) {
+        logo.src = newTheme === 'dark' 
+            ? '../Assets/img/logofoto2.png' 
+            : '../Assets/img/logofoto1.png';
+    }
     
     localStorage.setItem('theme', newTheme);
 }
 
 // Carregar tema salvo
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    document.getElementById('themeLogo').src = savedTheme === 'dark' 
-    ? '../Assets/img/logofoto2.png' 
-    : '../Assets/img/logofoto1.png';
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    const logo = document.getElementById('themeLogo'); // Pegar o elemento logo aqui também
+
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        if (logo) { // Aplicar o logo apenas se ele existir
+            logo.src = savedTheme === 'dark' 
+                ? '../Assets/img/logofoto2.png' 
+                : '../Assets/img/logofoto1.png';
+        }
+    }
+});

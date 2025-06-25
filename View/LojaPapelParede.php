@@ -43,8 +43,8 @@ $user = $idUsuario ? $controllerUsuario->readUser($idUsuario) : null;
             <a href="Home.php" class="btn btn-primary">Voltar para Home</a>
             <a href="LojaMoedas.php" class="btn btn-primary">Comprar Moedas</a>
             <a href="LojaIcone.php" class="btn btn-primary">Comprar Ícones</a>
-            <a href="LojaPacote.php" class="btn btn-primary">Pacotes</a>
-            <a href="LojaPapelParede.php" class="btn btn-primary active">Papéis de Parede</a>
+            <a href="LojaPacote.php" class="btn btn-primary"> Comprar Pacotes</a>
+            <a href="LojaPapelParede.php" class="btn btn-primary">Papéis de Parede</a>
             <a href="Carrinho.php" class="btn btn-warning">🛒 Carrinho</a>
         </div>
         <div class="nav-right">

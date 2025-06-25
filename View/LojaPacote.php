@@ -100,7 +100,7 @@ if ($showError) unset($_SESSION['error']);
                         </form>
 
                         <!-- Botão para comprar com dinheiro -->
-                        <form action="../View/ConfirmarPagamentoPacote.php" method="GET">
+                        <form action="../View/ConfirmarEndereco.php" method="GET">
                             <input type="hidden" name="id_pacote" value="<?php echo $pacote['id']; ?>">
                             <input type="hidden" name="preco_dinheiro" value="<?php echo $pacote['preco_dinheiro']; ?>">
                             <input type="hidden" name="cor" value="<?php echo $pacote['cor']; ?>">

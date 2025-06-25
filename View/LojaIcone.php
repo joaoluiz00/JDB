@@ -47,9 +47,12 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/loja.css">
     <style>
+        /* Estilos específicos para a loja de ícones, caso necessário,
+           mas a intenção é reutilizar o máximo possível do loja.css */
         .item-possui {
             opacity: 0.6;
             position: relative;
+            pointer-events: none; /* Desabilita cliques nos itens já possuídos */
         }
         .item-possui::after {
             content: "✅ JÁ POSSUI";
@@ -63,11 +66,15 @@ if ($showError) unset($_SESSION['error']);
             border-radius: 5px;
             font-weight: bold;
             font-size: 12px;
+            white-space: nowrap; /* Evita quebra de linha */
+        }
+        /* Ajustes para o card de ícone se ele for diferente do card de pacotes */
+        .card-item.icon-item .card-image-container {
+            height: 150px; /* Altura ajustada para ícones */
         }
     </style>
 </head>
 <body>
-    <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
             <a href="Home.php" class="btn btn-primary"> Voltar para Home</a>
@@ -83,39 +90,38 @@ if ($showError) unset($_SESSION['error']);
         </div>
     </nav>
 
-    <!-- Container principal da loja -->
+    <audio id="bgMusic" loop hidden>
+        <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="store-container">
         <div class="store-header">
-            <h1 class="store-title"> Loja de Ícones</h1>
+            <h1 class="store-title">Loja de Ícones</h1>
+            <p>Personalize seu perfil com ícones exclusivos!</p>
         </div>
 
-        <!-- Mensagens de sucesso ou erro -->
         <?php if ($showSuccess): ?>
             <div class="alert success">✅ Compra realizada com sucesso!</div>
         <?php elseif ($showError): ?>
             <div class="alert error">❌ Erro: <?php echo htmlspecialchars($_SESSION['error']); ?></div>
         <?php endif; ?>
 
-        <!-- Grid de ícones -->
         <div class="cards-grid">
             <?php if ($icones && $icones->num_rows > 0): ?>
                 <?php while ($icone = $icones->fetch_assoc()): ?>
                     <?php $jaPossui = in_array($icone['id'], $iconesJaPossuidos); ?>
-                    <div class="card <?php echo $jaPossui ? 'item-possui' : ''; ?>">
-                        <div class="card-image">
-                            <img src="<?php echo $icone['path']; ?>" alt="<?php echo $icone['nome']; ?>" onclick="openImage('<?php echo $icone['path']; ?>')">
+                    <div class="card-item <?php echo $jaPossui ? 'item-possui' : ''; ?>">
+                        <div class="card-image-container">
+                            <img src="<?php echo $icone['path']; ?>" alt="<?php echo $icone['nome']; ?>" class="card-image" onclick="openImage('<?php echo $icone['path']; ?>')">
                         </div>
-                        <div class="card-content">
-                            <h3 class="card-name"><?php echo $icone['nome']; ?></h3>
-                            <div class="card-stats">
-                                <p>💰 Preço em moedas: <?php echo $icone['preco']; ?></p>
-                                <p>💵 Preço em dinheiro: R$ <?php echo number_format($icone['preco_dinheiro'], 2, ',', '.'); ?></p>
-                            </div>
+                        <div class="card-details">
+                            <h2><?php echo $icone['nome']; ?></h2>
+                            <p class="price">💰 <?php echo $icone['preco']; ?> moedas</p>
+                            <p class="price">💵 R$ <?php echo number_format($icone['preco_dinheiro'], 2, ',', '.'); ?></p>
                         </div>
                         
                         <?php if (!$jaPossui): ?>
                             <div class="card-actions">
-                                <!-- Botão para comprar com moedas -->
                                 <form action="../Processamento/ProcessIcone.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar este ícone com moedas do jogo?');">
                                     <input type="hidden" name="id_icone" value="<?php echo $icone['id']; ?>">
                                     <input type="hidden" name="preco" value="<?php echo $icone['preco']; ?>">
@@ -123,7 +129,6 @@ if ($showError) unset($_SESSION['error']);
                                     <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
                                 </form>
 
-                                <!-- Botão para adicionar ao carrinho -->
                                 <form action="../Processamento/ProcessCarrinho.php" method="POST">
                                     <input type="hidden" name="tipo_item" value="icone">
                                     <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
@@ -133,17 +138,12 @@ if ($showError) unset($_SESSION['error']);
                                     <button type="submit" class="btn btn-success">🛒 Adicionar ao Carrinho</button>
                                 </form>
 
-                                <!-- Botão para comprar com dinheiro -->
                                 <form action="../View/ConfirmarEndereco.php" method="GET">
                                     <input type="hidden" name="tipo_item" value="icone">
                                     <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
                                     <input type="hidden" name="preco_dinheiro" value="<?php echo $icone['preco_dinheiro']; ?>">
                                     <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
                                 </form>
-                            </div>
-                        <?php else: ?>
-                            <div class="card-actions">
-                                <p class="text-success"><strong>✅ Você já possui este ícone</strong></p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -154,7 +154,6 @@ if ($showError) unset($_SESSION['error']);
         </div>
     </div>
 
-    <!-- Visualizador de imagem -->
     <div id="imageViewer" class="image-viewer">
         <span class="close">&times;</span>
         <img id="viewerImage" class="viewer-content">

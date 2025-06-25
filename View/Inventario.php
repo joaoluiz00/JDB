@@ -138,7 +138,6 @@ if (!$icones instanceof mysqli_result) {
             <?php endwhile; ?>
         </div>
 
-        ---
 
         <h2>Ícones</h2>
         <div class="icons-grid">
@@ -155,7 +154,6 @@ if (!$icones instanceof mysqli_result) {
             <?php endwhile; ?>
         </div>
 
-        ---
 
         <h2>Papéis de Parede</h2>
         <div class="wallpapers-grid">
