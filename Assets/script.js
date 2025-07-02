@@ -18,39 +18,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.warn("Elemento #bgMusic não encontrado.");
-    }    const imageViewer = document.getElementById('imageViewer');
+    }
+});
+
+function openImage(imagePath) {
+    const imageViewer = document.getElementById('imageViewer');
     const viewerImage = document.getElementById('viewerImage');
+    
+    viewerImage.src = imagePath;
+    imageViewer.classList.add('show');
+}
 
-    if (imageViewer) {
-        console.log("imageViewer encontrado e inicializado");
-        
-        document.querySelectorAll('.card-image').forEach(img => {
-            img.onclick = function() {
-                console.log("Imagem clicada:", this.src);
-                viewerImage.src = this.src;
-                imageViewer.style.display = "flex";
-                console.log("Viewer mostrado");
-            }
-        });
-
-        document.querySelector('.close').onclick = function() {
-            console.log("Botão fechar clicado");
-            imageViewer.style.display = "none";
-            console.log("Viewer ocultado");
+document.addEventListener('DOMContentLoaded', function() {
+    const imageViewer = document.getElementById('imageViewer');
+    
+    // Adicionar evento de clique em todas as imagens
+    document.querySelectorAll('.card-image').forEach(img => {
+        img.onclick = function() {
+            openImage(this.src);
         }
+    });
 
-        imageViewer.onclick = function(event) {
-            if (event.target === imageViewer) {
-                console.log("Clicado fora da imagem no viewer");
-                imageViewer.style.display = "none";
-                console.log("Viewer ocultado por clique fora");
-            }
-        }
-    } else {
-        console.warn("Elemento #imageViewer não encontrado.");
+    // Fechar ao clicar no X
+    document.querySelector('.close').onclick = function() {
+        imageViewer.classList.remove('show');
     }
 
+    // Fechar ao clicar fora da imagem
+    imageViewer.onclick = function(event) {
+        if (event.target === imageViewer) {
+            imageViewer.classList.remove('show');
+        }
+    }
+
+    // Fechar com ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            imageViewer.classList.remove('show');
+        }
+    });
 });
+
 // Efeitos dos Botões
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('mousedown', () => {

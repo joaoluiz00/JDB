@@ -40,6 +40,11 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="../Assets/loja.css">
 </head>
 <body>
+    <div id="imageViewer" class="image-viewer">
+        <span class="close">&times;</span>
+        <img id="viewerImage" class="viewer-content">
+    </div>
+
     <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
@@ -79,7 +84,10 @@ if ($showError) unset($_SESSION['error']);
             <?php while ($pacote = $pacotes->fetch_assoc()): ?>
                 <div class="card-item">
                     <div class="card-image-container">
-                        <img src="<?php echo $pacote['path']; ?>" alt="<?php echo $pacote['nome']; ?>" class="card-image">
+                        <img src="<?php echo $pacote['path']; ?>" 
+                             alt="<?php echo $pacote['nome']; ?>" 
+                             class="card-image"
+                             onclick="openImage('<?php echo $pacote['path']; ?>')">
                         <?php if ($pacote['cor'] != 'todos'): ?>
             <div class="color-indicator" style="background-color: <?php echo $pacote['cor']; ?>"></div>
         <?php endif; ?>

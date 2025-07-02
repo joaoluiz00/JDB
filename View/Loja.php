@@ -92,8 +92,11 @@ if ($showError) unset($_SESSION['error']);
         <div class="cards-grid">
             <?php while ($carta = $cartas->fetch_assoc()): ?>
                 <div class="card-item">
-                    <div class="card-image-container">
-                        <img src="<?php echo $carta['path']; ?>" alt="<?php echo $carta['nome']; ?>" class="card-image">
+                <div class="card-image-container">
+                        <img src="<?php echo $carta['path']; ?>" 
+                            alt="<?php echo $carta['nome']; ?>" 
+                            class="card-image" 
+                            onclick="openImage('<?php echo $carta['path']; ?>')">
                     </div>
                     <div class="card-details">
                         <h2><?php echo $carta['nome']; ?></h2>

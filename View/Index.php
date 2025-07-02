@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    
     <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <audio id="bgMusic" loop hidden>
         <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">

@@ -72,9 +72,41 @@ if ($showError) unset($_SESSION['error']);
             color: #ff9900;
             margin: 10px 0;
         }
+
+        .image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-viewer .viewer-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .image-viewer .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    <div id="imageViewer" class="image-viewer">
+        <span class="close" onclick="closeImage()">&times;</span>
+        <img id="viewerImage" class="viewer-content">
+    </div>
+
     <!-- Navegação fixa -->
     <nav class="navbar">
         <div class="nav-left">
@@ -115,7 +147,8 @@ if ($showError) unset($_SESSION['error']);
             <div class="moeda-image-container">
                 <img src="<?php echo $pacote['path']; ?>" 
                      alt="<?php echo $pacote['nome_pacote']; ?>" 
-                     class="moeda-image">
+                     class="moeda-image"
+                     onclick="openImage('<?php echo $pacote['path']; ?>')">
             </div>
             <div class="moeda-details">
                 <h2><?php echo $pacote['nome_pacote']; ?></h2>
@@ -134,5 +167,18 @@ if ($showError) unset($_SESSION['error']);
 </div>
     </div>
     <script src="../Assets/script.js"></script>
+    <script>
+        function openImage(path) {
+            const viewer = document.getElementById('imageViewer');
+            const viewerImage = document.getElementById('viewerImage');
+            viewerImage.src = path;
+            viewer.style.display = 'flex';
+        }
+
+        function closeImage() {
+            const viewer = document.getElementById('imageViewer');
+            viewer.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
