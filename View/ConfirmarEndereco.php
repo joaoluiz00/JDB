@@ -32,16 +32,35 @@ if ($isCarrinho) {
     }
 } else {
     // Compra de item individual
-    $tipoItem = $_GET['tipo_item'] ?? 'carta';
-    $idItem = $_GET['id_item'] ?? ($_GET['id_carta'] ?? null);
-    $precoDinheiro = $_GET['preco_dinheiro'] ?? null;
-    
-    if (!$idItem || !$precoDinheiro) {
-        $_SESSION['error'] = "Dados de compra inválidos!";
-        header("Location: Loja.php");
-        die();
+    if (isset($_GET['carrinho']) && $_GET['carrinho'] == '1') {
+        $isCarrinho = true;
+    } else {
+        $isCarrinho = false;
+        // Detecta corretamente o tipo de item e id
+        if (isset($_GET['id_carta'])) {
+            $tipoItem = 'carta';
+            $idItem = $_GET['id_carta'];
+        } elseif (isset($_GET['id_icone'])) {
+            $tipoItem = 'icone';
+            $idItem = $_GET['id_icone'];
+        } elseif (isset($_GET['id_pacote'])) {
+            $tipoItem = 'pacote';
+            $idItem = $_GET['id_pacote'];
+        } elseif (isset($_GET['id_papel'])) {
+            $tipoItem = 'papel_fundo';
+            $idItem = $_GET['id_papel'];
+        } else {
+            $tipoItem = $_GET['tipo_item'] ?? 'carta';
+            $idItem = $_GET['id_item'] ?? null;
+        }
+        $precoDinheiro = $_GET['preco_dinheiro'] ?? null;
+        if (!$idItem || !$precoDinheiro) {
+            $_SESSION['error'] = "Dados de compra inválidos!";
+            header("Location: Loja.php");
+            die();
+        }
+        $totalFinal = $precoDinheiro;
     }
-    $totalFinal = $precoDinheiro;
 }
 ?>
 
@@ -237,40 +256,41 @@ if ($isCarrinho) {
                     const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
                     const idItem = "<?php echo $idItem ?? ''; ?>";
                     const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    window.location.href = `AdicionarCartão.php?tipo_item=${tipoItem}&id_item=${idItem}&preco_dinheiro=${precoDinheiro}`;
+                    window.location.href = `AdicionarCartão.php?preco_dinheiro=${precoDinheiro}` +
+                        (tipoItem === 'carta' ? `&id_carta=${idItem}` :
+                        tipoItem === 'icone' ? `&id_icone=${idItem}` :
+                        tipoItem === 'pacote' ? `&id_pacote=${idItem}` :
+                        tipoItem === 'papel_fundo' ? `&id_papel=${idItem}` :
+                        '');
                 <?php endif; ?>
             }
         });
 
-        // Impede o envio do formulário se o método de pagamento for "Cartão de Crédito"
+        // Ao submeter o formulário, redireciona para AdicionarCartão.php se for cartão
         document.querySelector('form').addEventListener('submit', function(event) {
             const pagamento = document.getElementById('pagamento').value;
             if (pagamento === 'cartao') {
                 event.preventDefault();
-            }
-        });
-
-        document.getElementById('pagamento').addEventListener('change', function() {
-            if (this.value === 'cartao') {
                 <?php if ($isCarrinho): ?>
                     window.location.href = 'AdicionarCartão.php?carrinho=1';
                 <?php else: ?>
                     const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
                     const idItem = "<?php echo $idItem ?? ''; ?>";
                     const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    window.location.href = `AdicionarCartão.php?tipo_item=${tipoItem}&id_item=${idItem}&preco_dinheiro=${precoDinheiro}`;
+                    let url = 'AdicionarCartão.php?preco_dinheiro=' + encodeURIComponent(precoDinheiro);
+                    if (tipoItem === 'carta') {
+                        url += '&id_carta=' + encodeURIComponent(idItem);
+                    } else if (tipoItem === 'icone') {
+                        url += '&id_icone=' + encodeURIComponent(idItem);
+                    } else if (tipoItem === 'pacote') {
+                        url += '&id_pacote=' + encodeURIComponent(idItem);
+                    } else if (tipoItem === 'papel_fundo') {
+                        url += '&id_papel=' + encodeURIComponent(idItem);
+                    }
+                    window.location.href = url;
                 <?php endif; ?>
-            }
-        });
-
-        document.querySelector('form').addEventListener('submit', function(event) {
-            const pagamento = document.getElementById('pagamento').value;
-            
-            if (pagamento === 'cartao') {
-                event.preventDefault();
                 return;
             }
-            
             if (pagamento === 'pix') {
                 event.preventDefault();
                 // Redirecionar para página PIX com os dados necessários
@@ -278,20 +298,16 @@ if ($isCarrinho) {
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'ConfirmarPagamentoPix.php';
-                    
                     const tipoInput = document.createElement('input');
                     tipoInput.type = 'hidden';
                     tipoInput.name = 'tipo_compra';
                     tipoInput.value = 'carrinho';
                     form.appendChild(tipoInput);
-                    
                     const totalInput = document.createElement('input');
                     totalInput.type = 'hidden';
                     totalInput.name = 'total';
                     totalInput.value = '<?php echo $totalFinal; ?>';
                     form.appendChild(totalInput);
-                    
-                    // Adicionar dados do endereço
                     const enderecoDados = {
                         cep: document.getElementById('cep').value,
                         rua: document.getElementById('rua').value,
@@ -301,7 +317,6 @@ if ($isCarrinho) {
                         cidade: document.getElementById('cidade').value,
                         estado: document.getElementById('estado').value
                     };
-                    
                     Object.keys(enderecoDados).forEach(key => {
                         const input = document.createElement('input');
                         input.type = 'hidden';
@@ -309,39 +324,32 @@ if ($isCarrinho) {
                         input.value = enderecoDados[key];
                         form.appendChild(input);
                     });
-                    
                     document.body.appendChild(form);
                     form.submit();
                 <?php else: ?>
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = 'ConfirmarPagamentoPix.php';
-                    
                     const tipoInput = document.createElement('input');
                     tipoInput.type = 'hidden';
                     tipoInput.name = 'tipo_compra';
                     tipoInput.value = 'individual';
                     form.appendChild(tipoInput);
-                    
                     const tipoItemInput = document.createElement('input');
                     tipoItemInput.type = 'hidden';
                     tipoItemInput.name = 'tipo_item';
                     tipoItemInput.value = '<?php echo $tipoItem; ?>';
                     form.appendChild(tipoItemInput);
-                    
                     const idInput = document.createElement('input');
                     idInput.type = 'hidden';
                     idInput.name = 'id_item';
                     idInput.value = '<?php echo $idItem; ?>';
                     form.appendChild(idInput);
-                    
                     const precoInput = document.createElement('input');
                     precoInput.type = 'hidden';
                     precoInput.name = 'preco_dinheiro';
                     precoInput.value = '<?php echo $precoDinheiro; ?>';
                     form.appendChild(precoInput);
-                    
-                    // Adicionar dados do endereço
                     const enderecoDados = {
                         cep: document.getElementById('cep').value,
                         rua: document.getElementById('rua').value,
@@ -351,7 +359,6 @@ if ($isCarrinho) {
                         cidade: document.getElementById('cidade').value,
                         estado: document.getElementById('estado').value
                     };
-                    
                     Object.keys(enderecoDados).forEach(key => {
                         const input = document.createElement('input');
                         input.type = 'hidden';
@@ -359,7 +366,6 @@ if ($isCarrinho) {
                         input.value = enderecoDados[key];
                         form.appendChild(input);
                     });
-                    
                     document.body.appendChild(form);
                     form.submit();
                 <?php endif; ?>

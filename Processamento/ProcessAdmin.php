@@ -108,4 +108,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         $stmt->close();
     }
+    // Adicionar papel de parede
+    elseif ($_POST['action'] === 'add_papelparede') {
+        $nome = $_POST['nome'];
+        $imagem = $_POST['imagem'];
+        $preco = $_POST['preco'];
+        $preco_dinheiro = $_POST['preco_dinheiro'];
+        $conn = $db->getConnection();
+        $sql = "INSERT INTO papel_fundo (nome, path, preco, preco_dinheiro) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssdd", $nome, $imagem, $preco, $preco_dinheiro);
+        if ($stmt->execute()) {
+            header('Location: ../View/HomeAdmin.php?success=papel_added');
+        } else {
+            header('Location: ../View/AdicionarPapelParede.php?error=add_failed');
+        }
+        $stmt->close();
+    }
 }

@@ -132,11 +132,9 @@ $stmt->close();
             <h3>Selecione a forma de pagamento</h3>
             <div class="payment-options">
                 <div class="payment-option" id="card-option">
-                    <img src="../Assets/img/credit-card-icon.png" alt="Cartão de Crédito" style="width: 50px;">
                     <p>Cartão de Crédito</p>
                 </div>
                 <div class="payment-option" id="pix-option">
-                    <img src="../Assets/img/pix-icon.png" alt="PIX" style="width: 50px;">
                     <p>PIX</p>
                 </div>
             </div>

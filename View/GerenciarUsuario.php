@@ -41,11 +41,7 @@ $usuarios = $db->getUsersList(); // Método que retorna todos os usuários
                                 <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
                                 <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
                             </form>
-                            <form method="POST" action="../Processamento/ProcessUsuario.php" style="display: inline;">
-                                <input type="hidden" name="action" value="update">
-                                <input type="hidden" name="id" value="<?= $usuario['id'] ?>">
-                                <button type="submit" class="btn btn-primary btn-sm">Editar</button>
-                            </form>
+                            <a href="AtualizarUsuario.php?id=<?= $usuario['id'] ?>" class="btn btn-primary btn-sm">Editar</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

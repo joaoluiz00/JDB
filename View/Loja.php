@@ -40,9 +40,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/loja.css">
 </head>
-<body>
-
-        <div id="imageViewer" class="image-viewer">
+<body>        <div id="imageViewer" class="image-viewer">
             <span class="close">&times;</span>
             <img id="viewerImage" class="viewer-content">
         </div>

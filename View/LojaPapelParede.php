@@ -71,7 +71,11 @@ $user = $idUsuario ? $controllerUsuario->readUser($idUsuario) : null;
                                     <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
                                     <input type="hidden" name="preco" value="<?= $papel->getPreco() ?>">
                                     <button type="submit" name="comprar_moedas" class="btn btn-success btn-block mb-2">Comprar com moedas</button>
-                                    <button type="submit" name="comprar_dinheiro" class="btn btn-info btn-block">Comprar com dinheiro</button>
+                                </form>
+                                <form method="get" action="ConfirmarEndereco.php" class="mb-2">
+                                    <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
+                                    <input type="hidden" name="preco_dinheiro" value="<?= $papel->getPrecoDinheiro() ?>">
+                                    <button type="submit" class="btn btn-info btn-block">Comprar com dinheiro</button>
                                 </form>
                                 <form method="post" action="../Processamento/ProcessCarrinho.php">
                                     <input type="hidden" name="action" value="adicionar">

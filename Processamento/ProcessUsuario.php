@@ -45,9 +45,14 @@ if (isset($_POST['action'])) {
             break;
 
         case 'update':
-            if (isset($_POST['id'])) {
+            if (isset($_POST['id'], $_POST['nome'], $_POST['email'], $_POST['senha'], $_POST['coin'])) {
                 $id = $_POST['id'];
-                header("Location: ../View/AtualizarUsuario.php?id=$id");
+                $nome = $_POST['nome'];
+                $email = $_POST['email'];
+                $senha = $_POST['senha'];
+                $coin = $_POST['coin'];
+                $controller->updateUser($id, $nome, $email, $senha, $coin);
+                header("Location: ../View/GerenciarUsuario.php");
                 die();
             }
             break;

@@ -35,20 +35,30 @@ if ($isCarrinho) {
     $valorCompra = $totalFinal;
 } else {
     // Compra individual
-    $idCarta = $_GET['id_carta'] ?? $_GET['id_icone'] ?? $_GET['id_pacote'] ?? null;
+    $idCarta = $_GET['id_carta'] ?? $_GET['id_icone'] ?? $_GET['id_pacote'] ?? $_GET['id_papel'] ?? null;
     $precoDinheiro = $_GET['preco_dinheiro'] ?? null;
-    $tipoItem = isset($_GET['id_carta']) ? 'carta' : (isset($_GET['id_icone']) ? 'icone' : 'pacote');
-    
+    if (isset($_GET['id_carta'])) {
+        $tipoItem = 'carta';
+    } elseif (isset($_GET['id_icone'])) {
+        $tipoItem = 'icone';
+    } elseif (isset($_GET['id_pacote'])) {
+        $tipoItem = 'pacote';
+    } elseif (isset($_GET['id_papel'])) {
+        $tipoItem = 'papel_fundo';
+    } else {
+        $tipoItem = 'carta';
+    }
+
     if (!$idCarta || !$precoDinheiro) {
         $_SESSION['error'] = "Dados de compra inválidos!";
         header("Location: Loja.php");
         die();
     }
-    
+
     // Buscar nome do item
     $conn = BancoDeDados::getInstance('localhost', 'root', '', 'banco')->getConnection();
     $nomeItem = "Item";
-    
+
     switch ($tipoItem) {
         case 'carta':
             $sql = "SELECT nome FROM cartas WHERE id = ?";
@@ -58,6 +68,9 @@ if ($isCarrinho) {
             break;
         case 'pacote':
             $sql = "SELECT nome FROM pacote WHERE id = ?";
+            break;
+        case 'papel_fundo':
+            $sql = "SELECT nome FROM papel_fundo WHERE id = ?";
             break;
     }
     

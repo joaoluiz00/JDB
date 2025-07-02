@@ -1,7 +1,7 @@
 <?php
 require_once '../Model/BancoDeDados.php';
 
-$db = new BancoDeDados('localhost', 'root', '', 'banco');
+$db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
 $id = $_GET['id'];
 $usuario = $db->getUserById($id);
 ?>

@@ -1,6 +1,12 @@
 // No início do script.js
 console.log("script.js carregado.");
 
+// Adicionar classe 'loaded' quando a página estiver totalmente carregada
+window.addEventListener('load', function() {
+    document.body.classList.add('loaded');
+    console.log("Página totalmente carregada, classe 'loaded' adicionada");
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOMContentLoaded disparado.");
 
@@ -12,38 +18,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.warn("Elemento #bgMusic não encontrado.");
-    }
-
-
-    const imageViewer = document.getElementById('imageViewer');
+    }    const imageViewer = document.getElementById('imageViewer');
     const viewerImage = document.getElementById('viewerImage');
 
     if (imageViewer) {
-        console.log("Estado inicial do imageViewer:", imageViewer.style.display);
-        // Certifique-se de que está oculto por padrão (CSS deve fazer isso)
-        // imageViewer.style.display = 'none'; // Descomente esta linha APENAS para forçar, se nada mais funcionar.
-                                                // O ideal é que o CSS já o oculte.
-
+        console.log("imageViewer encontrado e inicializado");
+        
         document.querySelectorAll('.card-image').forEach(img => {
             img.onclick = function() {
                 console.log("Imagem clicada:", this.src);
                 viewerImage.src = this.src;
                 imageViewer.style.display = "flex";
-                console.log("imageViewer display após clique:", imageViewer.style.display);
+                console.log("Viewer mostrado");
             }
         });
 
         document.querySelector('.close').onclick = function() {
-            console.log("Botão fechar clicado.");
+            console.log("Botão fechar clicado");
             imageViewer.style.display = "none";
-            console.log("imageViewer display após fechar:", imageViewer.style.display);
+            console.log("Viewer ocultado");
         }
 
         imageViewer.onclick = function(event) {
             if (event.target === imageViewer) {
-                console.log("Clicado fora da imagem no viewer.");
+                console.log("Clicado fora da imagem no viewer");
                 imageViewer.style.display = "none";
-                console.log("imageViewer display após clique fora:", imageViewer.style.display);
+                console.log("Viewer ocultado por clique fora");
             }
         }
     } else {

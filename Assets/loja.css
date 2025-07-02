@@ -26,7 +26,33 @@ body {
     padding-top: 80px;
 }
 
+/* Prevenir flash de conteúdo não estilizado */
+.image-viewer {
+    display: none !important; /* Força o estado inicial oculto */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
 
+.image-viewer.show {
+    display: flex !important;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Garantir que o body não mostre conteúdo não estilizado durante o carregamento */
+body:not(.loaded) .image-viewer {
+    display: none !important;
+}
 
 /* Navbar corrigida */
 .navbar {
@@ -190,44 +216,73 @@ body {
     }
 }
 
+/* Visualizador de imagens - funcionalidade original restaurada */
 .image-viewer {
-    display: none; /* Importante: começa oculto */
+    display: none;
     position: fixed;
     z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.95);
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.9);
     justify-content: center;
     align-items: center;
 }
 
 .viewer-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     max-width: 90vw;
     max-height: 90vh;
     object-fit: contain;
 }
 
 .close {
-    position: fixed;
-    right: 25px;
+    position: absolute;
     top: 15px;
-    color: #fff;
-    font-size: 50px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
     font-weight: bold;
     cursor: pointer;
-    z-index: 10000;
-    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
 }
 
 .close:hover {
-    color: #ccc;
+    color: #bbb;
+}
+
+/* Responsivo para o visualizador de imagens */
+@media (max-width: 768px) {
+    .viewer-content {
+        max-width: 95vw;
+        max-height: 70vh;
+        min-width: 300px;
+        min-height: 400px;
+    }
+    
+    .close {
+        right: 15px;
+        top: 15px;
+        font-size: 30px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .viewer-content {
+        max-width: 98vw;
+        max-height: 65vh;
+        min-width: 250px;
+        min-height: 350px;
+    }
+    
+    .close {
+        right: 10px;
+        top: 10px;
+        font-size: 25px;
+        width: 35px;
+        height: 35px;
+    }
 }
 
 /* Responsivo melhorado */
@@ -270,8 +325,6 @@ body {
         font-size: 1.5rem;
     }
 }
-
-/* ...existing code... */
 
 .carrinho-container {
     max-width: 1200px;
