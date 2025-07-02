@@ -23,8 +23,10 @@ $cartasController = new ControllerCartas();
 $cartas = $cartasController->getCartas();
 
 // Verifica mensagens da sessão
-$showSuccess = isset($_SESSION['success']);
-$showError = isset($_SESSION['error']);
+$successMsg = isset($_SESSION['success']) ? $_SESSION['success'] : null;
+$errorMsg = isset($_SESSION['error']) ? $_SESSION['error'] : null;
+$showSuccess = !empty($successMsg);
+$showError = !empty($errorMsg);
 
 // Limpa as mensagens após exibir
 if ($showSuccess) unset($_SESSION['success']);
@@ -74,10 +76,14 @@ if ($showError) unset($_SESSION['error']);
         </div>
 
         <!-- Mensagens de sucesso ou erro -->
-        <?php if (isset($_GET['success']) || $showSuccess): ?>
+        <?php if ($showSuccess): ?>
+            <div class="alert success">✅ <?php echo htmlspecialchars($successMsg); ?></div>
+        <?php elseif ($showError): ?>
+            <div class="alert error">❌ Erro: <?php echo htmlspecialchars($errorMsg); ?></div>
+        <?php elseif (isset($_GET['success'])): ?>
             <div class="alert success">✅ Compra realizada com sucesso!</div>
-        <?php elseif (isset($_GET['error']) || $showError): ?>
-            <div class="alert error">❌ Erro: <?php echo isset($_GET['error']) ? htmlspecialchars($_GET['error']) : (isset($_SESSION['error']) ? htmlspecialchars($_SESSION['error']) : ''); ?></div>
+        <?php elseif (isset($_GET['error'])): ?>
+            <div class="alert error">❌ Erro: <?php echo htmlspecialchars($_GET['error']); ?></div>
         <?php endif; ?>
         
         
