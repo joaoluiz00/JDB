@@ -17,8 +17,12 @@
                 <input type="text" class="form-control" id="nome" name="nome" required>
             </div>
             <div class="form-group">
-                <label for="imagem">URL da Imagem</label>
-                <input type="text" class="form-control" id="imagem" name="imagem" required>
+                <label for="imagem">Nome da Imagem</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">/JDB/Assets/img/</span></div>
+                    <input type="text" class="form-control" id="imagem" name="imagem" placeholder="ex: nova_carta.jpg" required>
+                </div>
+                <small class="form-text text-muted">Informe apenas o nome do arquivo com extensão.</small>
             </div>
             <div class="form-group">
                 <label for="vida">Vida</label>
@@ -55,9 +59,23 @@
 
             <div class="form-group">
                 <label for="preco_dinheiro">Preço em Dinheiro</label>
-                <input type="number" class="form-control" id="preco_dinheiro" name="preco_dinheiro" required>
-
-
+                <input type="number" step="0.01" class="form-control" id="preco_dinheiro" name="preco_dinheiro" required>
+            </div>
+            <div class="form-group">
+                <label for="cor">Cor / Tipo</label>
+                <select class="form-control" id="cor" name="cor">
+                    <option value="neutro">Neutro</option>
+                    <option value="psiquico">Psíquico</option>
+                    <option value="dark">Dark</option>
+                    <option value="luta">Luta</option>
+                    <option value="fogo">Fogo</option>
+                    <option value="agua">Água</option>
+                    <option value="eletrico">Elétrico</option>
+                    <option value="normal">Normal</option>
+                    <option value="planta">Planta</option>
+                    <option value="metal">Metal</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Adicionar Carta</button>
             <a href="HomeAdmin.php" class="btn btn-secondary">Cancelar</a>
         </form>

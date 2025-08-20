@@ -28,13 +28,4 @@ class PapelParede {
     public function setPreco($preco) { $this->preco = $preco; }
     public function setPrecoDinheiro($preco_dinheiro) { $this->preco_dinheiro = $preco_dinheiro; }
 
-    public static function factory(array $data) {
-        return new self(
-            $data['id'] ?? null,
-            $data['nome'] ?? null,
-            $data['path'] ?? null,
-            $data['preco'] ?? null,
-            $data['preco_dinheiro'] ?? null
-        );
-    }
 }

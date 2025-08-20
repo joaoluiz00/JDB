@@ -17,8 +17,12 @@
                 <input type="text" class="form-control" id="nome" name="nome" required>
             </div>
             <div class="form-group">
-                <label for="imagem">URL da Imagem</label>
-                <input type="text" class="form-control" id="imagem" name="imagem" required>
+                <label for="imagem">Nome da Imagem (salva em /JDB/Assets/img/)</label>
+                <div class="input-group">
+                    <div class="input-group-prepend"><span class="input-group-text">/JDB/Assets/img/</span></div>
+                    <input type="text" class="form-control" id="imagem" name="imagem" placeholder="ex: icone.png" required>
+                </div>
+                <small class="form-text text-muted">Informe apenas o nome do arquivo.</small>
             </div>
             <div class="form-group">
                 <label for="preco">Preço em Moedas</label>

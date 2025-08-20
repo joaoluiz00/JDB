@@ -52,14 +52,5 @@ class Icone {
         $this->precoDinheiro = $precoDinheiro;
     }
 
-    public static function factory(array $data) {
-        return new self(
-            $data['id'] ?? null,
-            $data['nome'] ?? null,
-            $data['path'] ?? null,
-            $data['preco'] ?? null,
-            $data['precoDinheiro'] ?? $data['preco_dinheiro'] ?? null
-        );
-    }
 }
 ?>

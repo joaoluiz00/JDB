@@ -27,21 +27,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             header('Location: ../View/LoginAdmin.php?error=invalid_credentials');
         }
     } elseif ($_POST['action'] === 'add_card') {
-        $nome = $_POST['nome'];
-        $imagem = $_POST['imagem'];
-        $vida = $_POST['vida'];
-        $ataque1 = $_POST['ataque1'];
-        $ataque1_dano = $_POST['ataque1_dano'];
-        $ataque2 = $_POST['ataque2'];
-        $ataque2_dano = $_POST['ataque2_dano'];
-        $esquiva_critico = $_POST['esquiva_critico'];
-        $preco = $_POST['preco'];
+        // Captura e saneamento básico dos campos obrigatórios
+        $nome          = trim($_POST['nome'] ?? '');
+        $imagem        = trim($_POST['imagem'] ?? '');
+        // Garante prefixo padronizado do caminho da imagem
+        if ($imagem !== '' && str_starts_with($imagem, '/JDB/Assets/img/') === false) {
+            $imagem = '/JDB/Assets/img/' . ltrim($imagem, '/');
+        }
+        $vida          = (int)($_POST['vida'] ?? 0);
+        $ataque1       = trim($_POST['ataque1'] ?? '');
+        $ataque1_dano  = (int)($_POST['ataque1_dano'] ?? 0);
+        $ataque2       = trim($_POST['ataque2'] ?? '');
+        $ataque2_dano  = (int)($_POST['ataque2_dano'] ?? 0);
+        $esquiva       = (int)($_POST['esquiva'] ?? 0);
+        $critico       = (int)($_POST['critico'] ?? 0);
+        $preco         = (int)($_POST['preco'] ?? 0); // preço em moedas (int)
+        $preco_dinheiro = (float)($_POST['preco_dinheiro'] ?? 0); // preço em dinheiro (decimal)
+        $cor           = trim($_POST['cor'] ?? 'neutro');
 
-        $conn = $db->getConnection(); // Corrigido para usar getConnection()
-        $sql = "INSERT INTO cartas (nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva_critico, preco) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Validação mínima
+        if ($nome === '' || $imagem === '' || $vida <= 0 || $ataque1 === '') {
+            header('Location: ../View/AdicionarCarta.php?error=invalid_fields');
+            exit;
+        }
+
+        $conn = $db->getConnection();
+        $sql = "INSERT INTO cartas (nome, path, vida, ataque1, ataque1_dano, ataque2, ataque2_dano, esquiva, critico, preco, preco_dinheiro, cor)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssisssiii", $nome, $imagem, $vida, $ataque1, $ataque1_dano, $ataque2, $ataque2_dano, $esquiva_critico, $preco);
+        if (!$stmt) {
+            header('Location: ../View/AdicionarCarta.php?error=stmt_prepare');
+            exit;
+        }
+        // Tipos: s s i s i s i i i i d s
+        $stmt->bind_param(
+            'ssisisi' . 'iiids',
+            $nome,
+            $imagem,
+            $vida,
+            $ataque1,
+            $ataque1_dano,
+            $ataque2,
+            $ataque2_dano,
+            $esquiva,
+            $critico,
+            $preco,
+            $preco_dinheiro,
+            $cor
+        );
 
         if ($stmt->execute()) {
             header('Location: ../View/HomeAdmin.php?success=card_added');
@@ -112,6 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     elseif ($_POST['action'] === 'add_papelparede') {
         $nome = $_POST['nome'];
         $imagem = $_POST['imagem'];
+        if ($imagem !== '' && str_starts_with($imagem, '/JDB/Assets/img/') === false) {
+            $imagem = '/JDB/Assets/img/' . ltrim($imagem, '/');
+        }
         $preco = $_POST['preco'];
         $preco_dinheiro = $_POST['preco_dinheiro'];
         $conn = $db->getConnection();

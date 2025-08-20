@@ -73,15 +73,4 @@ class Pacote {
         $this->cor = $cor;
     }
 
-    public static function factory(array $data) {
-        return new self(
-            $data['id'] ?? null,
-            $data['nome'] ?? null,
-            $data['descricao'] ?? null,
-            $data['path'] ?? $data['imagem'] ?? null,
-            $data['preco'] ?? null,
-            $data['preco_dinheiro'] ?? 0.00,
-            $data['cor'] ?? 'todos'
-        );
-    }
 }

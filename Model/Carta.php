@@ -60,21 +60,4 @@ class Carta {
     public function setPrecoDinheiro($preco_dinheiro) { $this->preco_dinheiro = $preco_dinheiro; }
     public function setCor($cor) { $this->cor = $cor; }
 
-    public static function factory(array $data) {
-        return new self(
-            $data['id'] ?? null,
-            $data['nome'] ?? null,
-            $data['path'] ?? $data['imagem'] ?? null,
-            $data['vida'] ?? null,
-            $data['ataque1'] ?? null,
-            $data['ataque1_dano'] ?? null,
-            $data['ataque2'] ?? null,
-            $data['ataque2_dano'] ?? null,
-            $data['esquiva'] ?? null,
-            $data['critico'] ?? null,
-            $data['preco'] ?? null,
-            $data['preco_dinheiro'] ?? null,
-            $data['cor'] ?? 'neutro'
-        );
-    }
 }
