@@ -20,43 +20,94 @@ if (isset($_SESSION['id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Batalha de Cartas</title>
     <link rel="stylesheet" href="../Assets/style.css">
-    <title>Document</title>
     <style>
         body.custom-bg {
             <?php if ($backgroundUrl): ?>
-            background-image: url('<?= $backgroundUrl ?>');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+                background-image: url('<?= $backgroundUrl ?>');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
             <?php endif; ?>
+        }
+        
+        #battle-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            margin: 50px auto;
+            border: 2px solid black;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #game-canvas {
+            display: block;
+            background-color: transparent;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 2px solid black;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        #message-box {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #action-menu button {
+            padding: 10px 20px;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body class="<?php if ($backgroundUrl) echo 'custom-bg'; ?>">
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
-    <audio id="bgMusic" loop hidden>
-        <source src="../Assets/music/musicafundo1.mp3" type="audio/mpeg">
-    </audio>
- 
-    <!-- Embedding the YouTube Video -->
-    <div class="container mt-5">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/MuBcpzAh4o4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div id="battle-container">
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+        <div id="ui-overlay">
+            <div id="info-bars" style="width: 100%; display: flex; justify-content: space-between; padding: 0 20px;">
+                <div>
+                    <img id="player-card-img" style="width: 100px; height: 100px;" src="" alt="Sua Carta">
+                    <div class="life-bar-container">
+                        <div id="player-life-bar" class="life-bar"></div>
+                    </div>
+                </div>
+                <div>
+                    <img id="opponent-card-img" style="width: 100px; height: 100px;" src="" alt="Carta do Oponente">
+                    <div class="life-bar-container">
+                        <div id="opponent-life-bar" class="life-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="message-box">Aguarde...</div>
+            <div id="action-menu">
+                <button id="attack1-btn">Ataque 1</button>
+                <button id="attack2-btn">Ataque 2</button>
+            </div>
+        </div>
     </div>
-
-    <!-- Botão Voltar -->
-    <div class="container mt-3">
-        <a href="Home.php" class="btn btn-primary">Voltar</a>
-    </div>
- 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="../Assets/script.js"></script>
+    
+    <script src="../Assets/js/battle.js"></script>
 </body>
 </html>
