@@ -106,6 +106,17 @@ if (isset($_SESSION['id'])) {
                     </div>
                 </a>
             </div>
+            <div class="col-md-4">
+                <a href="HistoricoCompras.php" class="text-decoration-none">
+                    <div class="card-custom shadow-sm">
+                        <div class="card-body">
+                            <img src="../Assets/img/pacote_amarelo.png" alt="Histórico" class="img-fluid mb-3" style="max-width: 100px;">
+                            <h5 class="card-title">Histórico de Compras</h5>
+                            <p class="card-text">Veja todas as suas compras já realizadas.</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 

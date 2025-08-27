@@ -1,6 +1,7 @@
 <?php
 require_once "../Controller/ControllerCartas.php";
 require_once "../Controller/ControllerUsuario.php";
+require_once "../Model/BancoDeDados.php";
 
 // Inicie a sessão antes de qualquer operação
 session_start();
@@ -28,6 +29,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'comprar_moedas') {
             $result = $cartasController->comprarCarta($idUsuario, $idCarta, 0);
 
             if ($result) {
+                // Registrar histórico da compra com moedas
+                $conn = BancoDeDados::getInstance('localhost', 'root', '', 'banco')->getConnection();
+                $sqlHist = "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) VALUES (?, 'carta', ?, ?, 'moedas', NOW())";
+                $stmtHist = $conn->prepare($sqlHist);
+                $stmtHist->bind_param("iid", $idUsuario, $idCarta, $preco);
+                $stmtHist->execute();
+                $stmtHist->close();
+
                 $_SESSION['success'] = "Compra realizada com sucesso!";
                 header("Location: ../View/Loja.php?success=1");
             } else {

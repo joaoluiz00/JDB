@@ -105,6 +105,13 @@ if (isset($_POST['action'])) {
                             
                             if ($sucesso) {
                                 $itensProcessados[] = $item['nome'] . " (x" . $item['quantidade'] . ")";
+                                // Registrar histórico deste item já processado
+                                $valor = $item['preco_moedas'] * $item['quantidade'];
+                                $sqlHist = "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) VALUES (?, ?, ?, ?, 'moedas', NOW())";
+                                $stmtHist = $conn->prepare($sqlHist);
+                                $stmtHist->bind_param("isid", $userId, $item['tipo_item'], $item['id_item'], $valor);
+                                $stmtHist->execute();
+                                $stmtHist->close();
                                 
                                 // Remover o item do carrinho
                                 $sqlRemover = "DELETE FROM carrinho WHERE id = ? AND id_usuario = ?";
@@ -242,6 +249,13 @@ if (isset($_POST['action'])) {
                         throw new Exception("Erro ao debitar moedas do usuário!");
                     }
                     
+                    // Registrar histórico
+                    $sqlHist = "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) VALUES (?, ?, ?, ?, 'moedas', NOW())";
+                    $stmtHist = $conn->prepare($sqlHist);
+                    $stmtHist->bind_param("isid", $userId, $tipoItem, $idItem, $precoMoedas);
+                    $stmtHist->execute();
+                    $stmtHist->close();
+
                     // Confirmar transação
                     $conn->commit();
                     

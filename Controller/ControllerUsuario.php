@@ -16,12 +16,10 @@ class ControllerUsuario
 {
     // Busca o usuário pelo e-mail
     $user = $this->database->getUserByEmail($email);
-    var_dump($user); // Verifica se os dados do usuário estão sendo retornados
-
+    $senhaCorreta = false;
     if ($user) {
         // Verifica se a senha está correta (criptografada ou não)
         $senhaCorreta = password_verify($password, $user['senha']) || $password === $user['senha'];
-        var_dump($senhaCorreta); // Verifica se a senha foi validada
     }
 
     // Verifica se o usuário existe e se a senha está correta

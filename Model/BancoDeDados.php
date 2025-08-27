@@ -15,7 +15,7 @@ class BancoDeDados
         $this->user = $user;
         $this->password = $password;
         $this->database = $database;
-        $this->connection = mysqli_connect($this->host, $this->user, $this->password, $this->database);
+    $this->connection = mysqli_connect($this->host, $this->user, $this->password, $this->database);
     }
 
     public static function getInstance($host = 'localhost', $user = 'root', $password = '', $database = 'banco')
@@ -26,8 +26,25 @@ class BancoDeDados
         return self::$instance;
     }
 
+    private function reconnect()
+    {
+        // Tenta reconectar utilizando as credenciais já armazenadas
+        $this->connection = mysqli_connect($this->host, $this->user, $this->password, $this->database);
+    }
+
     public function getConnection()
     {
+        // Se a conexão não existir, estiver com erro ou não responder ao ping, reconecte
+        if (!$this->connection || ($this->connection instanceof mysqli && $this->connection->connect_errno)) {
+            $this->reconnect();
+        } else {
+            // ping pode falhar se a conexão foi fechada em outro ponto
+            if (method_exists($this->connection, 'ping')) {
+                if (!$this->connection->ping()) {
+                    $this->reconnect();
+                }
+            }
+        }
         return $this->connection;
     }
 
@@ -83,7 +100,6 @@ class BancoDeDados
             $stmt->execute();
             $result = $stmt->get_result();
             $user = $result->fetch_assoc();
-            var_dump($user); // Verifica se os dados do usuário estão sendo retornados
             $stmt->close();
             return $user;
         }
@@ -137,7 +153,7 @@ class BancoDeDados
                 return $result; // Certifique-se de que a conexão não foi fechada
             }
 
-        public function buyItem($userId, $pacoteId, $preco) {
+    public function buyItem($userId, $pacoteId, $preco) {
             $conn = $this->getConnection();
             $sql = "UPDATE usuario SET coin = coin - " . $preco . " WHERE id = " . $userId . " AND coin >= " . $preco;
             if ($conn->query($sql) === TRUE) {
@@ -145,11 +161,9 @@ class BancoDeDados
                         SELECT " . $pacoteId . ", c.id FROM cartas c WHERE c.id IN 
                         (SELECT id_carta FROM pacote_cartas WHERE id_pacote = " . $pacoteId . ")";
                 if ($conn->query($sql) === TRUE) {
-                    $conn->close();
                     return true;
                 }
             }
-            $conn->close();
             return false;
         }
 
@@ -172,7 +186,6 @@ class BancoDeDados
             $stmt->execute();
             $result = $stmt->get_result();
             $stmt->close();
-            $conn->close();
             return $result;
         }
 
@@ -180,7 +193,6 @@ class BancoDeDados
             $conn = $this->getConnection();
             $sql = "UPDATE usuario SET coin = coin + " . $amount . " WHERE id = " . $userId;
             $result = $conn->query($sql);
-            $conn->close();
             return $result;
         }
 
@@ -226,11 +238,9 @@ class BancoDeDados
             $stmt->bind_param("ii", $idUsuario, $idCarta);
             $result = $stmt->execute();
             $stmt->close();
-            $conn->close();
     
             return $result;
         } else {
-            $conn->close();
             return false; // Moedas insuficientes
         }
     }
@@ -244,7 +254,6 @@ class BancoDeDados
     while ($row = $result->fetch_assoc()) {
         $usuarios[] = $row;
     }
-    $conn->close();
     return $usuarios;
 }
 

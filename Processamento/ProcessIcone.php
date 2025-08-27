@@ -1,6 +1,7 @@
 <?php
 require_once "../Controller/ControllerIcone.php";
 require_once "../Controller/ControllerUsuario.php";
+require_once "../Model/BancoDeDados.php";
 
 // Inicie a sessão antes de qualquer operação
 session_start();
@@ -33,6 +34,14 @@ if (isset($_POST['action'])) {
             $result = $iconeController->comprarIcone($idUsuario, $idIcone);
 
             if ($result) {
+                // Registrar histórico da compra com moedas
+                $conn = BancoDeDados::getInstance('localhost', 'root', '', 'banco')->getConnection();
+                $sqlHist = "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) VALUES (?, 'icone', ?, ?, 'moedas', NOW())";
+                $stmtHist = $conn->prepare($sqlHist);
+                $stmtHist->bind_param("iid", $idUsuario, $idIcone, $preco);
+                $stmtHist->execute();
+                $stmtHist->close();
+
                 $_SESSION['success'] = "Ícone comprado com sucesso!";
                 header("Location: ../View/LojaIcone.php?success=1");
             } else {

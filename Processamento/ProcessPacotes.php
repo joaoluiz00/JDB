@@ -36,7 +36,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'comprar_moedas') {
         // Sorteia 1 carta aleatória da cor especificada
         $resultado = $db->sortearCartasAleatoriasPorCor($idUsuario, $cor, 1);
 
-        if ($resultado) {
+        // Registrar histórico da compra com moedas (tipo 'pacote')
+        $conn->query(sprintf(
+            "INSERT INTO historico_transacoes (id_usuario, tipo_transacao, id_item, valor, metodo_pagamento, data_transacao) VALUES (%d, 'pacote', %d, %d, 'moedas', NOW())",
+            intval($idUsuario), intval($idPacote), intval($preco)
+        ));
+
+    if ($resultado) {
             $_SESSION['success'] = "Pacote comprado com sucesso! Uma carta foi adicionada ao seu inventário.";
             header("Location: ../View/LojaPacote.php?success=1");
         } else {

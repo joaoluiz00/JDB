@@ -44,10 +44,10 @@ try {
         $itensCarrinho = $carrinhoController->getItensCarrinho($userId);
         
         // Criar pedido
-        $sqlPedido = "INSERT INTO pedidos (id_usuario, total, metodo_pagamento, hash_transacao) VALUES (?, ?, 'cartao', ?)";
+    $sqlPedido = "INSERT INTO pedidos (id_usuario, total, metodo_pagamento, status, hash_transacao, data_pedido) VALUES (?, ?, 'cartao', 'enviado', ?, NOW())";
         $hashTransacao = md5($userId . time() . $total);
-        $stmtPedido = $conn->prepare($sqlPedido);
-        $stmtPedido->bind_param("ids", $userId, $total, $hashTransacao);
+    $stmtPedido = $conn->prepare($sqlPedido);
+    $stmtPedido->bind_param("ids", $userId, $total, $hashTransacao);
         $stmtPedido->execute();
         $idPedido = $conn->insert_id;
         $stmtPedido->close();
@@ -80,6 +80,13 @@ try {
                         $stmtIcone->execute();
                         $stmtIcone->close();
                         break;
+                    case 'papel_fundo':
+                        $sqlPapel = "INSERT INTO papel_fundo_usuario (id_usuario, id_papel) VALUES (?, ?)";
+                        $stmtPapel = $conn->prepare($sqlPapel);
+                        $stmtPapel->bind_param("ii", $userId, $item['id_item']);
+                        $stmtPapel->execute();
+                        $stmtPapel->close();
+                        break;
                 }
             }
         }
@@ -94,10 +101,10 @@ try {
         $precoUnitario = $_POST['preco_dinheiro'] ?? 0;
         
         // Criar pedido
-        $sqlPedido = "INSERT INTO pedidos (id_usuario, total, metodo_pagamento, hash_transacao) VALUES (?, ?, 'cartao', ?)";
+    $sqlPedido = "INSERT INTO pedidos (id_usuario, total, metodo_pagamento, status, hash_transacao, data_pedido) VALUES (?, ?, 'cartao', 'enviado', ?, NOW())";
         $hashTransacao = md5($userId . time() . $precoUnitario);
-        $stmtPedido = $conn->prepare($sqlPedido);
-        $stmtPedido->bind_param("ids", $userId, $precoUnitario, $hashTransacao);
+    $stmtPedido = $conn->prepare($sqlPedido);
+    $stmtPedido->bind_param("ids", $userId, $precoUnitario, $hashTransacao);
         $stmtPedido->execute();
         $idPedido = $conn->insert_id;
         $stmtPedido->close();
@@ -124,6 +131,13 @@ try {
                 $stmtIcone->bind_param("ii", $userId, $idItem);
                 $stmtIcone->execute();
                 $stmtIcone->close();
+                break;
+            case 'papel_fundo':
+                $sqlPapel = "INSERT INTO papel_fundo_usuario (id_usuario, id_papel) VALUES (?, ?)";
+                $stmtPapel = $conn->prepare($sqlPapel);
+                $stmtPapel->bind_param("ii", $userId, $idItem);
+                $stmtPapel->execute();
+                $stmtPapel->close();
                 break;
         }
     }
