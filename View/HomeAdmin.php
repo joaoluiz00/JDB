@@ -47,10 +47,9 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <div class="col-md-4">
                     <div class="card-custom shadow-sm">
-                        <div class="card-body text-center">
-                            <img src="../Assets/img/pacote_verde.png" alt="Exportar Dados" class="img-fluid mb-3" style="max-width: 100px;">
+                        <div class="card-body">
+                            <img src="../Assets/img/exportar.png" alt="Exportar Dados" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Exportar Dados</h5>
                             <p class="card-text">Baixe os dados do sistema.</p>
                             <a class="btn btn-sm btn-primary mr-2" href="../Controller/ExportController.php?format=json">Baixar JSON</a>
@@ -118,7 +117,7 @@
                 <a href="HistoricoVendasAdmin.php" class="text-decoration-none">
                     <div class="card-custom shadow-sm">
                         <div class="card-body">
-                            <img src="../Assets/img/pacote_cinza.png" alt="Vendas" class="img-fluid mb-3" style="max-width: 100px;">
+                            <img src="../Assets/img/historico.png" alt="Vendas" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Vendas</h5>
                             <p class="card-text">Veja todas as compras de todos os clientes.</p>
                         </div>
