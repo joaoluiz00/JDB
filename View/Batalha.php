@@ -83,31 +83,44 @@ if (isset($_SESSION['id'])) {
     </style>
 </head>
 <body class="<?php if ($backgroundUrl) echo 'custom-bg'; ?>">
-    <div id="battle-container">
+    <div id="deck-setup" style="max-width:800px;margin:20px auto;background:#fff;padding:15px;border:1px solid #333;">
+        <h2>1. Monte seu Deck (escolha até 3)</h2>
+        <form id="deck-form">
+            <div id="user-cards" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+            <button type="submit">Confirmar Deck</button>
+        </form>
+    </div>
+
+    <div id="enemy-select" style="display:none;max-width:800px;margin:20px auto;background:#fff;padding:15px;border:1px solid #333;">
+        <h2>2. Escolha um Inimigo</h2>
+        <p>Gere até 3 inimigos aleatórios (eles podem repetir cartas).</p>
+        <button id="generate-enemies">Gerar Inimigos</button>
+        <div id="enemy-list" style="display:flex;gap:15px;margin-top:10px;"></div>
+    </div>
+
+    <div id="battle-container" style="display:none;">
         <canvas id="game-canvas" width="800" height="600"></canvas>
         <div id="ui-overlay">
             <div id="info-bars" style="width: 100%; display: flex; justify-content: space-between; padding: 0 20px;">
                 <div>
-                    <img id="player-card-img" style="width: 100px; height: 100px;" src="" alt="Sua Carta">
-                    <div class="life-bar-container">
-                        <div id="player-life-bar" class="life-bar"></div>
-                    </div>
+                    <img id="player-card-img" style="width: 100px; height: 100px;" src="" alt="Carta Ativa">
+                    <div class="life-bar-container"><div id="player-life-bar" class="life-bar"></div></div>
+                    <div id="switcher" style="margin-top:5px;display:flex;gap:5px;"></div>
                 </div>
                 <div>
-                    <img id="opponent-card-img" style="width: 100px; height: 100px;" src="" alt="Carta do Oponente">
-                    <div class="life-bar-container">
-                        <div id="opponent-life-bar" class="life-bar"></div>
-                    </div>
+                    <img id="opponent-card-img" style="width: 100px; height: 100px;" src="" alt="Carta do Inimigo">
+                    <div class="life-bar-container"><div id="opponent-life-bar" class="life-bar"></div></div>
                 </div>
             </div>
             <div id="message-box">Aguarde...</div>
             <div id="action-menu">
-                <button id="attack1-btn">Ataque 1</button>
-                <button id="attack2-btn">Ataque 2</button>
+                <button id="attack1-btn" disabled>Ataque 1</button>
+                <button id="attack2-btn" disabled>Ataque 2</button>
             </div>
+            <button id="reset-battle" style="margin-top:8px;">Resetar</button>
         </div>
     </div>
-    
+
     <script src="../Assets/js/battle.js"></script>
 </body>
 </html>

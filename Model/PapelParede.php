@@ -28,4 +28,19 @@ class PapelParede {
     public function setPreco($preco) { $this->preco = $preco; }
     public function setPrecoDinheiro($preco_dinheiro) { $this->preco_dinheiro = $preco_dinheiro; }
 
+    /**
+     * Cria uma instância de PapelParede a partir de um array (linha do banco)
+     * Espera chaves: id, nome, path, preco, preco_dinheiro
+     * Valores ausentes recebem defaults seguros.
+     */
+    public static function factory(array $row): self {
+        return new self(
+            $row['id'] ?? null,
+            $row['nome'] ?? '',
+            $row['path'] ?? '',
+            isset($row['preco']) ? (int)$row['preco'] : 0,
+            isset($row['preco_dinheiro']) ? $row['preco_dinheiro'] : 0
+        );
+    }
+
 }
