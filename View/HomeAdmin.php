@@ -7,7 +7,10 @@
 </head>
 <body>
     <!-- Botão de alternância de tema -->
-    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+        <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+    </button>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">

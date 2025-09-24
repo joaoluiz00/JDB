@@ -37,6 +37,7 @@ if ($showError) unset($_SESSION['error']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loja de Moedas</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
     <style>
         .moedas-grid {
@@ -118,7 +119,10 @@ if ($showError) unset($_SESSION['error']);
         </div>
         <div class="nav-right">
             <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+                <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+            </button>
         </div>
     </nav>
 

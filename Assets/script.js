@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleTheme() {
     const html = document.documentElement;
     const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    const logo = document.getElementById('themeLogo'); // Certifique-se de que este elemento existe na página
+    const logo = document.getElementById('themeLogo');
     
     // Alternar tema
     html.setAttribute('data-theme', newTheme);
@@ -100,19 +100,35 @@ function toggleTheme() {
     }
     
     localStorage.setItem('theme', newTheme);
+
+    // Atualizar visibilidade dos ícones de tema
+    document.querySelectorAll('.theme-icon').forEach(icon => {
+        icon.style.display = icon.classList.contains(newTheme + '-icon') ? 'none' : 'block';
+    });
 }
 
 // Carregar tema salvo
 document.addEventListener('DOMContentLoaded', function() {
-    const savedTheme = localStorage.getItem('theme');
-    const logo = document.getElementById('themeLogo'); // Pegar o elemento logo aqui também
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const logo = document.getElementById('themeLogo');
+    const html = document.documentElement;
 
-    if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        if (logo) { // Aplicar o logo apenas se ele existir
-            logo.src = savedTheme === 'dark' 
-                ? '../Assets/img/logofoto2.png' 
-                : '../Assets/img/logofoto1.png';
-        }
+    // Aplicar tema salvo
+    html.setAttribute('data-theme', savedTheme);
+    
+    // Atualizar logo se existir
+    if (logo) {
+        logo.src = savedTheme === 'dark' 
+            ? '../Assets/img/logofoto2.png' 
+            : '../Assets/img/logofoto1.png';
     }
+
+    // Atualizar ícones do alternador de tema
+    document.querySelectorAll('.theme-icon').forEach(icon => {
+        if (savedTheme === 'dark') {
+            icon.style.display = icon.classList.contains('light-icon') ? 'block' : 'none';
+        } else {
+            icon.style.display = icon.classList.contains('dark-icon') ? 'block' : 'none';
+        }
+    });
 });

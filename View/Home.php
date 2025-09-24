@@ -20,7 +20,7 @@ if (isset($_SESSION['id'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,8 +30,7 @@ if (isset($_SESSION['id'])) {
     <link rel="stylesheet" href="../Assets/style.css">
 </head>
 <body>
-    <!-- Botão de alternância de tema -->
-    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+    
 
     <!-- Música de fundo -->
     <audio id="bgMusic" loop hidden>
@@ -44,20 +43,11 @@ if (isset($_SESSION['id'])) {
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <!-- <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="Perfil.php">Perfil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="Batalha.php">Batalha</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="Loja.php">Loja</a>
-                </li>
-            </ul>
-        </div> -->
-        <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+
+          <button class="theme-toggle" onclick="toggleTheme()">
+        <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+        <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+    </button>
     </nav>
 
     <!-- Conteúdo principal -->

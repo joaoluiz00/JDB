@@ -1,5 +1,19 @@
 /* themes.css - Versão Corrigida */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --card-bg: #ffffff;
+    --card-text: #000000;
+    --border-color: #dee2e6;
+}
+
 [data-theme="dark"] {
+    --bg-color: #0a0a12;
+    --text-color: #ffffff;
+    --card-bg: #1a1a3f;
+    --card-text: #e6f1ff;
+    --border-color: #3d4f8a;
+    
     --color1: #0a0a12;
     --color2: #1a1a3f;
     --color3: #3d4f8a;
@@ -9,7 +23,72 @@
     --text: #ffffff;
 }
 
+/* Aplicar cores do tema */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+    background-color: var(--card-bg);
+    color: var(--card-text);
+    border-color: var(--border-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card-title, .card-text {
+    color: var(--card-text);
+}
+
+.btn-primary {
+    background-color: var(--color4);
+    border-color: var(--color3);
+}
+
 [data-theme="dark"] .card-custom {
     background: var(--color1);
     color: var(--color6);
+}
+
+/* Estilos para o botão de tema */
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-icon {
+    width: 24px;
+    height: 24px;
+    transition: display 0.3s ease;
+}
+
+/* Por padrão, mostra o ícone escuro e esconde o claro */
+.dark-icon {
+    display: block;
+}
+
+.light-icon {
+    display: none;
+}
+
+/* Quando o tema é escuro, inverte a visibilidade dos ícones */
+[data-theme='dark'] .dark-icon {
+    display: none;
+}
+
+[data-theme='dark'] .light-icon {
+    display: block;
 }

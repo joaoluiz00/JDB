@@ -19,7 +19,7 @@ $iconePerfil = $controllerIcone->getIconePerfil($userId);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,10 @@ $iconePerfil = $controllerIcone->getIconePerfil($userId);
     <title>Perfil</title>
 </head>
 <body>
-<button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+ <button class="theme-toggle" onclick="toggleTheme()">
+        <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+        <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+    </button>
     <div class="container mt-4">
         <h1>Perfil do Usuário</h1>
         <div class="card">
@@ -53,5 +56,6 @@ $iconePerfil = $controllerIcone->getIconePerfil($userId);
             </div>
         </div>
     </div>
+    <script src="../Assets/script.js"></script>
 </body>
 </html>

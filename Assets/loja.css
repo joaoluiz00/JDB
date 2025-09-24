@@ -286,6 +286,47 @@ body:not(.loaded) .image-viewer {
 }
 
 /* Responsivo melhorado */
+/* Estilos para o botão de tema */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-icon {
+    width: 24px;
+    height: 24px;
+    transition: display 0.3s ease;
+}
+
+/* Por padrão, mostra o ícone escuro e esconde o claro */
+.dark-icon {
+    display: block;
+}
+
+.light-icon {
+    display: none;
+}
+
+/* Quando o tema é escuro, inverte a visibilidade dos ícones */
+[data-theme='dark'] .dark-icon {
+    display: none;
+}
+
+[data-theme='dark'] .light-icon {
+    display: block;
+}
+
 @media (max-width: 768px) {
     .navbar {
         flex-wrap: wrap;
