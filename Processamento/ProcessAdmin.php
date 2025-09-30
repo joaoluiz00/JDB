@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 require_once '../Controller/ControllerAdmin.php';
 require_once '../Model/BancoDeDados.php';
 
@@ -21,7 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $email = $_POST['email'];
         $senha = $_POST['senha'];
 
-        if ($controller->loginAdmin($email, $senha)) {
+        $admin = $controller->loginAdmin($email, $senha);
+        if ($admin) {
+            // Flag de sessão para admin autenticado
+            $_SESSION['admin_id'] = $admin['id'];
+            $_SESSION['admin_nome'] = $admin['nome'] ?? '';
+            $_SESSION['admin_email'] = $admin['email'] ?? '';
             header('Location: ../View/HomeAdmin.php');
         } else {
             header('Location: ../View/LoginAdmin.php?error=invalid_credentials');

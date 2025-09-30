@@ -55,8 +55,33 @@
                             <img src="../Assets/img/exportar.png" alt="Exportar Dados" class="img-fluid mb-3" style="max-width: 100px;">
                             <h5 class="card-title">Exportar Dados</h5>
                             <p class="card-text">Baixe os dados do sistema.</p>
-                            <a class="btn btn-sm btn-primary mr-2" href="../Controller/ExportController.php?format=json">Baixar JSON</a>
-                            <a class="btn btn-sm btn-secondary" href="../Controller/ExportController.php?format=csv">Baixar CSV</a>
+                            <form class="form-inline justify-content-center" action="../Controller/ExportController.php" method="get">
+                                <div class="form-group mb-2 mr-2">
+                                    <label class="sr-only" for="tableSelect">Tabela</label>
+                                    <select class="form-control" id="tableSelect" name="table" required>
+                                        <option value="usuarios">Usuários</option>
+                                        <option value="admin">Admins</option>
+                                        <option value="cartas">Cartas</option>
+                                        <option value="pacotes">Pacotes</option>
+                                        <option value="pacotes_moedas">Pacotes de Moedas</option>
+                                        <option value="icones">Ícones</option>
+                                        <option value="papel_fundo">Papel de Fundo</option>
+                                        <option value="cartas_usuario">Cartas por Usuário</option>
+                                        <option value="icones_usuario">Ícones por Usuário</option>
+                                        <option value="papel_fundo_usuario">Papel de Fundo por Usuário</option>
+                                        <option value="pacote_cartas">Cartas por Pacote</option>
+                                        <option value="historico_transacoes">Histórico de Transações</option>
+                                        <option value="carrinho">Carrinho</option>
+                                        <option value="pedidos">Pedidos</option>
+                                        <option value="pedido_itens">Itens do Pedido</option>
+                                        <option value="cupons">Cupons</option>
+                                        <option value="cupons_usuario">Cupons por Usuário</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" name="format" value="json">
+                                <button type="submit" class="btn btn-sm btn-primary mb-2 mr-2">Baixar JSON</button>
+                                <button type="submit" class="btn btn-sm btn-secondary mb-2" onclick="this.form.format.value='csv'">Baixar CSV</button>
+                            </form>
                         </div>
                     </div>
                 </div>

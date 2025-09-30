@@ -38,8 +38,11 @@ class ControllerAdmin
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
+            $admin = $result->fetch_assoc();
             $stmt->close();
-            return true;
+            // Não retornar senha por segurança
+            unset($admin['senha']);
+            return $admin; // retorna os dados do admin
         } else {
             $stmt->close();
             return false;

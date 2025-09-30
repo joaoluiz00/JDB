@@ -75,4 +75,20 @@ class AdminDataProvider {
             'cupons_usuario' => $cupons_usuario,
         ];
     }
+
+    /**
+     * Retorna os dados de uma única "tabela lógica" para exportação.
+     * @param string $table Nome lógico: usuarios, admin, cartas, pacotes, pacotes_moedas, icones, papel_fundo,
+     *                      cartas_usuario, icones_usuario, papel_fundo_usuario, pacote_cartas,
+     *                      historico_transacoes, carrinho, pedidos, pedido_itens, cupons, cupons_usuario
+     * @return array|null Um array associativo com uma única chave => lista de linhas; ou null se inválido.
+     */
+    public function getDataFor(string $table) {
+        $all = $this->getAllData();
+        if (!array_key_exists($table, $all)) {
+            return null;
+        }
+        // Retornamos apenas a seção solicitada, mantendo a estrutura { tableName: rows }
+        return [$table => $all[$table]];
+    }
 }
