@@ -78,9 +78,9 @@
                                         <option value="cupons_usuario">Cupons por Usuário</option>
                                     </select>
                                 </div>
-                                <input type="hidden" name="format" value="json">
-                                <button type="submit" class="btn btn-sm btn-primary mb-2 mr-2">Baixar JSON</button>
-                                <button type="submit" class="btn btn-sm btn-secondary mb-2" onclick="this.form.format.value='csv'">Baixar CSV</button>
+                                <!-- Cada botão envia explicitamente o formato desejado para evitar estado persistente -->
+                                <button type="submit" name="format" value="json" class="btn btn-sm btn-primary mb-2 mr-2">Baixar JSON</button>
+                                <button type="submit" name="format" value="csv" class="btn btn-sm btn-secondary mb-2">Baixar CSV</button>
                             </form>
                         </div>
                     </div>
