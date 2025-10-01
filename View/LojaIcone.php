@@ -47,6 +47,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <link rel="stylesheet" href="../Assets/gameboy-card.css">
     <style>
         /* Estilos específicos para a loja de ícones, caso necessário,
            mas a intenção é reutilizar o máximo possível do loja.css */
@@ -114,41 +115,38 @@ if ($showError) unset($_SESSION['error']);
             <?php if ($icones && $icones->num_rows > 0): ?>
                 <?php while ($icone = $icones->fetch_assoc()): ?>
                     <?php $jaPossui = in_array($icone['id'], $iconesJaPossuidos); ?>
-                    <div class="card-item <?php echo $jaPossui ? 'item-possui' : ''; ?>">
-                        <div class="card-image-container">
+                    <div class="gameboy-card <?php echo $jaPossui ? 'item-possui' : ''; ?>">
+                        <div class="gameboy-screen">
                             <img src="<?php echo $icone['path']; ?>" alt="<?php echo $icone['nome']; ?>" class="card-image" onclick="openImage('<?php echo $icone['path']; ?>')">
                         </div>
-                        <div class="card-details">
+                        <div class="gameboy-details">
                             <h2><?php echo $icone['nome']; ?></h2>
-                            <p class="price">💰 <?php echo $icone['preco']; ?> moedas</p>
-                            <p class="price">💵 R$ <?php echo number_format($icone['preco_dinheiro'], 2, ',', '.'); ?></p>
+                            <p class="gameboy-price">💰 <?php echo $icone['preco']; ?> moedas</p>
+                            <p class="gameboy-price">💵 R$ <?php echo number_format($icone['preco_dinheiro'], 2, ',', '.'); ?></p>
                         </div>
-                        
                         <?php if (!$jaPossui): ?>
-                            <div class="card-actions">
-                                <form action="../Processamento/ProcessIcone.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar este ícone com moedas do jogo?');">
-                                    <input type="hidden" name="id_icone" value="<?php echo $icone['id']; ?>">
-                                    <input type="hidden" name="preco" value="<?php echo $icone['preco']; ?>">
-                                    <input type="hidden" name="action" value="comprar_moedas">
-                                    <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
-                                </form>
-
-                                <form action="../Processamento/ProcessCarrinho.php" method="POST">
-                                    <input type="hidden" name="tipo_item" value="icone">
-                                    <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
-                                    <input type="hidden" name="preco_unitario" value="<?php echo $icone['preco_dinheiro']; ?>">
-                                    <input type="hidden" name="preco_moedas" value="<?php echo $icone['preco']; ?>">
-                                    <input type="hidden" name="action" value="adicionar">
-                                    <button type="submit" class="btn btn-success">🛒 Adicionar ao Carrinho</button>
-                                </form>
-
-                                <form action="../View/ConfirmarEndereco.php" method="GET">
-                                    <input type="hidden" name="tipo_item" value="icone">
-                                    <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
-                                    <input type="hidden" name="preco_dinheiro" value="<?php echo $icone['preco_dinheiro']; ?>">
-                                    <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
-                                </form>
-                            </div>
+                        <div class="gameboy-buttons">
+                            <form action="../Processamento/ProcessIcone.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar este ícone com moedas do jogo?');">
+                                <input type="hidden" name="id_icone" value="<?php echo $icone['id']; ?>">
+                                <input type="hidden" name="preco" value="<?php echo $icone['preco']; ?>">
+                                <input type="hidden" name="action" value="comprar_moedas">
+                                <button type="submit" class="gameboy-btn buy">M</button>
+                            </form>
+                            <form action="../Processamento/ProcessCarrinho.php" method="POST">
+                                <input type="hidden" name="tipo_item" value="icone">
+                                <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
+                                <input type="hidden" name="preco_unitario" value="<?php echo $icone['preco_dinheiro']; ?>">
+                                <input type="hidden" name="preco_moedas" value="<?php echo $icone['preco']; ?>">
+                                <input type="hidden" name="action" value="adicionar">
+                                <button type="submit" class="gameboy-btn">🛒</button>
+                            </form>
+                            <form action="../View/ConfirmarEndereco.php" method="GET">
+                                <input type="hidden" name="tipo_item" value="icone">
+                                <input type="hidden" name="id_item" value="<?php echo $icone['id']; ?>">
+                                <input type="hidden" name="preco_dinheiro" value="<?php echo $icone['preco_dinheiro']; ?>">
+                                <button type="submit" class="gameboy-btn buy">R$</button>
+                            </form>
+                        </div>
                         <?php endif; ?>
                     </div>
                 <?php endwhile; ?>

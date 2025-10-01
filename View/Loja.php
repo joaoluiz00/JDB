@@ -42,6 +42,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <link rel="stylesheet" href="../Assets/gameboy-card.css">
 </head>
 <body>        <div id="imageViewer" class="image-viewer">
             <span class="close">&times;</span>
@@ -95,46 +96,42 @@ if ($showError) unset($_SESSION['error']);
         <!-- Exibe as cartas disponíveis -->
         <div class="cards-grid">
             <?php while ($carta = $cartas->fetch_assoc()): ?>
-                <div class="card-item">
-                <div class="card-image-container">
+                <div class="gameboy-card">
+                    <div class="gameboy-screen">
                         <img src="<?php echo $carta['path']; ?>" 
                             alt="<?php echo $carta['nome']; ?>" 
                             class="card-image" 
                             onclick="openImage('<?php echo $carta['path']; ?>')">
                     </div>
-                    <div class="card-details">
+                    <div class="gameboy-details">
                         <h2><?php echo $carta['nome']; ?></h2>
                         <p>Vida: <?php echo $carta['vida']; ?></p>
                         <p>Ataque 1: <?php echo $carta['ataque1']; ?> (<?php echo $carta['ataque1_dano']; ?> dano)</p>
                         <p>Ataque 2: <?php echo $carta['ataque2']; ?> (<?php echo $carta['ataque2_dano']; ?> dano)</p>
                         <p>Esquiva: <?php echo $carta['esquiva']; ?></p>
                         <p>Crítico: <?php echo $carta['critico']; ?></p>
-                        <p class="price"> <?php echo $carta['preco']; ?> moedas</p>
-                        <p class="price"> R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
-                        
-                        <!-- Botão para comprar com moedas -->
+                        <p class="gameboy-price"> <?php echo $carta['preco']; ?> moedas</p>
+                        <p class="gameboy-price"> R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
+                    </div>
+                    <div class="gameboy-buttons">
                         <form action="../Processamento/ProcessCartas.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar esta carta com moedas do jogo?');">
                             <input type="hidden" name="id_carta" value="<?php echo $carta['id']; ?>">
                             <input type="hidden" name="preco" value="<?php echo $carta['preco']; ?>">
                             <input type="hidden" name="action" value="comprar_moedas">
-                            <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
+                            <button type="submit" class="gameboy-btn buy" title="Comprar com Moedas">M</button>
                         </form>
-
-                        <!-- Botão para adicionar ao carrinho -->
                         <form action="../Processamento/ProcessCarrinho.php" method="POST">
                             <input type="hidden" name="tipo_item" value="carta">
                             <input type="hidden" name="id_item" value="<?php echo $carta['id']; ?>">
                             <input type="hidden" name="preco_unitario" value="<?php echo $carta['preco_dinheiro']; ?>">
                             <input type="hidden" name="preco_moedas" value="<?php echo $carta['preco']; ?>">
                             <input type="hidden" name="action" value="adicionar">
-                            <button type="submit" class="btn btn-success">🛒 Adicionar ao Carrinho</button>
+                            <button type="submit" class="gameboy-btn" title="Adicionar ao Carrinho">🛒</button>
                         </form>
-
-                        <!-- Botão para comprar com dinheiro -->
                         <form action="../View/ConfirmarEndereco.php" method="GET">
                             <input type="hidden" name="id_carta" value="<?php echo $carta['id']; ?>">
                             <input type="hidden" name="preco_dinheiro" value="<?php echo $carta['preco_dinheiro']; ?>">
-                            <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
+                            <button type="submit" class="gameboy-btn buy" title="Comprar com Dinheiro">R$</button>
                         </form>
                     </div>
                 </div>

@@ -39,6 +39,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <link rel="stylesheet" href="../Assets/gameboy-card.css">
     <style>
         .moedas-grid {
             display: grid;
@@ -145,25 +146,25 @@ if ($showError) unset($_SESSION['error']);
         <?php endif; ?>
 
         <!-- Exibe os pacotes de moedas disponíveis -->
-<div class="moedas-grid">
+<div class="cards-grid">
     <?php while ($pacote = $pacotes->fetch_assoc()): ?>
-        <div class="moeda-item">
-            <div class="moeda-image-container">
+        <div class="gameboy-card">
+            <div class="gameboy-screen">
                 <img src="<?php echo $pacote['path']; ?>" 
                      alt="<?php echo $pacote['nome_pacote']; ?>" 
-                     class="moeda-image"
+                     class="card-image"
                      onclick="openImage('<?php echo $pacote['path']; ?>')">
             </div>
-            <div class="moeda-details">
+            <div class="gameboy-details">
                 <h2><?php echo $pacote['nome_pacote']; ?></h2>
                 <p>Quantidade: <?php echo $pacote['quantidade_moedas']; ?> moedas</p>
-                <p class="price">R$ <?php echo number_format($pacote['valor_dinheiro'], 2, ',', '.'); ?></p>
-                
-                <!-- Botão para comprar com dinheiro -->
+                <p class="gameboy-price">R$ <?php echo number_format($pacote['valor_dinheiro'], 2, ',', '.'); ?></p>
+            </div>
+            <div class="gameboy-buttons">
                 <form action="../View/ConfirmarPagamentoMoedas.php" method="GET">
                     <input type="hidden" name="id_pacote" value="<?php echo $pacote['id_pacote']; ?>">
                     <input type="hidden" name="valor_dinheiro" value="<?php echo $pacote['valor_dinheiro']; ?>">
-                    <button type="submit" class="btn btn-primary">Comprar Agora</button>
+                    <button type="submit" class="gameboy-btn buy">R$</button>
                 </form>
             </div>
         </div>

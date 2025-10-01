@@ -32,6 +32,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <link rel="stylesheet" href="../Assets/gameboy-card.css">
 </head>
 <body>
     <div id="imageViewer" class="image-viewer">
@@ -75,38 +76,37 @@ if ($showError) unset($_SESSION['error']);
         <div class="cards-grid">
             <?php foreach ($papeis as $papel): ?>
                 <?php $jaPossui = in_array($papel->getId(), $papeisUsuario); ?>
-                <div class="card-item <?php if($jaPossui) echo 'item-possui'; ?>">
-                    <div class="card-image-container">
+                <div class="gameboy-card <?php if($jaPossui) echo 'item-possui'; ?>">
+                    <div class="gameboy-screen">
                         <img src="<?= $papel->getPath() ?>" alt="<?= $papel->getNome() ?>" class="card-image" onclick="openImage('<?= $papel->getPath() ?>')">
                     </div>
-                    <div class="card-details">
+                    <div class="gameboy-details">
                         <h2><?= $papel->getNome() ?></h2>
-                        <p class="price"><?= $papel->getPreco() ?> moedas</p>
-                        <p class="price">R$ <?= number_format($papel->getPrecoDinheiro(),2,',','.') ?></p>
-
-                        <?php if (!$jaPossui): ?>
-                            <form method="post" action="../Processamento/ProcessPapelParede.php" onsubmit="return confirm('Tem certeza que deseja comprar este papel de parede com moedas do jogo?');">
-                                <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
-                                <input type="hidden" name="preco" value="<?= $papel->getPreco() ?>">
-                                <button type="submit" name="comprar_moedas" class="btn btn-primary">Comprar com Moedas</button>
-                            </form>
-
-                            <form action="../Processamento/ProcessCarrinho.php" method="POST">
-                                <input type="hidden" name="action" value="adicionar">
-                                <input type="hidden" name="tipo_item" value="papel_fundo">
-                                <input type="hidden" name="id_item" value="<?= $papel->getId() ?>">
-                                <input type="hidden" name="preco_unitario" value="<?= $papel->getPrecoDinheiro() ?>">
-                                <input type="hidden" name="preco_moedas" value="<?= $papel->getPreco() ?>">
-                                <button type="submit" class="btn btn-success">🛒 Adicionar ao Carrinho</button>
-                            </form>
-
-                            <form method="get" action="ConfirmarEndereco.php">
-                                <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
-                                <input type="hidden" name="preco_dinheiro" value="<?= $papel->getPrecoDinheiro() ?>">
-                                <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
-                            </form>
-                        <?php endif; ?>
+                        <p class="gameboy-price"><?= $papel->getPreco() ?> moedas</p>
+                        <p class="gameboy-price">R$ <?= number_format($papel->getPrecoDinheiro(),2,',','.') ?></p>
                     </div>
+                    <?php if (!$jaPossui): ?>
+                    <div class="gameboy-buttons">
+                        <form method="post" action="../Processamento/ProcessPapelParede.php" onsubmit="return confirm('Tem certeza que deseja comprar este papel de parede com moedas do jogo?');">
+                            <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
+                            <input type="hidden" name="preco" value="<?= $papel->getPreco() ?>">
+                            <button type="submit" name="comprar_moedas" class="gameboy-btn buy">M</button>
+                        </form>
+                        <form action="../Processamento/ProcessCarrinho.php" method="POST">
+                            <input type="hidden" name="action" value="adicionar">
+                            <input type="hidden" name="tipo_item" value="papel_fundo">
+                            <input type="hidden" name="id_item" value="<?= $papel->getId() ?>">
+                            <input type="hidden" name="preco_unitario" value="<?= $papel->getPrecoDinheiro() ?>">
+                            <input type="hidden" name="preco_moedas" value="<?= $papel->getPreco() ?>">
+                            <button type="submit" class="gameboy-btn">🛒</button>
+                        </form>
+                        <form method="get" action="ConfirmarEndereco.php">
+                            <input type="hidden" name="id_papel" value="<?= $papel->getId() ?>">
+                            <input type="hidden" name="preco_dinheiro" value="<?= $papel->getPrecoDinheiro() ?>">
+                            <button type="submit" class="gameboy-btn buy">R$</button>
+                        </form>
+                    </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>

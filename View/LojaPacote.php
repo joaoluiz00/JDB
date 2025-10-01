@@ -39,6 +39,7 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <link rel="stylesheet" href="../Assets/gameboy-card.css">
 </head>
 <body>
     <div id="imageViewer" class="image-viewer">
@@ -86,38 +87,36 @@ if ($showError) unset($_SESSION['error']);
         <!-- Exibe os pacotes disponíveis -->
         <div class="cards-grid">
             <?php while ($pacote = $pacotes->fetch_assoc()): ?>
-                <div class="card-item">
-                    <div class="card-image-container">
+                <div class="gameboy-card">
+                    <div class="gameboy-screen">
                         <img src="<?php echo $pacote['path']; ?>" 
                              alt="<?php echo $pacote['nome']; ?>" 
                              class="card-image"
                              onclick="openImage('<?php echo $pacote['path']; ?>')">
                         <?php if ($pacote['cor'] != 'todos'): ?>
-            <div class="color-indicator" style="background-color: <?php echo $pacote['cor']; ?>"></div>
-        <?php endif; ?>
+                            <div class="color-indicator" style="background-color: <?php echo $pacote['cor']; ?>; position:absolute; right:10px; top:10px; width:24px; height:24px; border-radius:50%; border:2px solid #333;"></div>
+                        <?php endif; ?>
                     </div>
-                    <div class="card-details">
+                    <div class="gameboy-details">
                         <h2><?php echo $pacote['nome']; ?></h2>
                         <p><?php echo $pacote['descricao']; ?></p>
-                        <p class="price"><?php echo $pacote['preco']; ?> moedas</p>
-                        <p class="price">R$ <?php echo number_format($pacote['preco_dinheiro'], 2, ',', '.'); ?></p>
-                        
-                        <!-- Botão para comprar com moedas -->
+                        <p class="gameboy-price"><?php echo $pacote['preco']; ?> moedas</p>
+                        <p class="gameboy-price">R$ <?php echo number_format($pacote['preco_dinheiro'], 2, ',', '.'); ?></p>
+                    </div>
+                    <div class="gameboy-buttons">
                         <form action="../Processamento/ProcessPacotes.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar este pacote com moedas do jogo?');">
                             <input type="hidden" name="id_pacote" value="<?php echo $pacote['id']; ?>">
                             <input type="hidden" name="preco" value="<?php echo $pacote['preco']; ?>">
                             <input type="hidden" name="cor" value="<?php echo $pacote['cor']; ?>">
                             <input type="hidden" name="action" value="comprar_moedas">
-                            <button type="submit" class="btn btn-primary">Comprar com Moedas</button>
+                            <button type="submit" class="gameboy-btn buy">M</button>
                         </form>
-
-                        <!-- Botão para comprar com dinheiro -->
                         <form action="../View/ConfirmarEndereco.php" method="GET">
                             <input type="hidden" name="id_pacote" value="<?php echo $pacote['id']; ?>">
                             <input type="hidden" name="preco_dinheiro" value="<?php echo $pacote['preco_dinheiro']; ?>">
                             <input type="hidden" name="cor" value="<?php echo $pacote['cor']; ?>">
-                            <button type="submit" class="btn btn-primary">Comprar com Dinheiro</button>
-</form>
+                            <button type="submit" class="gameboy-btn buy">R$</button>
+                        </form>
                     </div>
                 </div>
             <?php endwhile; ?>

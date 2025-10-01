@@ -163,7 +163,7 @@ if (isset($_SESSION['id'])) {
             <div id="action-menu" style="margin-top:8px">
                 <button id="attack1-btn" disabled style="padding:10px 16px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer">Ataque 1</button>
                 <button id="attack2-btn" disabled style="padding:10px 16px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer">Ataque 2</button>
-                <button id="reset-battle" style="padding:10px 16px;border-radius:6px;border:1px solid #888;background:#fff;color:#111;cursor:pointer;margin-left:8px">Resetar</button>
+                <button id="reset-battle" style="padding:10px 16px;border-radius:6px;border:1px solid #888;background:#fff;color:#111;cursor:pointer;margin-left:8px">Fugir</button>
             </div>
         </div>
     </div>
