@@ -1,15 +1,15 @@
 <?php
+/**
+ * Interface de exportação de dados (ex.: JSON/CSV).
+ * Define: export() conteúdo, contentType() MIME e extension() padrão.
+ */
 interface ExporterInterface {
-    /**
-     * Exporta os dados em formato específico (JSON/CSV).
-     * @param array $data
-     * @return string
-     */
+    /** Serializa $data para o formato do exportador. */
     public function export(array $data);
 
-    /** @return string */
+    /** Retorna o MIME type (ex.: application/json, text/csv). */
     public function contentType();
 
-    /** @return string */
+    /** Extensão padrão (sem ponto). Ex.: json, csv. */
     public function extension();
 }
