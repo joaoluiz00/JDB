@@ -1,22 +1,11 @@
 /* layout.css - Versão Corrigida */
 body {
     background: linear-gradient(160deg, var(--color1) 0%, var(--color2) 100%);
-    min-height: 100vh;
+    min-height: 150vh;
 }
 
 /* Navbar corrigida */
-.navbar {
-    width: 100%; /* Corrigido de 10000px */
-    background: var(--color5);
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+
 
 .container {
     padding-top: 100px; /* Espaço para navbar fixa */
@@ -26,4 +15,149 @@ body {
 .main-content {
     padding: 20px;
     margin-top: 80px;
+}
+
+/* --- Estrutura Principal da Navbar --- */
+.navbar {
+  background: var(--color5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: var(--navbar-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* --- Logo --- */
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color1);
+  text-decoration: none;
+}
+
+/* --- Links de Navegação (Desktop) --- */
+.nav-links ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem; /* Espaçamento moderno entre os itens */
+}
+
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Efeito de sublinhado no hover */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--color1);
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-links a:hover {
+  color: var(--color1);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+}
+
+/* Estilo para a página ativa */
+.nav-links a.active {
+  color: var(--color1);
+  font-weight: 700;
+}
+
+/* --- Botão de Destaque (Call-to-Action) --- */
+.cta-button {
+  background-color: var(--color1);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cta-button:hover {
+  background-color: var(--color2);
+  transform: translateY(-2px); /* Efeito sutil de elevação */
+}
+
+/* --- Menu Hamburguer (para mobile) --- */
+.menu-toggler {
+  display: none; /* Escondido em telas grandes */
+  cursor: pointer;
+}
+
+.menu-toggler .bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-color);
+  margin: 5px 0;
+  transition: 0.4s;
+}
+
+
+/* --- Responsividade (Telas Pequenas) --- */
+@media (max-width: 768px) {
+  .nav-links, .cta-button {
+    display: none; /* Esconde os links e o botão */
+  }
+
+  .menu-toggler {
+    display: block; /* Mostra o ícone do menu */
+  }
+  
+  /* Estilos que seriam ativados via JavaScript */
+  /* Por exemplo, ao clicar no menu, adiciona a classe "nav-active" */
+
+  .navbar.nav-active .nav-links {
+      display: flex;
+      position: absolute;
+      top: var(--navbar-height);
+      left: 0;
+      width: 100%;
+      background-color: var(--color5);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar.nav-active .nav-links ul {
+      flex-direction: column;
+      width: 100%;
+      padding: 1rem 0;
+  }
+  
+  .navbar.nav-active .nav-links li {
+      text-align: center;
+      padding: 1rem 0;
+  }
+
+  .navbar.nav-active .nav-links a::after {
+      display: none; /* Remove o efeito de sublinhado no mobile */
+  }
+}
+
+:root {
+  /* ...outras variáveis... */
+
+  /* Variável para a altura da navbar. */
+  --navbar-height: 80px; 
 }

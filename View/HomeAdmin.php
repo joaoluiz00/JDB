@@ -4,6 +4,7 @@
     <title>Home Admin</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
+    <link rel="stylesheet" href="../Assets/card.css">
 </head>
 <body>
     <!-- Botão de alternância de tema -->
@@ -36,70 +37,70 @@
             </div>
         </div>
 
-        <!-- Seções com ícones e links -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <a href="GerenciarUsuario.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/gerencia.jpg" alt="Gerenciar Usuários" class="img-fluid mb-3" style="max-width: 100px;">
+        <!-- Cards principais do Admin -->
+        <div class="row mt-4 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="GerenciarUsuario.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/gerencia.jpg" alt="Gerenciar Usuários" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Gerenciar Usuários</h5>
                             <p class="card-text">Adicione, edite ou remova usuários.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/exportar.png" alt="Exportar Dados" class="img-fluid mb-3" style="max-width: 100px;">
-                            <h5 class="card-title">Exportar Dados</h5>
-                            <p class="card-text">Baixe os dados do sistema.</p>
-                            <form class="form-inline justify-content-center" action="../Controller/ExportController.php" method="get">
-                                <div class="form-group mb-2 mr-2">
-                                    <label class="sr-only" for="tableSelect">Tabela</label>
-                                    <select class="form-control" id="tableSelect" name="table" required>
-                                        <option value="usuarios">Usuários</option>
-                                        <option value="admin">Admins</option>
-                                        <option value="cartas">Cartas</option>
-                                        <option value="pacotes">Pacotes</option>
-                                        <option value="pacotes_moedas">Pacotes de Moedas</option>
-                                        <option value="icones">Ícones</option>
-                                        <option value="papel_fundo">Papel de Fundo</option>
-                                        <option value="cartas_usuario">Cartas por Usuário</option>
-                                        <option value="icones_usuario">Ícones por Usuário</option>
-                                        <option value="papel_fundo_usuario">Papel de Fundo por Usuário</option>
-                                        <option value="pacote_cartas">Cartas por Pacote</option>
-                                        <option value="historico_transacoes">Histórico de Transações</option>
-                                        <option value="carrinho">Carrinho</option>
-                                        <option value="pedidos">Pedidos</option>
-                                        <option value="pedido_itens">Itens do Pedido</option>
-                                        <option value="cupons">Cupons</option>
-                                        <option value="cupons_usuario">Cupons por Usuário</option>
-                                    </select>
-                                </div>
-                                <!-- Cada botão envia explicitamente o formato desejado para evitar estado persistente -->
-                                <button type="submit" name="format" value="json" class="btn btn-sm btn-primary mb-2 mr-2">Baixar JSON</button>
-                                <button type="submit" name="format" value="csv" class="btn btn-sm btn-secondary mb-2">Baixar CSV</button>
-                            </form>
-                        </div>
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <div class="card-custom card-home shadow-lg w-100">
+                    <div class="card-body text-center">
+                        <img src="../Assets/img/exportar.png" alt="Exportar Dados" class="img-fluid mb-3 card-img-home">
+                        <h5 class="card-title">Exportar Dados</h5>
+                        <p class="card-text">Baixe os dados do sistema.</p>
+                        <form class="form-inline justify-content-center" action="../Controller/ExportController.php" method="get">
+                            <div class="form-group mb-2 mr-2 d-flex flex-column align-items-center" style="width:100%;">
+                                <label class="sr-only" for="tableSelect">Tabela</label>
+                                <select class="form-control form-control-sm w-auto" id="tableSelect" name="table" required style="max-width:180px;">
+                                    <option value="usuarios">Usuários</option>
+                                    <option value="admin">Admins</option>
+                                    <option value="cartas">Cartas</option>
+                                    <option value="pacotes">Pacotes</option>
+                                    <option value="pacotes_moedas">Pacotes de Moedas</option>
+                                    <option value="icones">Ícones</option>
+                                    <option value="papel_fundo">Papel de Fundo</option>
+                                    <option value="cartas_usuario">Cartas por Usuário</option>
+                                    <option value="icones_usuario">Ícones por Usuário</option>
+                                    <option value="papel_fundo_usuario">Papel de Fundo por Usuário</option>
+                                    <option value="pacote_cartas">Cartas por Pacote</option>
+                                    <option value="historico_transacoes">Histórico de Transações</option>
+                                    <option value="carrinho">Carrinho</option>
+                                    <option value="pedidos">Pedidos</option>
+                                    <option value="pedido_itens">Itens do Pedido</option>
+                                    <option value="cupons">Cupons</option>
+                                    <option value="cupons_usuario">Cupons por Usuário</option>
+                                </select>
+                            </div>
+                            <button type="submit" name="format" value="json" class="btn btn-sm btn-primary mb-2 mr-2">Baixar JSON</button>
+                            <button type="submit" name="format" value="csv" class="btn btn-sm btn-secondary mb-2">Baixar CSV</button>
+                        </form>
                     </div>
                 </div>
-                <a href="AdicionarCarta.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/adicionar.png" alt="Adicionar Carta" class="img-fluid mb-3" style="max-width: 100px;">
+            </div>
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="AdicionarCarta.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/adicionar.png" alt="Adicionar Carta" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Adicionar Carta</h5>
                             <p class="card-text">Crie novas cartas para o jogo.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="AdicionarIcone.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/logofoto2.png" alt="Adicionar Ícone" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="AdicionarIcone.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/logofoto2.png" alt="Adicionar Ícone" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Adicionar Ícone</h5>
                             <p class="card-text">Adicione novos ícones de perfil.</p>
                         </div>
@@ -107,45 +108,45 @@
                 </a>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <a href="AdicionarPacote.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/pacoteGeral.png" alt="Adicionar Pacote" class="img-fluid mb-3" style="max-width: 100px;">
+        <div class="row mt-4 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="AdicionarPacote.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/pacoteGeral.png" alt="Adicionar Pacote" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Adicionar Pacote</h5>
                             <p class="card-text">Crie novos pacotes de cartas.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="AdicionarPapelParede.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/papelfundo.jpg" alt="Adicionar Papel de Parede" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="AdicionarPapelParede.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/papelfundo.jpg" alt="Adicionar Papel de Parede" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Adicionar Papel de Parede</h5>
                             <p class="card-text">Adicione novos papéis de parede para perfis.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="CuponsAdmin.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/moeda.png" alt="Gerenciar Cupons" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="CuponsAdmin.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/moeda.png" alt="Gerenciar Cupons" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Gerenciar Cupons</h5>
                             <p class="card-text">Crie, edite e exclua cupons de desconto.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="HistoricoVendasAdmin.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/historico.png" alt="Vendas" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="HistoricoVendasAdmin.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/historico.png" alt="Vendas" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Vendas</h5>
                             <p class="card-text">Veja todas as compras de todos os clientes.</p>
                         </div>

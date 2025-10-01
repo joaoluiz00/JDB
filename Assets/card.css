@@ -1,0 +1,41 @@
+
+/* Estilo para os cards da Home */
+.card-home {
+	border-radius: 18px;
+	background: linear-gradient(135deg, #f8fafc 60%, #e2e8f0 100%);
+	transition: transform 0.2s, box-shadow 0.2s;
+	min-width: 260px;
+	max-width: 320px;
+	margin-bottom: 20px;
+	border: none;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+	position: relative;
+}
+.card-home:hover {
+	transform: translateY(-8px) scale(1.04);
+	box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+	z-index: 2;
+}
+.card-img-home {
+	max-width: 90px;
+	margin-bottom: 10px;
+	filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+}
+.card-home .card-title {
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: #2d3748;
+	margin-bottom: 8px;
+}
+.card-home .card-text {
+	font-size: 1rem;
+	color: #4a5568;
+	margin-bottom: 0;
+}
+/* Carrossel setas customizadas */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+	background-color: #2d3748;
+	border-radius: 50%;
+	padding: 8px;
+}

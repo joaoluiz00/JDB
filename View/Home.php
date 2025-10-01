@@ -28,6 +28,7 @@ if (isset($_SESSION['id'])) {
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
+    <link rel="stylesheet" href="../Assets/card.css">
 </head>
 <body>
     
@@ -59,48 +60,46 @@ if (isset($_SESSION['id'])) {
             </div>
         </div>
 
-        <!-- Seções com ícones e links -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <a href="Perfil.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/garra.png" alt="Perfil" class="img-fluid mb-3" style="max-width: 100px;">
+        <!-- Cards principais -->
+        <div class="row mt-4 justify-content-center">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="Perfil.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/garra.png" alt="Perfil" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Perfil</h5>
                             <p class="card-text">Gerencie suas informações e personalize seu avatar.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="Batalha.php" class="text-decoration-none">
-                <div class="container main-content">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/espada.png" alt="Batalha" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="Batalha.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/espada.png" alt="Batalha" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Batalha</h5>
                             <p class="card-text">Enfrente outros jogadores e prove sua força.</p>
-                        </div>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="Loja.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/loja.png" alt="Loja" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="Loja.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/loja.png" alt="Loja" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Loja</h5>
                             <p class="card-text">Compre cartas, ícones e muito mais.</p>
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-md-4">
-                <a href="HistoricoCompras.php" class="text-decoration-none">
-                    <div class="card-custom shadow-sm">
-                        <div class="card-body">
-                            <img src="../Assets/img/pacote_amarelo.png" alt="Histórico" class="img-fluid mb-3" style="max-width: 100px;">
+            <div class="col-12 col-sm-6 col-md-3 mb-4 d-flex justify-content-center">
+                <a href="HistoricoCompras.php" class="text-decoration-none w-100">
+                    <div class="card-custom card-home shadow-lg">
+                        <div class="card-body text-center">
+                            <img src="../Assets/img/compras.png" alt="Histórico" class="img-fluid mb-3 card-img-home">
                             <h5 class="card-title">Histórico de Compras</h5>
                             <p class="card-text">Veja todas as suas compras já realizadas.</p>
                         </div>
