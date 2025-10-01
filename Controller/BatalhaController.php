@@ -18,6 +18,7 @@ header('Content-Type: application/json');
 
 require_once __DIR__ . '/../Service/BattleService.php';
 require_once __DIR__ . '/../Model/BancoDeDados.php';
+require_once __DIR__ . '/../Model/BattleState.php';
 
 $response = ['success'=>false,'message'=>''];
 if (!isset($_SESSION['id'])) { $response['message']='Usuário não autenticado.'; echo json_encode($response); exit; }
@@ -29,19 +30,19 @@ $action = $_GET['action'] ?? $_POST['action'] ?? null;
 // Obs.: o estado é serializado em array via BattleState::toArray() e reconstituído aqui
 if (!isset($_SESSION['battle_state'])) { $_SESSION['battle_state'] = null; }
 $state = null;
-if ($_SESSION['battle_state']) {
+if (is_array($_SESSION['battle_state'])) {
     $raw = $_SESSION['battle_state'];
     $state = new BattleState();
-    $state->deck = $raw['deck'];
-    $state->activeIndex = $raw['activeIndex'];
+    $state->deck = $raw['deck'] ?? [];
+    $state->activeIndex = isset($raw['activeIndex']) ? (int)$raw['activeIndex'] : 0;
     $state->enemyDeck = $raw['enemyDeck'] ?? [];
-    $state->enemyActiveIndex = $raw['enemyActiveIndex'] ?? 0;
-    $state->turn = $raw['turn'];
-    $state->finished = $raw['finished'];
-    $state->winner = $raw['winner'];
-    $state->rewarded = $raw['rewarded'] ?? false;
-    $state->enemyProgress = $raw['enemyProgress'] ?? 0;
-    $state->currentEnemyStage = $raw['currentEnemyStage'] ?? null;
+    $state->enemyActiveIndex = isset($raw['enemyActiveIndex']) ? (int)$raw['enemyActiveIndex'] : 0;
+    $state->turn = $raw['turn'] ?? 'player';
+    $state->finished = (bool)($raw['finished'] ?? false);
+    $state->winner = $raw['winner'] ?? null;
+    $state->rewarded = (bool)($raw['rewarded'] ?? false);
+    $state->enemyProgress = (int)($raw['enemyProgress'] ?? 0);
+    $state->currentEnemyStage = isset($raw['currentEnemyStage']) ? (int)$raw['currentEnemyStage'] : null;
 }
 
 try {
@@ -97,23 +98,19 @@ try {
             break;
         case 'selectEnemy':
             if (!$state) { throw new RuntimeException('Configure o deck primeiro.'); }
-            // aceita 1 id (compat) ou 3 ids
-            // Novo: seleção por estágio (0..2) onde apenas até enemyProgress está desbloqueado
+            // Modo por estágio (0..2), por lista de IDs, por ID único, ou aleatório
             if (isset($_POST['stage'])) {
                 $stage = max(0, min(2, (int)$_POST['stage']));
                 if ($stage > $state->enemyProgress) { throw new RuntimeException('Este inimigo ainda está bloqueado.'); }
                 $state->currentEnemyStage = $stage;
-                // Sorteia deck inimigo sem revelar (sem enviar ids no payload)
                 $service->assignRandomEnemy($state, 3);
-                    // Aceita 1 id (compat) ou 3 ids; porém o fluxo atual é por "estágio" (0..2),
-                    // onde apenas até enemyProgress está desbloqueado. As cartas inimigas são surpresa.
-                    $ids = array_map('intval', $_POST['enemyIds']);
-                    $service->assignEnemyByIds($state, $ids);
-                } else {
-                    $enemyId = isset($_POST['enemyId']) ? (int)$_POST['enemyId'] : 0;
-                        // Sorteia deck inimigo sem revelar (sem enviar ids no payload)
-                    else { $service->assignRandomEnemy($state); }
-                }
+            } elseif (!empty($_POST['enemyIds']) && is_array($_POST['enemyIds'])) {
+                $ids = array_map('intval', $_POST['enemyIds']);
+                $service->assignEnemyByIds($state, $ids);
+            } elseif (isset($_POST['enemyId'])) {
+                $service->assignEnemyById($state, (int)$_POST['enemyId']);
+            } else {
+                $service->assignRandomEnemy($state, 3);
             }
             $response['success'] = true;
             $response['message'] = 'Inimigo definido.';
@@ -138,7 +135,7 @@ try {
                         $conn = $db->getConnection();
                         $stmt = $conn->prepare('INSERT INTO progresso_batalha (id_usuario, enemy_progress, updated_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE enemy_progress = GREATEST(enemy_progress, VALUES(enemy_progress)), updated_at = NOW()');
                         if ($stmt) {
-                        // Avança progressão: libera próximo estágio se houver e faz UPSERT em progresso_batalha
+                            $stmt->bind_param('ii', $_SESSION['id'], $state->enemyProgress);
                             $stmt->execute();
                             $stmt->close();
                         }
@@ -174,7 +171,6 @@ try {
                 $db->addCoins($_SESSION['id'], $coins);
                 $state->rewarded = true;
                 $msg .= ' Você ganhou ' . $coins . ' moedas!';
-                    $msg = $service->enemyTurn($state);
                     // Salvaguarda: se a batalha terminar com vitória do jogador no turno do inimigo (improvável),
                     // aplica recompensa, persiste progresso e registra histórico
                 if ($state->currentEnemyStage !== null && $state->currentEnemyStage >= $state->enemyProgress) {
@@ -244,8 +240,8 @@ try {
             $state->finished = false;
             $state->winner = null;
             $state->rewarded = false;
-                    // Permite trocar para qualquer carta viva do seu deck
-                    $index = (int)($_POST['index'] ?? 0);
+            // Gera novo inimigo aleatório
+            $service->assignRandomEnemy($state, 3);
             $response['success'] = true;
             $response['message'] = 'Nova batalha iniciada!';
             break;
@@ -256,10 +252,8 @@ try {
             $response['message'] = 'OK';
             $response['coin'] = $user ? (int)$user['coin'] : 0;
             break;
-                    // Reseta toda a batalha da sessão (não altera progresso no banco)
-                    $_SESSION['battle_state'] = null; $state = null;
+        case 'switch':
             if (!$state) { throw new RuntimeException('Sem batalha ativa.'); }
-                // Sai da batalha e volta ao painel de seleção de inimigos sem recarregar a página
             $index = (int)($_POST['index'] ?? 0);
             $msg = $service->switchActive($state, $index);
             $response['success'] = true;
