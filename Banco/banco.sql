@@ -401,6 +401,37 @@ INSERT INTO `papel_fundo_usuario` (`id`, `id_usuario`, `id_papel`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `historico_batalhas`
+--
+
+CREATE TABLE IF NOT EXISTS `historico_batalhas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `id_carta_inimiga` int(11) NOT NULL,
+  `resultado` enum('vitoria','derrota') NOT NULL,
+  `recompensa` int(11) NOT NULL DEFAULT 0,
+  `data_batalha` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `progresso_batalha`
+--
+
+CREATE TABLE IF NOT EXISTS `progresso_batalha` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `enemy_progress` int(11) NOT NULL DEFAULT 0,
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_usuario_progress` (`id_usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `pedidos`
 --
 
