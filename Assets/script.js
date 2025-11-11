@@ -99,6 +99,13 @@ function toggleTheme() {
             : '../Assets/img/logofoto1.png';
     }
     
+    // Trocar ícones dos cards conforme o tema
+    document.querySelectorAll('.theme-icon-card').forEach(icon => {
+        const lightSrc = icon.getAttribute('data-light');
+        const darkSrc = icon.getAttribute('data-dark');
+        icon.src = newTheme === 'dark' ? darkSrc : lightSrc;
+    });
+    
     localStorage.setItem('theme', newTheme);
 
     // Atualizar visibilidade dos ícones de tema
@@ -123,6 +130,13 @@ document.addEventListener('DOMContentLoaded', function() {
             : '../Assets/img/logofoto1.png';
     }
 
+    // Aplicar ícones dos cards conforme o tema salvo
+    document.querySelectorAll('.theme-icon-card').forEach(icon => {
+        const lightSrc = icon.getAttribute('data-light');
+        const darkSrc = icon.getAttribute('data-dark');
+        icon.src = savedTheme === 'dark' ? darkSrc : lightSrc;
+    });
+
     // Atualizar ícones do alternador de tema
     document.querySelectorAll('.theme-icon').forEach(icon => {
         if (savedTheme === 'dark') {
@@ -131,4 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
             icon.style.display = icon.classList.contains('dark-icon') ? 'block' : 'none';
         }
     });
+});
+
+// Forçar tema no load para garantir que a imagem de fundo seja carregada
+window.addEventListener('load', function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 });

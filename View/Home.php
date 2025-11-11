@@ -30,7 +30,7 @@ if (isset($_SESSION['id'])) {
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/card.css">
 </head>
-<body>
+<body class="home-background">
     
 
     <!-- Música de fundo -->
@@ -40,15 +40,17 @@ if (isset($_SESSION['id'])) {
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="Home.php">JDB</a>
+        <a class="navbar-brand" href="Home.php">
+            <img id="themeLogo" src="../Assets/img/logofoto1.png" alt="JDB" class="navbar-logo">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-          <button class="theme-toggle" onclick="toggleTheme()">
-        <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
-        <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
-    </button>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+            <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+        </button>
     </nav>
 
     <!-- Conteúdo principal -->
@@ -66,7 +68,7 @@ if (isset($_SESSION['id'])) {
                 <a href="Perfil.php" class="text-decoration-none w-100">
                     <div class="card-custom card-home shadow-lg">
                         <div class="card-body text-center">
-                            <img src="../Assets/img/garra.png" alt="Perfil" class="img-fluid mb-3 card-img-home">
+                            <img src="../Assets/img/garra.png" alt="Perfil" class="img-fluid mb-3 card-img-home theme-icon-card" data-light="../Assets/img/garra.png" data-dark="../Assets/img/garrabranco.png">
                             <h5 class="card-title">Perfil</h5>
                             <p class="card-text">Gerencie suas informações e personalize seu avatar.</p>
                         </div>
@@ -77,7 +79,7 @@ if (isset($_SESSION['id'])) {
                 <a href="Batalha.php" class="text-decoration-none w-100">
                     <div class="card-custom card-home shadow-lg">
                         <div class="card-body text-center">
-                            <img src="../Assets/img/espada.png" alt="Batalha" class="img-fluid mb-3 card-img-home">
+                            <img src="../Assets/img/espada.png" alt="Batalha" class="img-fluid mb-3 card-img-home theme-icon-card" data-light="../Assets/img/espada.png" data-dark="../Assets/img/espadabranco.png">
                             <h5 class="card-title">Batalha</h5>
                             <p class="card-text">Enfrente outros jogadores e prove sua força.</p>
                         </div>
@@ -88,7 +90,7 @@ if (isset($_SESSION['id'])) {
                 <a href="Loja.php" class="text-decoration-none w-100">
                     <div class="card-custom card-home shadow-lg">
                         <div class="card-body text-center">
-                            <img src="../Assets/img/loja.png" alt="Loja" class="img-fluid mb-3 card-img-home">
+                            <img src="../Assets/img/loja.png" alt="Loja" class="img-fluid mb-3 card-img-home theme-icon-card" data-light="../Assets/img/loja.png" data-dark="../Assets/img/lojabranco.png">
                             <h5 class="card-title">Loja</h5>
                             <p class="card-text">Compre cartas, ícones e muito mais.</p>
                         </div>
@@ -99,7 +101,7 @@ if (isset($_SESSION['id'])) {
                 <a href="HistoricoCompras.php" class="text-decoration-none w-100">
                     <div class="card-custom card-home shadow-lg">
                         <div class="card-body text-center">
-                            <img src="../Assets/img/compras.png" alt="Histórico" class="img-fluid mb-3 card-img-home">
+                            <img src="../Assets/img/compras.png" alt="Histórico" class="img-fluid mb-3 card-img-home theme-icon-card" data-light="../Assets/img/compras.png" data-dark="../Assets/img/comprasbranco.png">
                             <h5 class="card-title">Histórico de Compras</h5>
                             <p class="card-text">Veja todas as suas compras já realizadas.</p>
                         </div>

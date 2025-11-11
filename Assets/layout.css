@@ -36,10 +36,17 @@ body {
 
 /* --- Logo --- */
 .navbar-logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color1);
-  text-decoration: none;
+  max-height: 100px !important;
+  max-width: 200px !important;
+  height: auto !important;
+  width: auto !important;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  display: block !important;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.05);
 }
 
 /* --- Links de Navegação (Desktop) --- */

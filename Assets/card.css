@@ -10,7 +10,20 @@
 	border: none;
 	box-shadow: 0 4px 24px rgba(0,0,0,0.10);
 	position: relative;
+	height: 340px;
+	display: flex;
+	flex-direction: column;
 }
+
+.card-home .card-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex: 1;
+	height: 100%;
+}
+
 .card-home:hover {
 	transform: translateY(-8px) scale(1.04);
 	box-shadow: 0 8px 32px rgba(0,0,0,0.18);
@@ -20,6 +33,7 @@
 	max-width: 90px;
 	margin-bottom: 10px;
 	filter: drop-shadow(0 2px 8px rgba(0,0,0,0.10));
+	transition: opacity 0.3s ease;
 }
 .card-home .card-title {
 	font-size: 1.3rem;

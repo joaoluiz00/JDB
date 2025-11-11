@@ -27,7 +27,7 @@ $iconePerfil = $controllerIcone->getIconePerfil($userId);
     <link rel="stylesheet" href="../Assets/style.css">
     <title>Perfil</title>
 </head>
-<body>
+<body >
  <button class="theme-toggle" onclick="toggleTheme()">
         <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
         <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">

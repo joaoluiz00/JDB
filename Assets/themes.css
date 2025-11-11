@@ -30,6 +30,19 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.home-background {
+    background-image: url('../Assets/img/amazoniadia.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    transition: background-image 0.3s ease;
+    min-height: 100vh;
+}
+
+[data-theme="dark"] body.home-background {
+    background-image: url('../Assets/img/amazonianoite.jpg');
+}
+
 .card {
     background-color: var(--card-bg);
     color: var(--card-text);
