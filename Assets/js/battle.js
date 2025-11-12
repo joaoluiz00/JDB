@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let battleState = null;
     let enemies = [];
+    let currentStage = null; // estágio selecionado (0..2) para usar como fundo da arena
 
     function updateLifeBar(el, current, total) {
         const pct = Math.max(0, (current/total)*100);
@@ -97,18 +98,47 @@ document.addEventListener('DOMContentLoaded', () => {
         const progress = (battleState && typeof battleState.enemyProgress !== 'undefined') ? battleState.enemyProgress : 0;
         for (let i=0;i<3;i++){
             const stage = document.createElement('div');
+            stage.className = 'battle-stage';
             stage.style.border='1px solid #666';
             stage.style.padding='10px';
             stage.style.borderRadius='6px';
             stage.style.textAlign='center';
             const locked = i>progress;
-            stage.innerHTML = `
-                <div style='font-weight:600;margin-bottom:6px'>Inimigo ${i+1}</div>
-                <div style='opacity:.85;margin-bottom:6px'>${locked? 'Bloqueado' : 'Disponível'}</div>
-                <button ${locked?'disabled':''} style='width:100%'>Enfrentar</button>
-            `;
-            if (!locked){ stage.querySelector('button').addEventListener('click',()=>chooseStage(i)); }
+            const title = document.createElement('div');
+            title.style.fontWeight = 600; title.style.marginBottom = '6px';
+            title.textContent = `Inimigo ${i+1}`;
+            const status = document.createElement('div');
+            status.style.opacity = '.85'; status.style.marginBottom = '6px';
+            status.textContent = locked ? 'Bloqueado' : 'Disponível';
+            stage.appendChild(title);
+            stage.appendChild(status);
+
+            // Imagem representativa do inimigo para este estágio (um por estágio)
+            const enemyImgWrap = document.createElement('div');
+            enemyImgWrap.className = 'stage-enemy-wrap';
+            enemyImgWrap.style.marginBottom = '8px';
+            const enemyImg = document.createElement('img');
+            // caminho fixo por estágio; coloque suas imagens em Assets/img/enemies/enemy1.png etc.
+            enemyImg.src = `../Assets/img/inimigo${i+1}.png`;
+            enemyImg.alt = `Inimigo ${i+1}`;
+            enemyImg.className = 'stage-enemy-img';
+            enemyImgWrap.appendChild(enemyImg);
+            stage.appendChild(enemyImgWrap);
+
+            // Não exibir miniaturas das cartas inimigas (apenas a imagem representativa do estágio)
+            // thumbs removido por opção do usuário
+
+            const btn = document.createElement('button');
+            // Use classes to match site theme
+            btn.className = 'btn-primary btn-block';
+            btn.textContent = 'Enfrentar';
+            if (locked) { btn.disabled = true; }
+            else { btn.addEventListener('click', ()=> chooseStage(i)); }
+            stage.appendChild(btn);
+
             enemyListDiv.appendChild(stage);
+
+            // Não buscar nem exibir previews das cartas inimigas conforme solicitado
         }
     }
 
@@ -131,6 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!data.success) { alert(data.message); return; }
         battleState = data.battleState;
         battleState.enemyActiveIndex = 0;
+        // guarda o estágio atual para definir o fundo da arena
+        currentStage = stage;
         launchBattleUI();
     }
 
@@ -138,6 +170,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function launchBattleUI(){
         enemySelectDiv.style.display='none';
         battleContainer.style.display='block';
+        // aplica a imagem como BACKGROUND DA PÁGINA (body) para que seja o fundo real
+        if (typeof currentStage === 'number'){
+            const imgPath = `../Assets/img/inimigo${currentStage+1}.png`;
+            document.body.classList.add('battle-bg');
+            // gradient + imagem para garantir overlay escuro
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${imgPath}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundRepeat = 'no-repeat';
+            document.body.style.backgroundAttachment = 'fixed';
+        } else {
+            document.body.classList.remove('battle-bg');
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundRepeat = '';
+            document.body.style.backgroundAttachment = '';
+        }
         refreshVisual();
         messageBox.textContent='Batalha iniciada! Seu turno.';
         attack1Btn.disabled=false; attack2Btn.disabled=false;
@@ -204,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // Se ainda não terminou, aguarda pequeno delay e executa turno inimigo
             attack1Btn.disabled = true; attack2Btn.disabled = true;
-            await sleep(500);
+            await sleep(2000);
             opponentCardImg.classList.remove('punch'); void opponentCardImg.offsetWidth; opponentCardImg.classList.add('punch');
             const fd2 = new URLSearchParams({action:'enemyTurn'});
             const res2 = await fetch('../Controller/BatalhaController.php',{method:'POST',body:fd2});
@@ -258,6 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
             battleState = data.battleState;
             endModal.style.display = 'none';
             battleContainer.style.display='none';
+            // limpa background ao voltar à seleção
+            currentStage = null;
+            battleContainer.style.backgroundImage = '';
             enemySelectDiv.style.display='block';
             // Recarrega as opções de estágio com progresso mais recente, se houver
             renderStages();

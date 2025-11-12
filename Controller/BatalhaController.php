@@ -70,6 +70,20 @@ try {
             $response['message'] = 'OK';
             $response['card'] = $card;
             break;
+        case 'previewStage':
+            // Retorna uma pré-visualização com 3 cartas aleatórias para um estágio
+            $conn = BancoDeDados::getInstance()->getConnection();
+            $cards = [];
+            if ($conn) {
+                $res = $conn->query('SELECT * FROM cartas ORDER BY RAND() LIMIT 3');
+                if ($res) {
+                    while ($row = $res->fetch_assoc()) { $cards[] = $row; }
+                }
+            }
+            $response['success'] = true;
+            $response['message'] = 'Preview gerado.';
+            $response['cards'] = $cards;
+            break;
         case 'setupDeck':
             // Recebe lista de cartas selecionadas pelo usuário
             // Valida propriedade das cartas e limita o deck a 3 no serviço

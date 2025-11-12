@@ -86,6 +86,11 @@ $notificacoesRecentes = $controllerNotif->buscarNotificacoesUsuario($_SESSION['i
     flex-shrink: 0;
 }
 
+/* Espaçamento para não colar no botão de alternar tema */
+.notificacoes-dropdown {
+    margin-right: 30px;
+}
+
 .notificacoes-item {
     transition: all 0.2s;
 }

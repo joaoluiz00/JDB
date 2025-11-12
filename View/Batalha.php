@@ -26,6 +26,7 @@ if (isset($_SESSION['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Batalha de Cartas</title>
     <link rel="stylesheet" href="../Assets/style.css">
+    <link rel="stylesheet" href="../Assets/batalha.css">
     <style>
         body.custom-bg {
             <?php if ($backgroundUrl): ?>
@@ -77,8 +78,8 @@ if (isset($_SESSION['id'])) {
             /* Animações simples */
             @keyframes hitShake { 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-3px)} 100%{transform:translateX(0)} }
             @keyframes punch { 0%{transform:translateX(0)} 50%{transform:translateX(12px) scale(1.05)} 100%{transform:translateX(0)} }
-            .shake { animation: hitShake .35s ease; }
-            .punch { animation: punch .35s ease; }
+            .shake { animation: hitShake .100s ease; }
+            .punch { animation: punch .100s ease; }
 
         #action-menu button {
             padding: 10px 20px;
@@ -119,7 +120,10 @@ if (isset($_SESSION['id'])) {
         <h2>1. Monte seu Deck (escolha até 3)</h2>
         <form id="deck-form">
             <div id="user-cards" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(160px,1fr));gap:12px"></div>
-            <div style="text-align:right;margin-top:10px"><button type="submit" style="padding:10px 18px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer">Confirmar Deck</button></div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;gap:10px">
+                <a href="Home.php" class="btn-voltar" id="voltar-step1">Voltar</a>
+                <div style="text-align:right"><button type="submit" class="btn-primary">Confirmar Deck</button></div>
+            </div>
         </form>
     </div>
 
@@ -127,7 +131,10 @@ if (isset($_SESSION['id'])) {
     <div id="enemy-select" style="display:none;max-width:980px;margin:20px auto;background:#fff;padding:15px;border:1px solid #333;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.15)">
         <h2>2. Progresso de Inimigos</h2>
         <p>Derrote o Inimigo 1 para desbloquear o 2, e assim por diante. As cartas deles são surpresa.</p>
-        <button id="generate-enemies">Ver Inimigos</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <button type="button" class="btn-voltar" id="voltar-to-step1">Voltar</button>
+            <button id="generate-enemies" class="btn-primary">Ver Inimigos</button>
+        </div>
         <div id="enemy-list" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(220px,1fr));gap:15px;margin-top:10px;"></div>
     </div>
 
@@ -161,9 +168,9 @@ if (isset($_SESSION['id'])) {
             <div id="message-box" style="margin-top:8px">Aguarde...</div>
             <div id="enemy-switcher" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;width:100%;padding:0 20px"></div>
             <div id="action-menu" style="margin-top:8px">
-                <button id="attack1-btn" disabled style="padding:10px 16px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer">Ataque 1</button>
-                <button id="attack2-btn" disabled style="padding:10px 16px;border-radius:6px;border:1px solid #333;background:#111;color:#fff;cursor:pointer">Ataque 2</button>
-                <button id="reset-battle" style="padding:10px 16px;border-radius:6px;border:1px solid #888;background:#fff;color:#111;cursor:pointer;margin-left:8px">Fugir</button>
+                <button id="attack1-btn" disabled class="btn-primary">Ataque 1</button>
+                <button id="attack2-btn" disabled class="btn-primary">Ataque 2</button>
+                <button id="reset-battle" class="btn-voltar" style="margin-left:8px">Fugir</button>
             </div>
         </div>
     </div>
@@ -174,14 +181,36 @@ if (isset($_SESSION['id'])) {
             <h3 id="end-title">Fim da Batalha</h3>
             <p id="end-sub">Resultado</p>
             <div class="cta">
-                <button id="play-again">Jogar Novamente</button>
-                <button id="back-to-select">Voltar à seleção de inimigos</button>
-                <a href="Loja.php">Ir para a Loja</a>
-                <a href="Home.php">Voltar ao Início</a>
+                <button id="play-again" class="btn-primary">Jogar Novamente</button>
+                <button id="back-to-select" class="btn-voltar">Voltar à seleção de inimigos</button>
+                <a href="Loja.php" class="btn-voltar">Ir para a Loja</a>
+                <a href="Home.php" class="btn-voltar">Voltar ao Início</a>
             </div>
         </div>
     </div>
 
     <script src="../Assets/js/battle.js"></script>
+    <script>
+    // Tornar o botão "Voltar" do passo 2 idempotente: volta para o passo 1 sem navegar
+    document.addEventListener('DOMContentLoaded', function(){
+        var backBtn = document.getElementById('voltar-to-step1');
+        if(backBtn){
+            backBtn.addEventListener('click', function(e){
+                e.preventDefault();
+                var deck = document.getElementById('deck-setup');
+                var enemy = document.getElementById('enemy-select');
+                if(deck && enemy){
+                    deck.style.display = 'block';
+                    enemy.style.display = 'none';
+                    // rolar suavemente para o passo 1
+                    setTimeout(function(){
+                        var y = deck.getBoundingClientRect().top + window.scrollY - 20;
+                        window.scrollTo({top: y, behavior: 'smooth'});
+                    }, 50);
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

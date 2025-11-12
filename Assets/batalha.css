@@ -1,0 +1,98 @@
+.btn-voltar{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:6px;
+    border:1px solid #888;
+    background:#fff;
+    color:#111;
+    text-decoration:none;
+    cursor:pointer;
+    font-family: inherit;
+}
+
+/* Botão primário (escuro) usado para ações principais) */
+.btn-primary{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:6px;
+    border:1px solid #333;
+    background:#111;
+    color:#fff;
+    text-decoration:none;
+    cursor:pointer;
+    font-family: inherit;
+}
+
+.btn-voltar:hover, .btn-primary:hover{
+    opacity:0.95;
+}
+
+.btn-primary:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+/* Ajustes gerais para a batalha */
+#battle-container{max-width:980px}
+#ui-overlay{padding:12px 14px}
+
+/* Responsividade */
+@media (max-width:600px){
+        #battle-container{margin:10px}
+        .btn-voltar{padding:6px 10px}
+        .btn-primary{padding:6px 10px}
+}
+
+/* Full-width helper similar to site CTA */
+.btn-block{display:block;width:100%;text-align:center}
+
+/* Estilos para lista de estágios */
+.battle-stage{background:#fff;box-shadow:0 4px 8px rgba(0,0,0,0.06);}
+.battle-stage .stage-thumbs img{width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #222}
+.battle-stage button{padding:8px 10px;border-radius:6px}
+
+/* Imagem representativa do inimigo (um por estágio) */
+.stage-enemy-wrap{display:flex;justify-content:center}
+.stage-enemy-img{width:120px;height:120px;object-fit:contain;border-radius:6px;border:2px solid rgba(0,0,0,0.12);background:transparent}
+
+/* Fundo da arena quando um inimigo é selecionado: imagem + overlay escuro para legibilidade */
+#battle-container{
+    background-position:center;
+    background-size:cover;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    /* garante espaço suficiente para visualizar o fundo em telas pequenas */
+    min-height:420px;
+    position:relative;
+}
+
+/* Caso precise de um overlay extra (já aplicamos gradient inline), esta classe pode complementar */
+.battle-bg-overlay::after{
+    content:'';
+    position:absolute;inset:0;
+    background:rgba(0,0,0,0.25);
+    pointer-events:none;
+}
+
+/* Quando a página estiver com o fundo do inimigo (classe aplicada ao body),
+   faça a arena ficar transparente e a UI ficar translúcida sobre o fundo */
+body.battle-bg #battle-container{
+    background: transparent !important;
+    border: 2px solid rgba(255,255,255,0.06);
+    box-shadow: none;
+}
+
+body.battle-bg #ui-overlay{
+    background-color: rgba(255,255,255,0.08) !important; /* quase translúcido */
+    color: #fff !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Ajustes adicionais para textos/vida/botões quando sobre fundo escuro */
+body.battle-bg #message-box, body.battle-bg #enemy-hud-name, body.battle-bg #enemy-hud-count{
+    color: #fff !important;
+}
+body.battle-bg .life-bar-container{ background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.12) !important }
+body.battle-bg .life-bar{ box-shadow:none }
+body.battle-bg #player-card-img{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12) }
+
