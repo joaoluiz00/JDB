@@ -27,8 +27,12 @@ if (isset($_SESSION['id'])) {
     <title>Home - JDB</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/card.css">
+    <link rel="stylesheet" href="../Assets/notificacoes.css">
+    <!-- jQuery DEVE ser carregado ANTES do widget -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body class="home-background">
     
@@ -47,10 +51,17 @@ if (isset($_SESSION['id'])) {
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <button class="theme-toggle" onclick="toggleTheme()">
-            <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
-            <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
-        </button>
+        <div class="ml-auto d-flex align-items-center">
+            <?php if (isset($_SESSION['id'])): ?>
+                <!-- Widget de Notificações -->
+                <?php include __DIR__ . '/components/NotificacoesWidget.php'; ?>
+            <?php endif; ?>
+            
+            <button class="theme-toggle ml-2" onclick="toggleTheme()">
+                <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
+                <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
+            </button>
+        </div>
     </nav>
 
     <!-- Conteúdo principal -->
@@ -112,9 +123,9 @@ if (isset($_SESSION['id'])) {
     </div>
 
     <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../Assets/script.js"></script>
+    <script src="../Assets/js/notificacoes.js"></script>
 </body>
 </html>

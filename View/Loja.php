@@ -12,9 +12,11 @@ if (!isset($_SESSION['id'])) {
 // Depois de verificar o login, carregue os controladores necessários
 require_once '../Controller/ControllerCartas.php';
 require_once '../Controller/ControllerUsuario.php';
+require_once '../Controller/ControllerAvaliacao.php';
 
 // Obtenha as informações do usuário usando o ControllerUsuario
 $userController = new ControllerUsuario();
+$controllerAvaliacao = new ControllerAvaliacao();
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
 
@@ -43,6 +45,44 @@ if ($showError) unset($_SESSION['error']);
     <link rel="stylesheet" href="../Assets/style.css">
     <link rel="stylesheet" href="../Assets/loja.css">
     <link rel="stylesheet" href="../Assets/gameboy-card.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../Assets/notificacoes.css">
+    <!-- jQuery DEVE ser carregado ANTES do widget -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        .rating-widget {
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .rating-stars {
+            color: #ffc107;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        .rating-info {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .btn-ver-avaliacoes {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            background: #007bff;
+            color: white;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn-ver-avaliacoes:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>        <div id="imageViewer" class="image-viewer">
             <span class="close">&times;</span>
@@ -62,6 +102,7 @@ if ($showError) unset($_SESSION['error']);
         </div>
         <div class="nav-right">
         <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>
+            <?php include __DIR__ . '/components/NotificacoesWidget.php'; ?>
             <button class="theme-toggle" onclick="toggleTheme()">
                 <img src="../Assets/img/modoescuro.PNG" alt="Alternar tema" class="theme-icon dark-icon">
                 <img src="../Assets/img/modoclaro.PNG" alt="Alternar tema" class="theme-icon light-icon">
@@ -95,7 +136,9 @@ if ($showError) unset($_SESSION['error']);
 
         <!-- Exibe as cartas disponíveis -->
         <div class="cards-grid">
-            <?php while ($carta = $cartas->fetch_assoc()): ?>
+            <?php while ($carta = $cartas->fetch_assoc()): 
+                $mediaInfo = $controllerAvaliacao->getMediaAvaliacoes('carta', $carta['id']);
+            ?>
                 <div class="gameboy-card">
                     <div class="gameboy-screen">
                         <img src="<?php echo $carta['path']; ?>" 
@@ -112,6 +155,35 @@ if ($showError) unset($_SESSION['error']);
                         <p>Crítico: <?php echo $carta['critico']; ?></p>
                         <p class="gameboy-price"> <?php echo $carta['preco']; ?> moedas</p>
                         <p class="gameboy-price"> R$ <?php echo number_format($carta['preco_dinheiro'], 2, ',', '.'); ?></p>
+                        
+                        <!-- Widget de Avaliações -->
+                        <?php if ($mediaInfo['total'] > 0): ?>
+                            <div class="rating-widget">
+                                <div class="rating-stars">
+                                    <?php 
+                                    $media = $mediaInfo['media'];
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        echo ($i <= round($media)) ? '★' : '☆';
+                                    }
+                                    ?>
+                                </div>
+                                <div class="rating-info">
+                                    <?php echo $mediaInfo['media']; ?> / 5.0 (<?php echo $mediaInfo['total']; ?> avaliações)
+                                </div>
+                                <a href="VisualizarAvaliacoes.php?tipo=carta&id=<?php echo $carta['id']; ?>" 
+                                   class="btn-ver-avaliacoes">
+                                    <i class="fas fa-comments"></i> Ver Avaliações
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="rating-widget">
+                                <div class="rating-info">Sem avaliações ainda</div>
+                                <a href="VisualizarAvaliacoes.php?tipo=carta&id=<?php echo $carta['id']; ?>" 
+                                   class="btn-ver-avaliacoes">
+                                    <i class="fas fa-star"></i> Seja o primeiro!
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="gameboy-buttons">
                         <form action="../Processamento/ProcessCartas.php" method="POST" onsubmit="return confirm('Tem certeza que deseja comprar esta carta com moedas do jogo?');">
@@ -139,5 +211,6 @@ if ($showError) unset($_SESSION['error']);
         </div>
     </div>
     <script src="../Assets/script.js"></script>
+    <script src="../Assets/js/notificacoes.js"></script>
 </body>
 </html>

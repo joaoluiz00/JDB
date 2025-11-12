@@ -6,6 +6,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 require_once '../Model/BancoDeDados.php';
+require_once '../Service/NotificationService.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idUsuario = $_SESSION['id'];
@@ -37,6 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Adicionar moedas ao usuário
     $db->addCoins($idUsuario, $quantidadeMoedas);
+
+    // NOTIFICAÇÃO: Compra de moedas realizada
+    $notificationService = NotificationService::getInstance();
+    $notificationService->notificarCompraMoedas(
+        $idUsuario,
+        $_SESSION['nome'] ?? 'Usuário',
+        $_SESSION['email'] ?? '',
+        $quantidadeMoedas,
+        $valorDinheiro
+    );
 
     $_SESSION['success'] = "Compra de moedas realizada com sucesso!";
     header("Location: ../View/Loja.php?success=1");

@@ -1,0 +1,372 @@
+/* ========================================
+   SISTEMA DE AVALIAÇÕES - CSS
+   ======================================== */
+
+/* Estrelas de Avaliação */
+.rating-stars {
+    display: inline-block;
+    font-size: 1.5rem;
+    color: #ffc107;
+    letter-spacing: 2px;
+}
+
+.rating-stars.small {
+    font-size: 1rem;
+}
+
+.rating-stars.large {
+    font-size: 2rem;
+}
+
+/* Cards de Avaliação */
+.avaliacao-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.avaliacao-card:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Informações do Usuário */
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 15px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Badges de Sentimento */
+.sentimento-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sentimento-POSITIVO {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.sentimento-NEGATIVO {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.sentimento-NEUTRO {
+    background: linear-gradient(135deg, #e2e3e5 0%, #d6d8db 100%);
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+/* Ícones de Sentimento */
+.sentimento-badge span.emoji {
+    font-size: 1.3rem;
+    margin-right: 5px;
+}
+
+/* Comentário */
+.comentario {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Imagens da Avaliação */
+.avaliacao-imagens {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.avaliacao-imagens img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid #e0e0e0;
+}
+
+.avaliacao-imagens img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-color: #667eea;
+}
+
+/* Resumo de Avaliações */
+.rating-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.rating-number {
+    font-size: 4.5rem;
+    font-weight: bold;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stars-display {
+    color: #ffc107;
+    font-size: 2rem;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    letter-spacing: 3px;
+}
+
+/* Resumo IA */
+.resumo-ia {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 5px solid #667eea;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.resumo-ia-title {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.resumo-ia-title i {
+    font-size: 1.5rem;
+}
+
+/* Mensagem sem avaliações */
+.no-avaliacoes {
+    text-align: center;
+    padding: 80px 20px;
+    color: #999;
+}
+
+.no-avaliacoes i {
+    font-size: 6rem;
+    margin-bottom: 30px;
+    color: #ddd;
+}
+
+.no-avaliacoes h4 {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Botões */
+.btn-avaliar,
+.btn-ver-avaliacoes {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-avaliar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-ver-avaliacoes:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Widget de Avaliação */
+.rating-widget {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.rating-widget .rating-stars {
+    color: #ffc107;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.rating-widget .rating-info {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+/* Formulário de Avaliação */
+.star.active {
+    color: #ffc107 !important;
+}
+
+.star:hover {
+    color: #ffc107 !important;
+}
+
+.preview-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.preview-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-item .remove-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.preview-item .remove-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+/* Distribuição de Notas */
+.progress {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .rating-summary {
+        padding: 25px;
+    }
+
+    .rating-number {
+        font-size: 3rem;
+    }
+
+    .stars-display {
+        font-size: 1.5rem;
+    }
+
+    .avaliacao-card {
+        padding: 15px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .avaliacao-imagens img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .resumo-ia {
+        padding: 15px;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.avaliacao-card {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .avaliacao-card {
+        background: #2d2d2d;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    .comentario {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .rating-widget {
+        background: rgba(45, 45, 45, 0.95);
+        border-color: #444;
+    }
+
+    .rating-widget .rating-info {
+        color: #aaa;
+    }
+}

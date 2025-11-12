@@ -1,0 +1,2 @@
+[2025-11-12 03:42:02] EVENTO: COMPRA_REALIZADA | USUÁRIO: Gustavo (ID: 1) | DADOS: {"id_usuario":1,"nome_usuario":"Gustavo","email_usuario":"gu@gmail.com","tipo_item":"carta","id_item":2,"nome_item":"Spider-Aranha","valor":50}
+----------------------------------------------------------------------------------------------------

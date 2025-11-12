@@ -9,6 +9,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 require_once '../Model/BancoDeDados.php';
+require_once '../Service/NotificationService.php';
 
 // Definir o ID do usuário logo no início do script
 $idUsuario = $_SESSION['id'];
@@ -43,6 +44,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'comprar_moedas') {
         ));
 
     if ($resultado) {
+            // NOTIFICAÇÃO: Pacote aberto
+            $notificationService = NotificationService::getInstance();
+            $notificationService->notificarPacoteAberto(
+                $idUsuario,
+                $_SESSION['nome'] ?? 'Usuário',
+                'Pacote de Cartas',
+                [] // Array vazio, você pode adicionar as cartas recebidas aqui
+            );
+            
             $_SESSION['success'] = "Pacote comprado com sucesso! Uma carta foi adicionada ao seu inventário.";
             header("Location: ../View/LojaPacote.php?success=1");
         } else {

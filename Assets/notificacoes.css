@@ -1,0 +1,319 @@
+/* ===================================
+   Sistema de Notificações - Estilos
+   =================================== */
+
+/* Card de Notificação */
+.notificacao-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border-left: 4px solid #007bff;
+}
+
+.notificacao-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateX(5px);
+}
+
+.notificacao-card.nao-lida {
+    background: linear-gradient(to right, #f0f8ff, white);
+    border-left: 4px solid #007bff;
+    font-weight: 500;
+}
+
+/* Ícone da Notificação */
+.notificacao-icone {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Conteúdo da Notificação */
+.notificacao-conteudo {
+    flex: 1;
+}
+
+.notificacao-titulo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.notificacao-mensagem {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+/* Footer da Notificação */
+.notificacao-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.notificacao-acoes {
+    display: flex;
+    gap: 8px;
+}
+
+/* Tipos de Notificação - Cores */
+.notif-compra {
+    border-left-color: #28a745;
+}
+
+.notif-batalha {
+    border-left-color: #ff6b6b;
+}
+
+.notif-conquista {
+    border-left-color: #9c27b0;
+}
+
+.notif-sistema {
+    border-left-color: #007bff;
+}
+
+.notif-aviso {
+    border-left-color: #ff5722;
+}
+
+.notif-presente {
+    border-left-color: #ff9800;
+}
+
+.notif-default {
+    border-left-color: #6c757d;
+}
+
+/* Badge "Nova" */
+.badge-primary {
+    background-color: #007bff;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+/* Botões de Ação */
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-danger:hover {
+    transform: scale(1.05);
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notificacao-card {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Estado de carregamento */
+.notificacao-loading {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+}
+
+.notificacao-loading i {
+    font-size: 2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Vazio */
+.notificacao-vazio {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.notificacao-vazio i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .notificacao-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .notificacao-icone {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .notificacao-footer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .notificacao-acoes {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ===================================
+   Widget de Notificações (Dropdown)
+   =================================== */
+
+.notificacoes-dropdown {
+    position: relative;
+}
+
+.notificacoes-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.notificacoes-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    max-height: 500px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin-top: 10px;
+    display: none;
+    z-index: 1000;
+}
+
+.notificacoes-menu.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notificacoes-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notificacoes-body {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notificacoes-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notificacoes-item:hover {
+    background: #f8f9fa;
+}
+
+.notificacoes-item.nao-lida {
+    background: #e3f2fd;
+}
+
+.notificacoes-footer {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.notificacoes-footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.notificacoes-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Scrollbar customizada */
+.notificacoes-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notificacoes-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.notificacoes-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.notificacoes-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

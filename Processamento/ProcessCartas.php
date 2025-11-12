@@ -2,6 +2,7 @@
 require_once "../Controller/ControllerCartas.php";
 require_once "../Controller/ControllerUsuario.php";
 require_once "../Model/BancoDeDados.php";
+require_once "../Service/NotificationService.php";
 
 // Inicie a sessão antes de qualquer operação
 session_start();
@@ -36,6 +37,31 @@ if (isset($_POST['action']) && $_POST['action'] === 'comprar_moedas') {
                 $stmtHist->bind_param("iid", $idUsuario, $idCarta, $preco);
                 $stmtHist->execute();
                 $stmtHist->close();
+
+                // NOTIFICAÇÃO: Compra de carta com moedas
+                // Busca nome da carta diretamente do banco
+                $sqlCarta = "SELECT nome FROM cartas WHERE id = ?";
+                $stmtCarta = $conn->prepare($sqlCarta);
+                $stmtCarta->bind_param("i", $idCarta);
+                $stmtCarta->execute();
+                $stmtCarta->bind_result($nomeCarta);
+                $stmtCarta->fetch();
+                $stmtCarta->close();
+                
+                if (!$nomeCarta) {
+                    $nomeCarta = 'Carta';
+                }
+                
+                $notificationService = NotificationService::getInstance();
+                $notificationService->notificarCompra(
+                    $idUsuario,
+                    $_SESSION['nome'] ?? 'Usuário',
+                    $_SESSION['email'] ?? '',
+                    'carta',
+                    $idCarta,
+                    $nomeCarta,
+                    $preco
+                );
 
                 $_SESSION['success'] = "Compra realizada com sucesso!";
                 header("Location: ../View/Loja.php?success=1");

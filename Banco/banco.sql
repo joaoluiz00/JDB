@@ -821,6 +821,161 @@ ALTER TABLE `pedidos`
 --
 ALTER TABLE `pedido_itens`
   ADD CONSTRAINT `pedido_itens_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `avaliacoes`
+--
+
+CREATE TABLE `avaliacoes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `tipo_item` enum('carta','pacote','icone','papel_fundo') NOT NULL,
+  `id_item` int(11) NOT NULL,
+  `nota` int(11) NOT NULL CHECK (`nota` >= 1 AND `nota` <= 5),
+  `comentario` text NOT NULL,
+  `sentimento` enum('POSITIVO','NEGATIVO','NEUTRO') DEFAULT 'NEUTRO',
+  `data_avaliacao` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_usuario` (`id_usuario`),
+  KEY `idx_item` (`tipo_item`, `id_item`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `avaliacoes_imagens`
+--
+
+CREATE TABLE `avaliacoes_imagens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_avaliacao` int(11) NOT NULL,
+  `path_imagem` varchar(255) NOT NULL,
+  `data_upload` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_avaliacao` (`id_avaliacao`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Limitadores para a tabela `avaliacoes`
+--
+ALTER TABLE `avaliacoes`
+  ADD CONSTRAINT `avaliacoes_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE;
+
+--
+-- Limitadores para a tabela `avaliacoes_imagens`
+--
+ALTER TABLE `avaliacoes_imagens`
+  ADD CONSTRAINT `avaliacoes_imagens_ibfk_1` FOREIGN KEY (`id_avaliacao`) REFERENCES `avaliacoes` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `notificacoes`
+-- Sistema de Notificações com Padrão Observer
+--
+
+CREATE TABLE `notificacoes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) NOT NULL,
+  `tipo` varchar(50) NOT NULL COMMENT 'compra, batalha, conquista, presente, sistema, aviso',
+  `titulo` varchar(200) NOT NULL,
+  `mensagem` text NOT NULL,
+  `lida` tinyint(1) DEFAULT 0,
+  `icone` varchar(50) DEFAULT 'bell' COMMENT 'Ícone do Font Awesome',
+  `cor_fundo` varchar(20) DEFAULT '#007bff' COMMENT 'Cor de fundo do ícone',
+  `link` varchar(500) DEFAULT NULL COMMENT 'Link para ação relacionada',
+  `data_hora` datetime DEFAULT current_timestamp(),
+  `dados_extra` text DEFAULT NULL COMMENT 'JSON com dados adicionais',
+  PRIMARY KEY (`id`),
+  KEY `idx_usuario` (`id_usuario`),
+  KEY `idx_lida` (`lida`),
+  KEY `idx_tipo` (`tipo`),
+  KEY `idx_data` (`data_hora`),
+  KEY `idx_usuario_lida` (`id_usuario`, `lida`, `data_hora`),
+  KEY `idx_usuario_tipo` (`id_usuario`, `tipo`, `data_hora`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tabela de notificações do sistema usando padrão Observer';
+
+--
+-- Limitadores para a tabela `notificacoes`
+--
+ALTER TABLE `notificacoes`
+  ADD CONSTRAINT `fk_notificacoes_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------
+
+--
+-- View para Estatísticas de Notificações
+--
+
+CREATE OR REPLACE VIEW `vw_estatisticas_notificacoes` AS
+SELECT 
+    u.id as id_usuario,
+    u.nome as nome_usuario,
+    COUNT(n.id) as total_notificacoes,
+    SUM(CASE WHEN n.lida = 0 THEN 1 ELSE 0 END) as nao_lidas,
+    SUM(CASE WHEN n.lida = 1 THEN 1 ELSE 0 END) as lidas,
+    COUNT(DISTINCT n.tipo) as tipos_diferentes,
+    MAX(n.data_hora) as ultima_notificacao
+FROM usuario u
+LEFT JOIN notificacoes n ON u.id = n.id_usuario
+GROUP BY u.id, u.nome;
+
+-- --------------------------------------------------------
+
+--
+-- Procedure para Limpar Notificações Antigas
+--
+
+DELIMITER //
+
+CREATE PROCEDURE IF NOT EXISTS `limpar_notificacoes_antigas`(IN dias INT)
+BEGIN
+    DELETE FROM notificacoes 
+    WHERE data_hora < DATE_SUB(NOW(), INTERVAL dias DAY);
+    
+    SELECT ROW_COUNT() as notificacoes_deletadas;
+END //
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Trigger para Limitar Quantidade de Notificações por Usuário
+--
+
+DELIMITER //
+
+CREATE TRIGGER IF NOT EXISTS `trg_limitar_notificacoes`
+AFTER INSERT ON `notificacoes`
+FOR EACH ROW
+BEGIN
+    DECLARE total_notif INT;
+    
+    -- Conta notificações do usuário
+    SELECT COUNT(*) INTO total_notif
+    FROM notificacoes
+    WHERE id_usuario = NEW.id_usuario;
+    
+    -- Se passar de 100, deleta as mais antigas
+    IF total_notif > 100 THEN
+        DELETE FROM notificacoes
+        WHERE id_usuario = NEW.id_usuario
+        AND id NOT IN (
+            SELECT id FROM (
+                SELECT id FROM notificacoes
+                WHERE id_usuario = NEW.id_usuario
+                ORDER BY data_hora DESC
+                LIMIT 100
+            ) AS subquery
+        );
+    END IF;
+END //
+
+DELIMITER ;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
