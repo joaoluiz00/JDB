@@ -14,7 +14,7 @@
 class SentimentAnalysisService {
     
     // CONFIGURAÇÃO: Insira sua chave API do Google Gemini aqui
-    private const GEMINI_API_KEY = 'AIzaSyDQ3ITZjpbFV6wMqcGfL1vGWxfO36XZm5E';
+    private const GEMINI_API_KEY = 'Chave_api_aqui';
     private const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
     
     /**
@@ -29,7 +29,7 @@ class SentimentAnalysisService {
         }
 
         // Verifica se a API está configurada
-        if (self::GEMINI_API_KEY === 'AIzaSyDQ3ITZjpbFV6wMqcGfL1vGWxfO36XZm5E') {
+        if (self::GEMINI_API_KEY === 'Chave_api_aqui') {
             // Fallback: análise simples baseada em palavras-chave
             return $this->analisarSentimentoSimples($comentario);
         }
@@ -71,7 +71,7 @@ class SentimentAnalysisService {
         }
 
         // Verifica se a API está configurada
-        if (self::GEMINI_API_KEY === 'AIzaSyDQ3ITZjpbFV6wMqcGfL1vGWxfO36XZm5E') {
+        if (self::GEMINI_API_KEY === 'Chave_api_aqui') {
             return $this->gerarResumoSimples($comentarios);
         }
 
@@ -209,6 +209,6 @@ class SentimentAnalysisService {
      * @return bool
      */
     public static function isApiConfigurada() {
-        return self::GEMINI_API_KEY !== 'AIzaSyDQ3ITZjpbFV6wMqcGfL1vGWxfO36XZm5E';
+        return self::GEMINI_API_KEY !== 'Chave_api_aqui';
     }
 }
