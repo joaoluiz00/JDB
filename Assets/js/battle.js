@@ -34,7 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateLifeBar(el, current, total) {
         const pct = Math.max(0, (current/total)*100);
         el.style.width = pct + '%';
-        el.style.backgroundColor = pct < 20 ? 'red' : (pct < 50 ? 'orange' : 'green');
+        
+        // Aplica classes para animação de baixa vida
+        if (pct < 20) {
+            el.classList.add('low');
+            el.style.backgroundColor = '';
+        } else {
+            el.classList.remove('low');
+            el.style.backgroundColor = '';
+        }
     }
 
     async function fetchUserCards() {
@@ -53,14 +61,52 @@ document.addEventListener('DOMContentLoaded', () => {
             wrap.style.width = '100%';
             wrap.style.display = 'flex';
             wrap.style.flexDirection = 'column';
-            wrap.style.border = '1px solid #ccc';
-            wrap.style.padding = '4px';
+            wrap.style.border = '3px solid #ddd';
+            wrap.style.borderRadius = '8px';
+            wrap.style.padding = '8px';
             wrap.style.fontSize = '12px';
-            wrap.innerHTML = `
-                <input type="checkbox" name="cards[]" value="${c.id_carta}" />
-                <img src="${c.path}" style="width:100%;height:140px;object-fit:contain;background:#f9fafb" />
-                <span style="padding:4px 0">${c.nome}</span>
-            `;
+            wrap.style.cursor = 'pointer';
+            wrap.style.transition = 'all 0.3s ease';
+            wrap.style.background = '#fff';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'cards[]';
+            checkbox.value = c.id_carta;
+            
+            // Add event listener para melhorar visual ao selecionar
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    wrap.style.borderColor = '#3498db';
+                    wrap.style.boxShadow = '0 6px 16px rgba(52, 152, 219, 0.3)';
+                    wrap.style.transform = 'translateY(-4px)';
+                } else {
+                    wrap.style.borderColor = '#ddd';
+                    wrap.style.boxShadow = 'none';
+                    wrap.style.transform = 'translateY(0)';
+                }
+            });
+            
+            wrap.appendChild(checkbox);
+            
+            const img = document.createElement('img');
+            img.src = c.path;
+            img.style.width = '100%';
+            img.style.height = '140px';
+            img.style.objectFit = 'contain';
+            img.style.background = '#f9fafb';
+            img.style.borderRadius = '4px';
+            img.style.marginBottom = '4px';
+            wrap.appendChild(img);
+            
+            const label = document.createElement('span');
+            label.style.padding = '6px 0';
+            label.style.fontWeight = '600';
+            label.style.color = '#2c3e50';
+            label.style.textAlign = 'center';
+            label.textContent = c.nome;
+            wrap.appendChild(label);
+            
             userCardsDiv.appendChild(wrap);
         });
     }
@@ -70,7 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const fd = new FormData(deckForm);
         const chosen = fd.getAll('cards[]');
-        if (chosen.length === 0 || chosen.length > 3) { alert('Selecione entre 1 e 3 cartas.'); return; }
+        if (chosen.length === 0 || chosen.length > 3) { 
+            alert('Selecione entre 1 e 3 cartas.');
+            return; 
+        }
         const send = new FormData();
         send.append('action','setupDeck');
         chosen.forEach(id => send.append('cards[]', id));
@@ -80,7 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
             battleState = data.battleState;
             deckSetupDiv.style.display='none';
             enemySelectDiv.style.display='block';
-            messageBox.textContent = 'Deck configurado. Gere inimigos.';
+            messageBox.textContent = 'Deck configurado! Escolha seu inimigo.';
+            // Scroll suave para a próxima seção
+            setTimeout(() => {
+                enemySelectDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         } else {
             alert(data.message);
         }
@@ -99,46 +152,45 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i=0;i<3;i++){
             const stage = document.createElement('div');
             stage.className = 'battle-stage';
-            stage.style.border='1px solid #666';
-            stage.style.padding='10px';
-            stage.style.borderRadius='6px';
-            stage.style.textAlign='center';
             const locked = i>progress;
-            const title = document.createElement('div');
-            title.style.fontWeight = 600; title.style.marginBottom = '6px';
+            if (locked) stage.classList.add('locked');
+            
+            const title = document.createElement('h3');
             title.textContent = `Inimigo ${i+1}`;
-            const status = document.createElement('div');
-            status.style.opacity = '.85'; status.style.marginBottom = '6px';
-            status.textContent = locked ? 'Bloqueado' : 'Disponível';
             stage.appendChild(title);
+            
+            const status = document.createElement('div');
+            status.className = 'stage-status';
+            status.textContent = locked ? 'Bloqueado' : 'Disponível';
             stage.appendChild(status);
 
             // Imagem representativa do inimigo para este estágio (um por estágio)
             const enemyImgWrap = document.createElement('div');
             enemyImgWrap.className = 'stage-enemy-wrap';
-            enemyImgWrap.style.marginBottom = '8px';
             const enemyImg = document.createElement('img');
-            // caminho fixo por estágio; coloque suas imagens em Assets/img/enemies/enemy1.png etc.
             enemyImg.src = `../Assets/img/inimigo${i+1}.png`;
             enemyImg.alt = `Inimigo ${i+1}`;
             enemyImg.className = 'stage-enemy-img';
             enemyImgWrap.appendChild(enemyImg);
             stage.appendChild(enemyImgWrap);
 
-            // Não exibir miniaturas das cartas inimigas (apenas a imagem representativa do estágio)
-            // thumbs removido por opção do usuário
-
             const btn = document.createElement('button');
-            // Use classes to match site theme
             btn.className = 'btn-primary btn-block';
             btn.textContent = 'Enfrentar';
-            if (locked) { btn.disabled = true; }
-            else { btn.addEventListener('click', ()=> chooseStage(i)); }
+            if (locked) { 
+                btn.disabled = true;
+                btn.textContent = 'Bloqueado';
+            }
+            else { 
+                btn.addEventListener('click', ()=> {
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Carregando...';
+                    chooseStage(i);
+                }); 
+            }
             stage.appendChild(btn);
 
             enemyListDiv.appendChild(stage);
-
-            // Não buscar nem exibir previews das cartas inimigas conforme solicitado
         }
     }
 
@@ -163,47 +215,44 @@ document.addEventListener('DOMContentLoaded', () => {
         battleState.enemyActiveIndex = 0;
         // guarda o estágio atual para definir o fundo da arena
         currentStage = stage;
-        launchBattleUI();
+        messageBox.textContent = 'Preparando batalha...';
+        setTimeout(launchBattleUI, 500);
     }
 
     // Mostra a arena de batalha e inicializa botões/vida/hud
     function launchBattleUI(){
         enemySelectDiv.style.display='none';
         battleContainer.style.display='block';
-        // aplica a imagem como BACKGROUND DA PÁGINA (body) para que seja o fundo real
-        if (typeof currentStage === 'number'){
-            const imgPath = `../Assets/img/inimigo${currentStage+1}.png`;
-            document.body.classList.add('battle-bg');
-            // gradient + imagem para garantir overlay escuro
-            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${imgPath}')`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
-            document.body.style.backgroundRepeat = 'no-repeat';
-            document.body.style.backgroundAttachment = 'fixed';
-        } else {
-            document.body.classList.remove('battle-bg');
-            document.body.style.backgroundImage = '';
-            document.body.style.backgroundSize = '';
-            document.body.style.backgroundPosition = '';
-            document.body.style.backgroundRepeat = '';
-            document.body.style.backgroundAttachment = '';
-        }
+        
         refreshVisual();
         messageBox.textContent='Batalha iniciada! Seu turno.';
         attack1Btn.disabled=false; attack2Btn.disabled=false;
         refreshBalance();
+        
+        // Scroll suave para a arena
+        setTimeout(() => {
+            battleContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
 
     // Atualiza imagens, barras de vida, HUD do inimigo e switchers
     function refreshVisual(){
         const active = battleState.deck[battleState.activeIndex];
         const eActive = battleState.enemyDeck[battleState.enemyActiveIndex];
-    playerCardImg.src = active.card.path;
-    opponentCardImg.src = eActive.card.path;
-    if (enemyHudName) enemyHudName.textContent = eActive.card.nome || '';
-    if (enemyHudCount) enemyHudCount.textContent = `Carta ${battleState.enemyActiveIndex+1} de ${battleState.enemyDeck.length}`;
-        attack1Btn.textContent = active.card.ataque1 || 'Ataque 1';
-        attack2Btn.textContent = active.card.ataque2 || 'Ataque 2';
+        
+        // Aplica efeito visual na carta ativa
+        playerCardImg.classList.add('active-card');
+        playerCardImg.src = active.card.path;
+        
+        opponentCardImg.classList.add('active-card');
+        opponentCardImg.src = eActive.card.path;
+        
+        if (enemyHudName) enemyHudName.textContent = eActive.card.nome || '';
+        if (enemyHudCount) enemyHudCount.textContent = `Carta ${battleState.enemyActiveIndex+1} de ${battleState.enemyDeck.length}`;
+        
+        attack1Btn.textContent = (active.card.ataque1 || 'Ataque 1');
+        attack2Btn.textContent = (active.card.ataque2 || 'Ataque 2');
+        
         updateLifeBar(playerLifeBar, active.hp, active.card.vida);
         updateLifeBar(opponentLifeBar, eActive.hp, eActive.card.vida);
         renderSwitcher();
@@ -214,7 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
         switcherDiv.innerHTML='';
         battleState.deck.forEach((c,i)=>{
             const btn=document.createElement('button');
-            btn.textContent = (i===battleState.activeIndex?'* ':'') + c.card.nome + ' ('+c.hp+')';
+            btn.textContent = (i===battleState.activeIndex?'★ ':'') + c.card.nome + ' ('+c.hp+')';
+            if (i===battleState.activeIndex) btn.classList.add('active');
             btn.disabled = c.hp<=0 || i===battleState.activeIndex;
             btn.addEventListener('click',()=>switchCard(i));
             switcherDiv.appendChild(btn);
@@ -226,7 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
         enemySwitcherDiv.innerHTML='';
         battleState.enemyDeck.forEach((c,i)=>{
             const b=document.createElement('button');
-            b.textContent = (i===battleState.enemyActiveIndex?'* ':'') + c.card.nome + ' ('+c.hp+')';
+            b.textContent = (i===battleState.enemyActiveIndex?'★ ':'') + c.card.nome + ' ('+c.hp+')';
+            if (i===battleState.enemyActiveIndex) b.classList.add('active');
             b.disabled = true; // Apenas visual; não permite forçar troca do inimigo
             enemySwitcherDiv.appendChild(b);
         });
@@ -236,7 +287,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const fd = new FormData(); fd.append('action','switch'); fd.append('index', i);
         const res = await fetch('../Controller/BatalhaController.php', {method:'POST', body:fd});
         const data = await res.json();
-        if (data.success){ battleState = data.battleState; refreshVisual(); messageBox.textContent=data.message; } else { alert(data.message); }
+        if (data.success){ 
+            battleState = data.battleState; 
+            refreshVisual(); 
+            messageBox.textContent='Troca realizada.';
+            
+            // Animação de troca
+            playerCardImg.classList.remove('active-card');
+            void playerCardImg.offsetWidth;
+            playerCardImg.classList.add('active-card');
+        } else { 
+            alert('❌ ' + data.message); 
+        }
     }
 
     // Ciclo de turno: jogador ataca, anima; se não finalizar, inimigo ataca após pequeno atraso
@@ -282,10 +344,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mostra modal de fim de batalha com texto e recompensa (se houver)
     function showEndModal(data){
         const won = battleState.winner === 'player';
-        endTitle.textContent = won ? 'Vitória!' : 'Derrota';
+        endTitle.textContent = won ? '🏆 Vitória!' : '💀 Derrota';
         const reward = data && typeof data.reward !== 'undefined' ? parseInt(data.reward,10) : 0;
-        endSub.textContent = won ? `Você ganhou ${reward} moedas.` : 'Tente novamente para ganhar moedas!';
-        endModal.style.display = 'flex';
+        
+        // Aplica classe para estilizar diferente se ganhou ou perdeu
+        endModal.classList.remove('victory', 'defeat');
+        if (won) {
+            endModal.classList.add('victory');
+            endSub.textContent = `🎉 Parabéns! Você ganhou ${reward} moedas!`;
+        } else {
+            endModal.classList.add('defeat');
+            endSub.textContent = '😢 Tente novamente para ganhar moedas!';
+        }
+        
+        endModal.classList.add('show');
     }
 
     playAgainBtn?.addEventListener('click', async ()=>{
@@ -293,10 +365,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (data.success){
             battleState = data.battleState;
-            endModal.style.display = 'none';
-            attack1Btn.disabled=false; attack2Btn.disabled=false;
+            endModal.classList.remove('show');
+            attack1Btn.disabled=false; 
+            attack2Btn.disabled=false;
             refreshVisual();
-            messageBox.textContent = 'Nova batalha iniciada!';
+            messageBox.textContent = '🔄 Nova batalha iniciada!';
+            
+            // Scroll suave para a arena
+            setTimeout(() => {
+                battleContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
     });
 
@@ -306,17 +384,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (data.success){
             battleState = data.battleState;
-            endModal.style.display = 'none';
+            endModal.classList.remove('show');
             battleContainer.style.display='none';
             // limpa background ao voltar à seleção
             currentStage = null;
             battleContainer.style.backgroundImage = '';
+            document.body.classList.remove('battle-bg');
             enemySelectDiv.style.display='block';
             // Recarrega as opções de estágio com progresso mais recente, se houver
             renderStages();
-            messageBox.textContent = data.message || 'Escolha um inimigo para enfrentar.';
+            messageBox.textContent = data.message || '👀 Escolha um inimigo para enfrentar.';
+            
+            // Scroll suave
+            setTimeout(() => {
+                enemySelectDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         } else {
-            alert(data.message || 'Não foi possível voltar à seleção.');
+            alert('❌ ' + (data.message || 'Não foi possível voltar à seleção.'));
         }
     });
 

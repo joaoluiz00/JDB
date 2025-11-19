@@ -1,59 +1,175 @@
+/* Botões estilo Pokémon */
 .btn-voltar{
     display:inline-block;
-    padding:8px 14px;
+    padding:6px 10px;
     border-radius:6px;
-    border:1px solid #888;
-    background:#fff;
+    border:1px solid #666;
+    background:linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
     color:#111;
     text-decoration:none;
     cursor:pointer;
     font-family: inherit;
+    font-weight: 600;
+    font-size: 11px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
 }
 
-/* Botão primário (escuro) usado para ações principais) */
+.btn-voltar:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.btn-voltar:active{
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Botão primário (estilo Pokémon vibrante) */
 .btn-primary{
     display:inline-block;
-    padding:8px 14px;
+    padding:6px 10px;
     border-radius:6px;
-    border:1px solid #333;
-    background:#111;
+    border:2px solid #2c3e50;
+    background:linear-gradient(135deg, #3498db 0%, #2980b9 100%);
     color:#fff;
     text-decoration:none;
     cursor:pointer;
     font-family: inherit;
+    font-weight: 700;
+    font-size: 11px;
+    box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4);
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
-.btn-voltar:hover, .btn-primary:hover{
-    opacity:0.95;
+.btn-primary:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(52, 152, 219, 0.6);
+    background:linear-gradient(135deg, #5dade2 0%, #2980b9 100%);
+}
+
+.btn-primary:active{
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.4);
 }
 
 .btn-primary:disabled{
     opacity:0.5;
     cursor:not-allowed;
+    transform: none;
+}
+
+/* Quando batalha está ativa, remove scroll da page */
+body:has(#battle-container[style*="display: block"]) {
+    overflow: hidden;
+    height: 100vh;
 }
 
 /* Ajustes gerais para a batalha */
-#battle-container{max-width:980px}
-#ui-overlay{padding:12px 14px}
+#battle-container{
+    max-width:900px;
+    background: linear-gradient(135deg, rgba(44,62,80,0.95) 0%, rgba(52,73,94,0.95) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+#ui-overlay{
+    padding:10px 12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.85) 100%);
+    border-top: 2px solid rgba(255,215,0,0.6);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+}
+
+#message-box{
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+    padding: 6px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 4px;
+    border-left: 3px solid #ffd700;
+}
 
 /* Responsividade */
 @media (max-width:600px){
-        #battle-container{margin:10px}
-        .btn-voltar{padding:6px 10px}
-        .btn-primary{padding:6px 10px}
+    #battle-container{margin:5px}
+    .btn-voltar, .btn-primary{padding:5px 8px; font-size:10px}
+    #ui-overlay{padding:8px 10px}
+    #battle-stage{min-height:250px}
 }
 
 /* Full-width helper similar to site CTA */
 .btn-block{display:block;width:100%;text-align:center}
 
-/* Estilos para lista de estágios */
-.battle-stage{background:#fff;box-shadow:0 4px 8px rgba(0,0,0,0.06);}
-.battle-stage .stage-thumbs img{width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #222}
-.battle-stage button{padding:8px 10px;border-radius:6px}
+/* Estilos para lista de estágios - estilo Pokémon arena cards */
+.battle-stage{
+    background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-/* Imagem representativa do inimigo (um por estágio) */
-.stage-enemy-wrap{display:flex;justify-content:center}
-.stage-enemy-img{width:120px;height:120px;object-fit:contain;border-radius:6px;border:2px solid rgba(0,0,0,0.12);background:transparent}
+.battle-stage:hover:not(.locked){
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border-color: #3498db;
+}
+
+.battle-stage.locked{
+    opacity: 0.6;
+    background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+}
+
+.battle-stage h3{
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.battle-stage .stage-status{
+    font-size: 10px;
+    color: #7f8c8d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+
+.battle-stage .stage-thumbs img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:6px;
+    border:1px solid #222;
+}
+
+/* Imagem representativa do inimigo (um por estágio) - estilo Pokémon */
+.stage-enemy-wrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom:12px;
+    perspective: 1000px;
+}
+
+.stage-enemy-img{
+    width:100px;
+    height:100px;
+    object-fit:contain;
+    border-radius:10px;
+    border:3px solid rgba(52, 152, 219, 0.6);
+    background:linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.stage-enemy-img:hover{
+    transform: scale(1.08) rotateZ(-2deg);
+}
 
 /* Fundo da arena quando um inimigo é selecionado: imagem + overlay escuro para legibilidade */
 #battle-container{
@@ -62,8 +178,51 @@
     background-repeat:no-repeat;
     background-attachment:fixed;
     /* garante espaço suficiente para visualizar o fundo em telas pequenas */
-    min-height:420px;
+    min-height:480px;
     position:relative;
+}
+
+/* Barras de vida estilo Pokémon */
+.life-bar-container{
+    width:130px;
+    height:14px;
+    border:1px solid #2c3e50;
+    background: linear-gradient(90deg, #34495e 0%, #2c3e50 100%);
+    border-radius:6px;
+    overflow:hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.life-bar-container::before{
+    content:'';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+
+.life-bar{
+    height:100%;
+    width:100%;
+    background:linear-gradient(90deg, #2ecc71 0%, #27ae60 50%, #229954 100%);
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.6), inset 0 1px 2px rgba(255,255,255,0.3);
+    border-radius: 6px;
+}
+
+.life-bar.low{
+    background:linear-gradient(90deg, #e74c3c 0%, #c0392b 50%, #a93226 100%);
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.8), inset 0 1px 2px rgba(255,255,255,0.3);
+    animation: pulse-low 0.5s infinite;
+}
+
+@keyframes pulse-low{
+    0%, 100%{box-shadow: 0 0 10px rgba(231, 76, 60, 0.8), inset 0 1px 2px rgba(255,255,255,0.3);}
+    50%{box-shadow: 0 0 20px rgba(231, 76, 60, 1), inset 0 1px 2px rgba(255,255,255,0.3);}
 }
 
 /* Caso precise de um overlay extra (já aplicamos gradient inline), esta classe pode complementar */
@@ -78,21 +237,333 @@
    faça a arena ficar transparente e a UI ficar translúcida sobre o fundo */
 body.battle-bg #battle-container{
     background: transparent !important;
-    border: 2px solid rgba(255,255,255,0.06);
-    box-shadow: none;
+    border: 3px solid rgba(255,215,0,0.3);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    min-height: 560px;
 }
 
 body.battle-bg #ui-overlay{
-    background-color: rgba(255,255,255,0.08) !important; /* quase translúcido */
+    background-color: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%) !important;
     color: #fff !important;
-    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    border-top: 3px solid rgba(255,215,0,0.6) !important;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.6) !important;
+}
+
+/* Enemy HUD estilo Pokémon */
+#enemy-hud{
+    background: linear-gradient(135deg, rgba(44,62,80,0.95) 0%, rgba(52,73,94,0.95) 100%) !important;
+    border: 2px solid rgba(255,215,0,0.5) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+    backdrop-filter: blur(8px);
+}
+
+body.battle-bg #enemy-hud{
+    box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+#enemy-hud-img{
+    border: 2px solid rgba(255,215,0,0.6) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.1) 100%) !important;
+}
+
+#enemy-hud-name{
+    color: #ffd700 !important;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important;
+    font-weight: 700 !important;
+}
+
+#enemy-hud-count{
+    color: rgba(255,255,255,0.8) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6) !important;
 }
 
 /* Ajustes adicionais para textos/vida/botões quando sobre fundo escuro */
 body.battle-bg #message-box, body.battle-bg #enemy-hud-name, body.battle-bg #enemy-hud-count{
     color: #fff !important;
 }
-body.battle-bg .life-bar-container{ background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.12) !important }
-body.battle-bg .life-bar{ box-shadow:none }
-body.battle-bg #player-card-img{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12) }
+
+body.battle-bg .life-bar-container{
+    background: linear-gradient(90deg, rgba(44,62,80,0.8) 0%, rgba(52,73,94,0.8) 100%) !important;
+    border-color: rgba(255,215,0,0.4) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+body.battle-bg #player-card-img{
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,215,0,0.4);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    border-radius: 8px;
+}
+
+/* ========== ANIMAÇÕES POKÉMON ========== */
+
+/* Animação de ataque - movimento fluido com escala */
+@keyframes pokemonAttack{
+    0%{ transform: translateX(0) scale(1); }
+    50%{ transform: translateX(20px) scale(1.1); }
+    100%{ transform: translateX(0) scale(1); }
+}
+
+/* Animação de dano - shake mais intenso */
+@keyframes pokemonDamage{
+    0%{ transform: translateX(0) rotate(0deg) scale(1); }
+    10%{ transform: translateX(-8px) rotate(-1deg) scale(0.98); }
+    20%{ transform: translateX(8px) rotate(1deg) scale(0.98); }
+    30%{ transform: translateX(-6px) rotate(-0.5deg) scale(0.99); }
+    40%{ transform: translateX(6px) rotate(0.5deg) scale(0.99); }
+    50%{ transform: translateX(-4px) scale(1); }
+    60%{ transform: translateX(4px) scale(1); }
+    70%{ transform: translateX(-2px) scale(1); }
+    80%{ transform: translateX(2px) scale(1); }
+    100%{ transform: translateX(0) scale(1); }
+}
+
+/* Animação de crítico - flash + punch */
+@keyframes criticalHit{
+    0%{ filter: brightness(1) drop-shadow(0 0 0 transparent); transform: scale(1); }
+    30%{ filter: brightness(1.4) drop-shadow(0 0 12px rgba(255,215,0,0.8)); transform: scale(1.15); }
+    60%{ filter: brightness(1.2) drop-shadow(0 0 8px rgba(255,215,0,0.6)); transform: scale(1.1); }
+    100%{ filter: brightness(1) drop-shadow(0 0 0 transparent); transform: scale(1); }
+}
+
+/* Animação de fading */
+@keyframes fadeOut{
+    0%{ opacity: 1; transform: scale(1); }
+    100%{ opacity: 0; transform: scale(0.9); }
+}
+
+/* Classe para punch no ataque do jogador */
+.punch{
+    animation: pokemonAttack 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Classe para shake no dano recebido */
+.shake{
+    animation: pokemonDamage 0.6s ease;
+}
+
+/* Classe para crítico */
+.critical{
+    animation: criticalHit 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Classe para card derrotado */
+.defeated{
+    animation: fadeOut 0.8s ease forwards;
+    opacity: 0.4;
+    filter: grayscale(100%) brightness(0.7);
+}
+
+/* Efeito de brilho nas cartas ativas */
+.active-card{
+    filter: drop-shadow(0 0 12px rgba(52, 152, 219, 0.6));
+    border-color: #3498db !important;
+}
+
+/* Switches de carta com estilo melhorado */
+#switcher, #enemy-switcher{
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#switcher button, #enemy-switcher button{
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+#switcher button:hover:not(:disabled){
+    background: rgba(255,215,0,0.2);
+    border-color: rgba(255,215,0,0.6);
+    transform: translateY(-2px);
+}
+
+#switcher button:disabled{
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+#switcher button.active{
+    background: rgba(52, 152, 219, 0.5);
+    border-color: rgba(52, 152, 219, 1);
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+}
+
+/* Ícone visual de ativo (*) */
+#switcher button.active::before, #enemy-switcher button.active::before{
+    content: '★ ';
+    color: #ffd700;
+    margin-right: 2px;
+}
+
+/* Melhorias no action menu */
+#action-menu{
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+#action-menu button{
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+/* Efeito de pulsação para botões de ataque quando habilitados */
+@keyframes pulse{
+    0%, 100%{ box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4); }
+    50%{ box-shadow: 0 8px 20px rgba(52, 152, 219, 0.8); }
+}
+
+#action-menu .btn-primary:not(:disabled){
+    animation: pulse 2s infinite;
+}
+
+/* Tooltips para ataques (opcional) */
+.attack-info{
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Moedas display estilo Pokémon */
+#coin-balance{
+    color: #ffd700;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    font-size: 1.1em;
+}
+
+/* ========== MODAL DE FIM DE BATALHA - POKÉMON STYLE ========== */
+
+#end-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+#end-modal.show{
+    display: flex;
+    animation: modalAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalAppear{
+    0%{
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100%{
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#end-modal .panel{
+    background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+    border-radius: 12px;
+    padding: 18px;
+    width: 85%;
+    max-width: 420px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    border: 2px solid #ffd700;
+    text-align: center;
+    animation: panelSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes panelSlideUp{
+    0%{
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#end-modal h3{
+    margin: 0 0 10px 0;
+    font-size: 22px;
+    color: #2c3e50;
+}
+
+#end-modal.victory h3{
+    color: #27ae60;
+    text-shadow: 2px 2px 4px rgba(39, 174, 96, 0.2);
+}
+
+#end-modal.defeat h3{
+    color: #e74c3c;
+    text-shadow: 2px 2px 4px rgba(231, 76, 60, 0.2);
+}
+
+#end-modal p{
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+#end-modal .cta{
+    display:flex;
+    gap: 6px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+}
+
+#end-modal .cta button, #end-modal .cta a{
+    padding: 8px 11px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+}
+
+#end-modal .cta a.btn-voltar{
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    border-color: #555;
+    box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+}
+
+#end-modal .cta button:hover, #end-modal .cta a:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.5);
+}
+
+#end-modal .cta a.btn-voltar:hover{
+    box-shadow: 0 6px 16px rgba(127, 140, 141, 0.5);
+}
 
