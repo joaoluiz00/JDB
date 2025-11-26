@@ -439,18 +439,22 @@ CREATE TABLE `pedidos` (
   `id` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `total` decimal(10,2) NOT NULL,
-  `status` enum('pendente','processando','enviado','entregue','cancelado') DEFAULT 'pendente',
   `metodo_pagamento` enum('cartao','pix') NOT NULL,
+  `status` enum('pendente','processando','enviado','entregue','cancelado') DEFAULT 'pendente',
   `data_pedido` datetime DEFAULT current_timestamp(),
-  `hash_transacao` varchar(255) DEFAULT NULL
+  `hash_transacao` varchar(64) DEFAULT NULL,
+  `payment_id` varchar(64) DEFAULT NULL,
+  `payment_status` varchar(32) DEFAULT NULL,
+  `payment_detail` varchar(64) DEFAULT NULL,
+  `external_reference` varchar(64) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Extraindo dados da tabela `pedidos`
 --
 
-INSERT INTO `pedidos` (`id`, `id_usuario`, `total`, `status`, `metodo_pagamento`, `data_pedido`, `hash_transacao`) VALUES
-(1, 1, '6.00', 'pendente', 'cartao', '2025-06-04 16:58:47', '5a17d6eb246f738299b504578abd2fb2');
+INSERT INTO `pedidos` (`id`, `id_usuario`, `total`, `metodo_pagamento`, `status`, `data_pedido`, `hash_transacao`, `payment_id`, `payment_status`, `payment_detail`, `external_reference`) VALUES
+(1, 1, '6.00', 'cartao', 'pendente', '2025-06-04 16:58:47', '5a17d6eb246f738299b504578abd2fb2', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -461,7 +465,7 @@ INSERT INTO `pedidos` (`id`, `id_usuario`, `total`, `status`, `metodo_pagamento`
 CREATE TABLE `pedido_itens` (
   `id` int(11) NOT NULL,
   `id_pedido` int(11) NOT NULL,
-  `tipo_item` enum('carta','icone','pacote') NOT NULL,
+  `tipo_item` enum('carta','icone','pacote','papel_fundo','moeda') NOT NULL,
   `id_item` int(11) NOT NULL,
   `quantidade` int(11) NOT NULL,
   `preco_unitario` decimal(10,2) NOT NULL

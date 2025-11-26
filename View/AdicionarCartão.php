@@ -7,11 +7,13 @@ if (!isset($_SESSION['id'])) {
 
 require_once '../Controller/ControllerCarrinho.php';
 require_once '../Controller/ControllerUsuario.php';
+require_once '../Service/MercadoPagoService.php';
 
 $userController = new ControllerUsuario();
 $carrinhoController = new ControllerCarrinho();
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
+$documento = preg_replace('/\D/', '', $_GET['documento'] ?? '');
 
 // Verificar se é compra do carrinho ou item individual
 $isCarrinho = isset($_GET['carrinho']) && $_GET['carrinho'] == '1';
@@ -86,6 +88,15 @@ if ($isCarrinho) {
     $descricaoCompra = $nomeItem . " (" . ucfirst($tipoItem) . ")";
     $valorCompra = $precoDinheiro;
 }
+
+try {
+    $mercadoPago = MercadoPagoService::getInstance();
+    $publicKey = $mercadoPago->getPublicKey();
+} catch (Exception $e) {
+    $_SESSION['error'] = 'Configure as credenciais do Mercado Pago antes de continuar. ' . $e->getMessage();
+    header('Location: ' . ($isCarrinho ? 'Carrinho.php' : 'Loja.php'));
+    die();
+}
 ?>
 
 <!DOCTYPE html>
@@ -96,6 +107,7 @@ if ($isCarrinho) {
     <title>Adicionar Cartão</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <style>
         .payment-container {
             max-width: 600px;
@@ -126,6 +138,16 @@ if ($isCarrinho) {
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+        }
+
+        .mp-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mp-row .form-group {
+            flex: 1;
         }
         
         .resumo-compra {
@@ -192,10 +214,8 @@ if ($isCarrinho) {
             </div>
         </div>
 
-        <form action="../Processamento/ProcessCartao.php" method="POST" class="card-form">
-            <!-- Dados da compra -->
-            <input type="hidden" name="is_carrinho" value="<?php echo $isCarrinho ? '1' : '0'; ?>">
-            
+        <form action="../Processamento/ProcessCartao.php" method="POST" class="card-form" id="paymentForm">
+            <input type="hidden" name="tipo_compra" value="<?php echo $isCarrinho ? 'carrinho' : 'individual'; ?>">
             <?php if ($isCarrinho): ?>
                 <input type="hidden" name="total" value="<?php echo $valorCompra; ?>">
             <?php else: ?>
@@ -204,70 +224,142 @@ if ($isCarrinho) {
                 <input type="hidden" name="preco_dinheiro" value="<?php echo $precoDinheiro; ?>">
             <?php endif; ?>
 
+            <input type="hidden" name="token" id="token">
+            <input type="hidden" name="payment_method_id" id="paymentMethodId">
+            <input type="hidden" name="issuer_id" id="issuerId">
+            <input type="hidden" name="installments" id="installmentsHidden">
+            <input type="hidden" name="cardholderName" id="cardholderNameHidden">
+            <input type="hidden" name="cardholderEmail" id="cardholderEmailHidden">
+            <input type="hidden" name="identificationType" id="identificationTypeHidden">
+            <input type="hidden" name="identificationNumber" id="identificationNumberHidden">
+
             <div class="form-group">
-                <label for="numero">Número do Cartão:</label>
-                <input type="text" id="numero" name="numero" maxlength="19" placeholder="1234 5678 9012 3456" required>
+                <label for="form-checkout__cardholderName">Nome do Titular</label>
+                <input type="text" id="form-checkout__cardholderName" placeholder="NOME COMO NO CARTÃO" required>
             </div>
-            
+
             <div class="form-group">
-                <label for="portador">Nome do Portador:</label>
-                <input type="text" id="portador" name="portador" placeholder="NOME COMO NO CARTÃO" style="text-transform: uppercase;" required>
+                <label for="form-checkout__cardholderEmail">E-mail do Titular</label>
+                <input type="email" id="form-checkout__cardholderEmail" placeholder="email@exemplo.com" value="<?php echo htmlspecialchars($user->getEmail()); ?>" required>
             </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="validade">Validade (MM/AA):</label>
-                        <input type="text" id="validade" name="validade" maxlength="5" placeholder="12/25" required>
-                    </div>
+
+            <div class="form-group">
+                <label for="form-checkout__cardNumber">Número do Cartão</label>
+                <input type="text" id="form-checkout__cardNumber" placeholder="1234 5678 9012 3456" required>
+            </div>
+
+            <div class="mp-row">
+                <div class="form-group">
+                    <label for="form-checkout__cardExpirationMonth">Mês</label>
+                    <input type="text" id="form-checkout__cardExpirationMonth" placeholder="MM" required>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="cvv">CVV:</label>
-                        <input type="text" id="cvv" name="cvv" maxlength="4" placeholder="123" required>
-                    </div>
+                <div class="form-group">
+                    <label for="form-checkout__cardExpirationYear">Ano</label>
+                    <input type="text" id="form-checkout__cardExpirationYear" placeholder="AA" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-checkout__securityCode">CVV</label>
+                    <input type="text" id="form-checkout__securityCode" placeholder="123" required>
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg btn-block">
-                💳 Salvar Cartão e Finalizar Compra
+            <div class="mp-row">
+                <div class="form-group">
+                    <label for="form-checkout__identificationType">Documento</label>
+                    <select id="form-checkout__identificationType" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="form-checkout__identificationNumber">CPF</label>
+                    <input type="text" id="form-checkout__identificationNumber" placeholder="00000000000" value="<?php echo $documento; ?>" required>
+                </div>
+            </div>
+
+            <div class="mp-row">
+                <div class="form-group">
+                    <label for="form-checkout__issuer">Bandeira</label>
+                    <select id="form-checkout__issuer" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="form-checkout__installments">Parcelas</label>
+                    <select id="form-checkout__installments" required></select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="form-checkout__submit">
+                💳 Pagar com Cartão
             </button>
         </form>
     </div>
 
     <script>
-        // Formatação e atualização visual do cartão
-        document.getElementById('numero').addEventListener('input', function(e) {
-            let valor = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
-            let formattedValue = valor.match(/.{1,4}/g)?.join(' ') || valor;
-            if (formattedValue.length <= 19) {
-                e.target.value = formattedValue;
-                
-                // Atualizar visualização
-                let displayValue = formattedValue.padEnd(19, '*').replace(/(.{4})/g, '$1 ').trim();
-                if (formattedValue.length === 0) {
-                    displayValue = '**** **** **** ****';
+        const cardNumberInput = document.getElementById('form-checkout__cardNumber');
+        const cardholderInput = document.getElementById('form-checkout__cardholderName');
+        const expMonthInput = document.getElementById('form-checkout__cardExpirationMonth');
+        const expYearInput = document.getElementById('form-checkout__cardExpirationYear');
+
+        function atualizarNumeroCartao(value) {
+            const digits = value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+            const formatted = digits.match(/.{1,4}/g)?.join(' ') || digits;
+            const displayValue = formatted ? formatted.padEnd(19, '*').replace(/(.{4})/g, '$1 ').trim() : '**** **** **** ****';
+            document.getElementById('cardDisplay').textContent = displayValue;
+        }
+
+        function atualizarNome(value) {
+            document.getElementById('nameDisplay').textContent = value.trim().toUpperCase() || 'NOME DO PORTADOR';
+        }
+
+        function atualizarValidade() {
+            const mes = expMonthInput.value.padStart(2, '0');
+            const ano = expYearInput.value.padStart(2, '0');
+            const texto = mes.trim() || ano.trim() ? `${mes}/${ano}` : 'MM/AA';
+            document.getElementById('validadeDisplay').textContent = texto;
+        }
+
+        cardNumberInput.addEventListener('input', (e) => atualizarNumeroCartao(e.target.value));
+        cardholderInput.addEventListener('input', (e) => atualizarNome(e.target.value));
+        expMonthInput.addEventListener('input', atualizarValidade);
+        expYearInput.addEventListener('input', atualizarValidade);
+
+        const mp = new MercadoPago('<?php echo $publicKey; ?>', { locale: 'pt-BR' });
+        const cardForm = mp.cardForm({
+            amount: '<?php echo number_format($valorCompra, 2, '.', ''); ?>',
+            iframe: true,
+            form: {
+                id: 'paymentForm',
+                cardholderName: { id: 'form-checkout__cardholderName', placeholder: 'Nome como no cartão' },
+                cardholderEmail: { id: 'form-checkout__cardholderEmail', placeholder: 'email@example.com' },
+                cardNumber: { id: 'form-checkout__cardNumber', placeholder: 'Numero do cartão' },
+                cardExpirationMonth: { id: 'form-checkout__cardExpirationMonth', placeholder: 'MM' },
+                cardExpirationYear: { id: 'form-checkout__cardExpirationYear', placeholder: 'AA' },
+                securityCode: { id: 'form-checkout__securityCode', placeholder: 'CVV' },
+                installments: { id: 'form-checkout__installments' },
+                identificationType: { id: 'form-checkout__identificationType' },
+                identificationNumber: { id: 'form-checkout__identificationNumber', placeholder: 'CPF' },
+                issuer: { id: 'form-checkout__issuer' }
+            },
+            callbacks: {
+                onFormMounted: error => {
+                    if (error) {
+                        console.warn('Erro ao montar formulário:', error);
+                    }
+                },
+                onSubmit: event => {
+                    event.preventDefault();
+                    const data = cardForm.getCardFormData();
+                    document.getElementById('token').value = data.token;
+                    document.getElementById('paymentMethodId').value = data.paymentMethodId;
+                    document.getElementById('issuerId').value = data.issuerId;
+                    document.getElementById('installmentsHidden').value = data.installments;
+                    document.getElementById('cardholderNameHidden').value = data.cardholderName;
+                    document.getElementById('cardholderEmailHidden').value = data.cardholderEmail;
+                    document.getElementById('identificationTypeHidden').value = data.identificationType;
+                    document.getElementById('identificationNumberHidden').value = data.identificationNumber;
+                    document.getElementById('paymentForm').submit();
+                },
+                onError: error => {
+                    alert('Erro ao processar o cartão: ' + (error?.message || 'tente novamente.'));
                 }
-                document.getElementById('cardDisplay').textContent = displayValue;
             }
-        });
-
-        document.getElementById('portador').addEventListener('input', function(e) {
-            let valor = e.target.value.toUpperCase();
-            document.getElementById('nameDisplay').textContent = valor || 'NOME DO PORTADOR';
-        });
-
-        document.getElementById('validade').addEventListener('input', function(e) {
-            let valor = e.target.value.replace(/\D/g, '');
-            if (valor.length >= 2) {
-                valor = valor.substring(0,2) + '/' + valor.substring(2,4);
-            }
-            e.target.value = valor;
-            document.getElementById('validadeDisplay').textContent = valor || 'MM/AA';
-        });
-
-        document.getElementById('cvv').addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '');
         });
     </script>
 </body>

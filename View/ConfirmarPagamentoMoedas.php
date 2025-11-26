@@ -15,15 +15,25 @@ if (!isset($_GET['id_pacote']) || !isset($_GET['valor_dinheiro'])) {
 }
 
 require_once '../Controller/ControllerUsuario.php';
+require_once '../Service/MercadoPagoService.php';
 
 // Obtém os dados do usuário
 $userController = new ControllerUsuario();
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
+try {
+    $mercadoPago = MercadoPagoService::getInstance();
+    $publicKey = $mercadoPago->getPublicKey();
+} catch (Exception $e) {
+    $_SESSION['error'] = 'Configure suas credenciais do Mercado Pago antes de comprar moedas. ' . $e->getMessage();
+    header('Location: LojaMoedas.php');
+    die();
+}
+$documento = preg_replace('/\D/', '', $_GET['documento'] ?? '');
 
 // Obtém os dados do pacote
-$idPacote = $_GET['id_pacote'];
-$valorDinheiro = $_GET['valor_dinheiro'];
+$idPacote = intval($_GET['id_pacote']);
+$valorDinheiro = floatval($_GET['valor_dinheiro']);
 
 // Obtém o nome do pacote e quantidade de moedas
 require_once '../Model/BancoDeDados.php';
@@ -45,6 +55,7 @@ $stmt->close();
     <title>Confirmar Pagamento</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/loja.css">
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <style>
         .payment-container {
             max-width: 800px;
@@ -100,6 +111,25 @@ $stmt->close();
         .card-fields.active {
             display: block;
         }
+
+        .mp-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mp-row .form-group {
+            flex: 1;
+        }
+
+        .pix-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .pix-section button {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -125,83 +155,174 @@ $stmt->close();
             <p><strong>Valor:</strong> R$ <?php echo number_format($valorDinheiro, 2, ',', '.'); ?></p>
         </div>
         
-        <form action="../Processamento/ProcessMoedas.php" method="POST">
+        <form action="../Processamento/ProcessCartao.php" method="POST" id="formCartaoMoedas">
+            <input type="hidden" name="tipo_compra" value="moedas">
             <input type="hidden" name="id_pacote" value="<?php echo $idPacote; ?>">
+            <input type="hidden" name="quantidade_moedas" value="<?php echo $quantidadeMoedas; ?>">
             <input type="hidden" name="valor_dinheiro" value="<?php echo $valorDinheiro; ?>">
+            <input type="hidden" name="token" id="token">
+            <input type="hidden" name="payment_method_id" id="paymentMethodId">
+            <input type="hidden" name="issuer_id" id="issuerId">
+            <input type="hidden" name="installments" id="installmentsHidden">
+            <input type="hidden" name="cardholderName" id="cardholderNameHidden">
+            <input type="hidden" name="cardholderEmail" id="cardholderEmailHidden">
+            <input type="hidden" name="identificationType" id="identificationTypeHidden">
+            <input type="hidden" name="identificationNumber" id="identificationNumberHidden">
             
             <h3>Selecione a forma de pagamento</h3>
             <div class="payment-options">
-                <div class="payment-option" id="card-option">
+                <div class="payment-option selected" id="card-option">
                     <p>Cartão de Crédito</p>
                 </div>
                 <div class="payment-option" id="pix-option">
                     <p>PIX</p>
                 </div>
             </div>
-            
-            <input type="hidden" name="pagamento" id="pagamento-input" value="cartao">
-            
-            <div id="card-fields" class="card-fields active">
+
+            <div class="form-group">
+                <label for="form-checkout__cardholderEmail">E-mail</label>
+                <input type="email" class="form-control" id="form-checkout__cardholderEmail" value="<?php echo htmlspecialchars($user->getEmail()); ?>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="form-checkout__cardholderName">Nome do Titular</label>
+                <input type="text" class="form-control" id="form-checkout__cardholderName" placeholder="Nome completo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="form-checkout__cardNumber">Número do Cartão</label>
+                <input type="text" class="form-control" id="form-checkout__cardNumber" placeholder="0000 0000 0000 0000" required>
+            </div>
+
+            <div class="mp-row">
                 <div class="form-group">
-                    <label for="numero">Número do Cartão</label>
-                    <input type="text" class="form-control" id="numero" name="numero" placeholder="0000 0000 0000 0000" required>
+                    <label for="form-checkout__cardExpirationMonth">Mês</label>
+                    <input type="text" class="form-control" id="form-checkout__cardExpirationMonth" placeholder="MM" required>
                 </div>
                 <div class="form-group">
-                    <label for="portador">Nome do Titular</label>
-                    <input type="text" class="form-control" id="portador" name="portador" placeholder="Nome como impresso no cartão" required>
+                    <label for="form-checkout__cardExpirationYear">Ano</label>
+                    <input type="text" class="form-control" id="form-checkout__cardExpirationYear" placeholder="AA" required>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 form-group">
-                        <label for="validade">Data de Validade</label>
-                        <input type="text" class="form-control" id="validade" name="validade" placeholder="MM/AA" required>
-                    </div>
-                    <div class="col-md-6 form-group">
-                        <label for="cvv">Código de Segurança</label>
-                        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="CVV" required>
-                    </div>
+                <div class="form-group">
+                    <label for="form-checkout__securityCode">CVV</label>
+                    <input type="text" class="form-control" id="form-checkout__securityCode" placeholder="123" required>
                 </div>
             </div>
-            
+
+            <div class="mp-row">
+                <div class="form-group">
+                    <label for="form-checkout__identificationType">Documento</label>
+                    <select class="form-control" id="form-checkout__identificationType" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="form-checkout__identificationNumber">CPF</label>
+                    <input type="text" class="form-control" id="form-checkout__identificationNumber" placeholder="00000000000" value="<?php echo htmlspecialchars($documento); ?>" required>
+                </div>
+            </div>
+
+            <div class="mp-row">
+                <div class="form-group">
+                    <label for="form-checkout__issuer">Bandeira</label>
+                    <select class="form-control" id="form-checkout__issuer" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="form-checkout__installments">Parcelas</label>
+                    <select class="form-control" id="form-checkout__installments" required></select>
+                </div>
+            </div>
+
+            <div class="card-fields active" id="card-fields">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                    💳 Pagar com Cartão (Mercado Pago)
+                </button>
+            </div>
+
             <div id="pix-fields" class="card-fields">
-                <div class="text-center">
-                    <img src="../Assets/img/qrcode-placeholder.png" alt="QR Code PIX" style="width: 200px; margin: 20px auto;">
-                    <p>Escaneie o QR Code acima com o aplicativo do seu banco para pagar</p>
-                    <p>Código PIX: <strong>12345678901234567890</strong></p>
+                <div class="pix-section">
+                    <p>Prefere pagar com PIX? Gere um QR Code aprovado pelo Mercado Pago.</p>
+                    <button type="button" class="btn btn-success" id="gerarPixMoedas">Gerar PIX agora</button>
                 </div>
             </div>
-            
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Finalizar Pagamento</button>
         </form>
     </div>
 
+    <form id="formPixMoedas" action="ConfirmarPagamentoPix.php" method="POST" style="display:none;">
+        <input type="hidden" name="tipo_compra" value="moedas">
+        <input type="hidden" name="documento" value="<?php echo htmlspecialchars($documento); ?>">
+        <input type="hidden" name="id_pacote" value="<?php echo $idPacote; ?>">
+        <input type="hidden" name="quantidade_moedas" value="<?php echo $quantidadeMoedas; ?>">
+        <input type="hidden" name="preco_dinheiro" value="<?php echo $valorDinheiro; ?>">
+    </form>
+
     <script>
-        // Script para alternar entre as opções de pagamento
-        document.getElementById('card-option').addEventListener('click', function() {
-            selectPaymentOption('cartao');
-        });
-        
-        document.getElementById('pix-option').addEventListener('click', function() {
-            selectPaymentOption('pix');
-        });
-        
-        function selectPaymentOption(option) {
-            document.getElementById('pagamento-input').value = option;
-            
-            if (option === 'cartao') {
-                document.getElementById('card-option').classList.add('selected');
-                document.getElementById('pix-option').classList.remove('selected');
-                document.getElementById('card-fields').classList.add('active');
-                document.getElementById('pix-fields').classList.remove('active');
-            } else {
-                document.getElementById('pix-option').classList.add('selected');
-                document.getElementById('card-option').classList.remove('selected');
-                document.getElementById('pix-fields').classList.add('active');
-                document.getElementById('card-fields').classList.remove('active');
-            }
+        const cardOption = document.getElementById('card-option');
+        const pixOption = document.getElementById('pix-option');
+        const cardFields = document.getElementById('card-fields');
+        const pixFields = document.getElementById('pix-fields');
+        const btnPix = document.getElementById('gerarPixMoedas');
+        const pixDocInput = document.querySelector('#formPixMoedas input[name="documento"]');
+        const cpfInput = document.getElementById('form-checkout__identificationNumber');
+
+        function togglePayment(option) {
+            const isCard = option === 'card';
+            cardOption.classList.toggle('selected', isCard);
+            pixOption.classList.toggle('selected', !isCard);
+            cardFields.classList.toggle('active', isCard);
+            pixFields.classList.toggle('active', !isCard);
         }
-        
-        // Inicializar com cartão selecionado
-        selectPaymentOption('cartao');
+
+        cardOption.addEventListener('click', () => togglePayment('card'));
+        pixOption.addEventListener('click', () => togglePayment('pix'));
+        togglePayment('card');
+
+        btnPix.addEventListener('click', () => {
+            if (cpfInput && pixDocInput) {
+                pixDocInput.value = cpfInput.value.replace(/\D/g, '');
+            }
+            document.getElementById('formPixMoedas').submit();
+        });
+
+        const mp = new MercadoPago('<?php echo $publicKey; ?>', { locale: 'pt-BR' });
+        const cardForm = mp.cardForm({
+            amount: '<?php echo number_format($valorDinheiro, 2, '.', ''); ?>',
+            iframe: true,
+            form: {
+                id: 'formCartaoMoedas',
+                cardholderName: { id: 'form-checkout__cardholderName', placeholder: 'Nome completo' },
+                cardholderEmail: { id: 'form-checkout__cardholderEmail', placeholder: 'email@exemplo.com' },
+                cardNumber: { id: 'form-checkout__cardNumber', placeholder: 'Numero do cartão' },
+                cardExpirationMonth: { id: 'form-checkout__cardExpirationMonth', placeholder: 'MM' },
+                cardExpirationYear: { id: 'form-checkout__cardExpirationYear', placeholder: 'AA' },
+                securityCode: { id: 'form-checkout__securityCode', placeholder: 'CVV' },
+                installments: { id: 'form-checkout__installments' },
+                identificationType: { id: 'form-checkout__identificationType' },
+                identificationNumber: { id: 'form-checkout__identificationNumber', placeholder: 'CPF' },
+                issuer: { id: 'form-checkout__issuer' }
+            },
+            callbacks: {
+                onFormMounted: error => {
+                    if (error) {
+                        console.warn('Erro ao montar formulário:', error);
+                    }
+                },
+                onSubmit: event => {
+                    event.preventDefault();
+                    const data = cardForm.getCardFormData();
+                    document.getElementById('token').value = data.token;
+                    document.getElementById('paymentMethodId').value = data.paymentMethodId;
+                    document.getElementById('issuerId').value = data.issuerId;
+                    document.getElementById('installmentsHidden').value = data.installments;
+                    document.getElementById('cardholderNameHidden').value = data.cardholderName;
+                    document.getElementById('cardholderEmailHidden').value = data.cardholderEmail;
+                    document.getElementById('identificationTypeHidden').value = data.identificationType;
+                    document.getElementById('identificationNumberHidden').value = data.identificationNumber;
+                    document.getElementById('formCartaoMoedas').submit();
+                },
+                onError: error => {
+                    alert('Erro ao processar o cartão: ' + (error?.message || 'tente novamente.'));
+                }
+            }
+        });
     </script>
 </body>
 </html>

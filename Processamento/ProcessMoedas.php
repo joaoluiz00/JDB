@@ -1,55 +1,30 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['id'])) {
-    header("Location: ../View/index.php");
+    header('Location: ../View/index.php');
     die();
 }
 
-require_once '../Model/BancoDeDados.php';
-require_once '../Service/NotificationService.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $idUsuario = $_SESSION['id'];
-    $idPacote = $_POST['id_pacote'];
-    $valorDinheiro = $_POST['valor_dinheiro'];
-    $pagamento = $_POST['pagamento'];
-
-    $db = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
-
-    if ($pagamento === 'cartao') {
-        $numero = $_POST['numero'];
-        $portador = $_POST['portador'];
-        $validade = $_POST['validade'];
-        $cvv = $_POST['cvv'];
-
-        // Salvar os dados do cartão
-        $db->salvarCartao($idUsuario, $numero, $portador, $validade, $cvv);
-    }
-
-    // Buscar o pacote específico
-    $conn = $db->getConnection();
-    $query = "SELECT quantidade_moedas FROM pacotes_moedas WHERE id_pacote = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $idPacote);
-    $stmt->execute();
-    $stmt->bind_result($quantidadeMoedas);
-    $stmt->fetch();
-    $stmt->close();
-
-    // Adicionar moedas ao usuário
-    $db->addCoins($idUsuario, $quantidadeMoedas);
-
-    // NOTIFICAÇÃO: Compra de moedas realizada
-    $notificationService = NotificationService::getInstance();
-    $notificationService->notificarCompraMoedas(
-        $idUsuario,
-        $_SESSION['nome'] ?? 'Usuário',
-        $_SESSION['email'] ?? '',
-        $quantidadeMoedas,
-        $valorDinheiro
-    );
-
-    $_SESSION['success'] = "Compra de moedas realizada com sucesso!";
-    header("Location: ../View/Loja.php?success=1");
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ../View/LojaMoedas.php');
     die();
 }
+
+$pagamento = $_POST['pagamento'] ?? '';
+
+if ($pagamento === 'cartao') {
+    $_POST['tipo_compra'] = 'moedas';
+    require __DIR__ . '/ProcessCartao.php';
+    die();
+}
+
+if ($pagamento === 'pix') {
+    $_SESSION['error'] = 'Use o botão "Gerar PIX" para criar o QR Code com o Mercado Pago.';
+    header('Location: ../View/ConfirmarPagamentoMoedas.php');
+    die();
+}
+
+$_SESSION['error'] = 'Forma de pagamento inválida.';
+header('Location: ../View/ConfirmarPagamentoMoedas.php');
+die();

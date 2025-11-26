@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
-    header("Location: index.php");
+    header('Location: index.php');
     die();
 }
 
@@ -13,57 +13,52 @@ $carrinhoController = new ControllerCarrinho();
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
 
-// Verificar se é compra do carrinho ou item individual
-$isCarrinho = isset($_GET['carrinho']) && $_GET['carrinho'] == '1';
+$isCarrinho = isset($_GET['carrinho']) && $_GET['carrinho'] === '1';
+$documento = preg_replace('/\D/', '', $_GET['documento'] ?? '');
+$totalFinal = 0.0;
+$tipoItem = null;
+$idItem = null;
+$precoDinheiro = null;
 
 if ($isCarrinho) {
-    // Compra do carrinho
     $itensCarrinho = $carrinhoController->getItensCarrinho($userId);
-    $totalCarrinho = $carrinhoController->calcularTotal($userId);
-    
-    // Aplicar desconto se houver cupom na sessão
-    $desconto = isset($_SESSION['desconto']) ? $_SESSION['desconto'] : 0;
-    $totalFinal = $totalCarrinho - $desconto;
-    
-    if ($itensCarrinho->num_rows == 0) {
-        $_SESSION['error'] = "Carrinho vazio!";
-        header("Location: Carrinho.php");
+    if ($itensCarrinho->num_rows === 0) {
+        $_SESSION['error'] = 'Seu carrinho está vazio.';
+        header('Location: Carrinho.php');
         die();
     }
+
+    $totalCarrinho = $carrinhoController->calcularTotal($userId);
+    $desconto = isset($_SESSION['desconto']) ? floatval($_SESSION['desconto']) : 0.0;
+    $totalFinal = max($totalCarrinho - $desconto, 0);
 } else {
-    // Compra de item individual
-    if (isset($_GET['carrinho']) && $_GET['carrinho'] == '1') {
-        $isCarrinho = true;
+    if (isset($_GET['id_carta'])) {
+        $tipoItem = 'carta';
+        $idItem = intval($_GET['id_carta']);
+    } elseif (isset($_GET['id_icone'])) {
+        $tipoItem = 'icone';
+        $idItem = intval($_GET['id_icone']);
+    } elseif (isset($_GET['id_pacote'])) {
+        $tipoItem = 'pacote';
+        $idItem = intval($_GET['id_pacote']);
+    } elseif (isset($_GET['id_papel'])) {
+        $tipoItem = 'papel_fundo';
+        $idItem = intval($_GET['id_papel']);
     } else {
-        $isCarrinho = false;
-        // Detecta corretamente o tipo de item e id
-        if (isset($_GET['id_carta'])) {
-            $tipoItem = 'carta';
-            $idItem = $_GET['id_carta'];
-        } elseif (isset($_GET['id_icone'])) {
-            $tipoItem = 'icone';
-            $idItem = $_GET['id_icone'];
-        } elseif (isset($_GET['id_pacote'])) {
-            $tipoItem = 'pacote';
-            $idItem = $_GET['id_pacote'];
-        } elseif (isset($_GET['id_papel'])) {
-            $tipoItem = 'papel_fundo';
-            $idItem = $_GET['id_papel'];
-        } else {
-            $tipoItem = $_GET['tipo_item'] ?? 'carta';
-            $idItem = $_GET['id_item'] ?? null;
-        }
-        $precoDinheiro = $_GET['preco_dinheiro'] ?? null;
-        if (!$idItem || !$precoDinheiro) {
-            $_SESSION['error'] = "Dados de compra inválidos!";
-            header("Location: Loja.php");
-            die();
-        }
-        $totalFinal = $precoDinheiro;
+        $tipoItem = $_GET['tipo_item'] ?? 'carta';
+        $idItem = intval($_GET['id_item'] ?? 0);
     }
+
+    $precoDinheiro = isset($_GET['preco_dinheiro']) ? floatval($_GET['preco_dinheiro']) : null;
+    if ($idItem <= 0 || $precoDinheiro === null) {
+        $_SESSION['error'] = 'Dados de compra inválidos.';
+        header('Location: Loja.php');
+        die();
+    }
+
+    $totalFinal = $precoDinheiro;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -72,34 +67,20 @@ if ($isCarrinho) {
     <title>Confirmar Endereço</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="../Assets/loja.css">
-    <script>
-        function buscarCEP() {
-            const cep = document.getElementById('cep').value.replace(/\D/g, '');
-            if (cep.length === 8) {
-                fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.erro) {
-                            document.getElementById('rua').value = data.logradouro;
-                            document.getElementById('bairro').value = data.bairro;
-                            document.getElementById('cidade').value = data.localidade;
-                            document.getElementById('estado').value = data.uf;
-                        } else {
-                            alert('CEP não encontrado.');
-                        }
-                    })
-                    .catch(error => {
-                        alert('Erro ao buscar CEP.');
-                    });
-            }
+    <style>
+        .checkout-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: var(--card-bg, #fff);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
-
-        function formatarCEP(input) {
-            let valor = input.value.replace(/\D/g, '');
-            valor = valor.replace(/^(\d{5})(\d)/, '$1-$2');
-            input.value = valor;
-        }
-    </script>
+        .form-section { margin-bottom: 25px; }
+        .form-section h3 { margin-bottom: 15px; }
+        .checkout-buttons { display: flex; gap: 15px; }
+        .checkout-buttons .btn { flex: 1; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -111,266 +92,262 @@ if ($isCarrinho) {
         </div>
     </nav>
 
-    <div class="store-container">
-        <div class="store-header">
-            <h1 class="store-title">Confirmar Endereço de Entrega</h1>
+    <div class="checkout-container">
+        <h1 class="text-center">Confirme seu endereço</h1>
+        <p class="text-center">Informe seus dados para continuarmos com o pagamento.</p>
+
+        <div class="alert alert-info">
+            <strong>Resumo:</strong>
+            <span><?php echo $isCarrinho ? 'Compra do carrinho' : 'Compra individual'; ?></span>
+            <span class="float-right">Total: R$ <?php echo number_format($totalFinal, 2, ',', '.'); ?></span>
         </div>
 
-        <?php if ($isCarrinho): ?>
-            <div class="resumo-pedido">
-                <h3>Resumo do Pedido</h3>
-                <?php 
-                $itensCarrinho->data_seek(0); // Reset pointer
-                while ($item = $itensCarrinho->fetch_assoc()): 
-                ?>
-                    <div class="item-resumo">
-                        <span><?php echo $item['nome']; ?> (<?php echo $item['quantidade']; ?>x)</span>
-                        <span>R$ <?php echo number_format($item['quantidade'] * $item['preco_unitario'], 2, ',', '.'); ?></span>
-                    </div>
-                <?php endwhile; ?>
-                
-                <?php if ($desconto > 0): ?>
-                    <div class="item-resumo desconto">
-                        <span>Desconto aplicado:</span>
-                        <span>-R$ <?php echo number_format($desconto, 2, ',', '.'); ?></span>
-                    </div>
-                <?php endif; ?>
-                
-                <div class="total-resumo">
-                    <strong>Total: R$ <?php echo number_format($totalFinal, 2, ',', '.'); ?></strong>
-                </div>
-            </div>
-        <?php else: ?>
-            <div class="resumo-pedido">
-                <h3>Total da Compra</h3>
-                <div class="total-resumo">
-                    <strong>R$ <?php echo number_format($totalFinal, 2, ',', '.'); ?></strong>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <form action="../Processamento/ProcessPagamento.php" method="POST" class="endereco-form">
-            <?php if ($isCarrinho): ?>
-                <input type="hidden" name="tipo_compra" value="carrinho">
-            <?php else: ?>
-                <input type="hidden" name="tipo_compra" value="individual">
-                <input type="hidden" name="tipo_item" value="<?php echo $tipoItem; ?>">
-                <input type="hidden" name="id_item" value="<?php echo $idItem; ?>">
-                <input type="hidden" name="preco_dinheiro" value="<?php echo $precoDinheiro; ?>">
+        <form id="checkout-form" data-tipo-compra="<?php echo $isCarrinho ? 'carrinho' : 'individual'; ?>">
+            <input type="hidden" id="total_final" value="<?php echo number_format($totalFinal, 2, '.', ''); ?>">
+            <?php if (!$isCarrinho): ?>
+                <input type="hidden" name="tipo_item" id="tipo_item" value="<?php echo htmlspecialchars($tipoItem); ?>">
+                <input type="hidden" name="id_item" id="id_item" value="<?php echo $idItem; ?>">
+                <input type="hidden" name="preco_dinheiro" id="preco_dinheiro" value="<?php echo number_format($precoDinheiro, 2, '.', ''); ?>">
             <?php endif; ?>
 
             <div class="form-section">
-                <h3>Endereço de Entrega</h3>
-                
+                <h3>Dados pessoais</h3>
                 <div class="form-group">
-                    <label for="cep">CEP:</label>
-                    <input type="text" id="cep" name="cep" maxlength="9" required onblur="buscarCEP()" onkeyup="formatarCEP(this)" placeholder="00000-000">
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group col-md-8">
-                        <label for="rua">Rua:</label>
-                        <input type="text" id="rua" name="rua" required>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="numero">Número:</label>
-                        <input type="text" id="numero" name="numero" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="complemento">Complemento:</label>
-                    <input type="text" id="complemento" name="complemento" placeholder="Apartamento, bloco, etc.">
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="bairro">Bairro:</label>
-                        <input type="text" id="bairro" name="bairro" required>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="cidade">Cidade:</label>
-                        <input type="text" id="cidade" name="cidade" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="estado">Estado:</label>
-                    <select id="estado" name="estado" required>
-                        <option value="">Selecione o estado</option>
-                        <option value="AC">Acre</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AP">Amapá</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PR">Paraná</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
+                    <label for="cpf">CPF</label>
+                    <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" value="<?php echo htmlspecialchars($documento); ?>" required>
                 </div>
             </div>
 
             <div class="form-section">
-                <h3>Forma de Pagamento</h3>
-                <div class="form-group">
-                    <select id="pagamento" name="pagamento" required class="form-control">
-                        <option value="">Selecione a forma de pagamento</option>
-                        <option value="pix">PIX - Aprovação Instantânea</option>
-                        <option value="cartao">Cartão de Crédito - Parcelamento disponível</option>
-                    </select>
+                <h3>Endereço</h3>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="cep">CEP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="cep" placeholder="00000-000" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary" type="button" id="buscarCep">Buscar CEP</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="rua">Rua</label>
+                        <input type="text" class="form-control" id="rua" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="numero">Número</label>
+                        <input type="text" class="form-control" id="numero" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" class="form-control" id="complemento">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" class="form-control" id="bairro" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" class="form-control" id="cidade" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="estado">Estado</label>
+                        <select id="estado" class="form-control" required>
+                            <option value="">Selecione</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
+            <div class="form-section">
+                <h3>Forma de pagamento</h3>
+                <select id="pagamento" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option value="pix">PIX - Aprovação instantânea</option>
+                    <option value="cartao">Cartão de crédito</option>
+                </select>
+            </div>
+
             <div class="checkout-buttons">
-                <button type="submit" class="btn btn-primary btn-lg">Confirmar Compra</button>
-                <a href="<?php echo $isCarrinho ? 'Carrinho.php' : 'Loja.php'; ?>" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-lg">Continuar</button>
+                <a href="<?php echo $isCarrinho ? 'Carrinho.php' : 'Loja.php'; ?>" class="btn btn-outline-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 
     <script>
-        document.getElementById('pagamento').addEventListener('change', function() {
-            if (this.value === 'cartao') {
-                <?php if ($isCarrinho): ?>
-                    window.location.href = 'AdicionarCartão.php?carrinho=1';
-                <?php else: ?>
-                    const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
-                    const idItem = "<?php echo $idItem ?? ''; ?>";
-                    const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    window.location.href = `AdicionarCartão.php?preco_dinheiro=${precoDinheiro}` +
-                        (tipoItem === 'carta' ? `&id_carta=${idItem}` :
-                        tipoItem === 'icone' ? `&id_icone=${idItem}` :
-                        tipoItem === 'pacote' ? `&id_pacote=${idItem}` :
-                        tipoItem === 'papel_fundo' ? `&id_papel=${idItem}` :
-                        '');
-                <?php endif; ?>
+        const cepInput = document.getElementById('cep');
+        const btnBuscarCep = document.getElementById('buscarCep');
+        const ruaInput = document.getElementById('rua');
+        const bairroInput = document.getElementById('bairro');
+        const cidadeInput = document.getElementById('cidade');
+        const estadoSelect = document.getElementById('estado');
+
+        async function consultarCep() {
+            const cep = cepInput.value.replace(/\D/g, '');
+            if (cep.length !== 8) {
+                alert('Informe um CEP válido com 8 dígitos.');
+                return;
+            }
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                if (!response.ok) {
+                    throw new Error('Erro ao consultar CEP.');
+                }
+                const data = await response.json();
+                if (data.erro) {
+                    alert('CEP não encontrado. Verifique e tente novamente.');
+                    return;
+                }
+                ruaInput.value = data.logradouro || '';
+                bairroInput.value = data.bairro || '';
+                cidadeInput.value = data.localidade || '';
+                estadoSelect.value = data.uf || '';
+            } catch (error) {
+                alert('Não foi possível consultar o CEP agora. Tente novamente em instantes.');
+                console.error(error);
+            }
+        }
+
+        btnBuscarCep.addEventListener('click', consultarCep);
+        cepInput.addEventListener('blur', () => {
+            if (cepInput.value.replace(/\D/g, '').length === 8) {
+                consultarCep();
             }
         });
 
-        // Ao submeter o formulário, redireciona para AdicionarCartão.php se for cartão
-        document.querySelector('form').addEventListener('submit', function(event) {
-            const pagamento = document.getElementById('pagamento').value;
-            if (pagamento === 'cartao') {
-                event.preventDefault();
-                <?php if ($isCarrinho): ?>
-                    window.location.href = 'AdicionarCartão.php?carrinho=1';
-                <?php else: ?>
-                    const tipoItem = "<?php echo $tipoItem ?? 'carta'; ?>";
-                    const idItem = "<?php echo $idItem ?? ''; ?>";
-                    const precoDinheiro = "<?php echo $precoDinheiro ?? ''; ?>";
-                    let url = 'AdicionarCartão.php?preco_dinheiro=' + encodeURIComponent(precoDinheiro);
-                    if (tipoItem === 'carta') {
-                        url += '&id_carta=' + encodeURIComponent(idItem);
-                    } else if (tipoItem === 'icone') {
-                        url += '&id_icone=' + encodeURIComponent(idItem);
-                    } else if (tipoItem === 'pacote') {
-                        url += '&id_pacote=' + encodeURIComponent(idItem);
-                    } else if (tipoItem === 'papel_fundo') {
-                        url += '&id_papel=' + encodeURIComponent(idItem);
-                    }
-                    window.location.href = url;
-                <?php endif; ?>
+        const checkoutForm = document.getElementById('checkout-form');
+        const pagamentoSelect = document.getElementById('pagamento');
+
+        checkoutForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const pagamento = pagamentoSelect.value;
+            if (!pagamento) {
+                alert('Escolha uma forma de pagamento.');
+                return;
+            }
+            if (!validarEndereco()) {
+                alert('Preencha todos os campos de endereço.');
                 return;
             }
             if (pagamento === 'pix') {
-                event.preventDefault();
-                // Redirecionar para página PIX com os dados necessários
-                <?php if ($isCarrinho): ?>
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'ConfirmarPagamentoPix.php';
-                    const tipoInput = document.createElement('input');
-                    tipoInput.type = 'hidden';
-                    tipoInput.name = 'tipo_compra';
-                    tipoInput.value = 'carrinho';
-                    form.appendChild(tipoInput);
-                    const totalInput = document.createElement('input');
-                    totalInput.type = 'hidden';
-                    totalInput.name = 'total';
-                    totalInput.value = '<?php echo $totalFinal; ?>';
-                    form.appendChild(totalInput);
-                    const enderecoDados = {
-                        cep: document.getElementById('cep').value,
-                        rua: document.getElementById('rua').value,
-                        numero: document.getElementById('numero').value,
-                        complemento: document.getElementById('complemento').value,
-                        bairro: document.getElementById('bairro').value,
-                        cidade: document.getElementById('cidade').value,
-                        estado: document.getElementById('estado').value
-                    };
-                    Object.keys(enderecoDados).forEach(key => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = enderecoDados[key];
-                        form.appendChild(input);
-                    });
-                    document.body.appendChild(form);
-                    form.submit();
-                <?php else: ?>
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = 'ConfirmarPagamentoPix.php';
-                    const tipoInput = document.createElement('input');
-                    tipoInput.type = 'hidden';
-                    tipoInput.name = 'tipo_compra';
-                    tipoInput.value = 'individual';
-                    form.appendChild(tipoInput);
-                    const tipoItemInput = document.createElement('input');
-                    tipoItemInput.type = 'hidden';
-                    tipoItemInput.name = 'tipo_item';
-                    tipoItemInput.value = '<?php echo $tipoItem; ?>';
-                    form.appendChild(tipoItemInput);
-                    const idInput = document.createElement('input');
-                    idInput.type = 'hidden';
-                    idInput.name = 'id_item';
-                    idInput.value = '<?php echo $idItem; ?>';
-                    form.appendChild(idInput);
-                    const precoInput = document.createElement('input');
-                    precoInput.type = 'hidden';
-                    precoInput.name = 'preco_dinheiro';
-                    precoInput.value = '<?php echo $precoDinheiro; ?>';
-                    form.appendChild(precoInput);
-                    const enderecoDados = {
-                        cep: document.getElementById('cep').value,
-                        rua: document.getElementById('rua').value,
-                        numero: document.getElementById('numero').value,
-                        complemento: document.getElementById('complemento').value,
-                        bairro: document.getElementById('bairro').value,
-                        cidade: document.getElementById('cidade').value,
-                        estado: document.getElementById('estado').value
-                    };
-                    Object.keys(enderecoDados).forEach(key => {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = enderecoDados[key];
-                        form.appendChild(input);
-                    });
-                    document.body.appendChild(form);
-                    form.submit();
-                <?php endif; ?>
+                enviarParaPix();
+            } else {
+                redirecionarParaCartao();
             }
         });
+
+        function validarEndereco() {
+            return ruaInput.value && bairroInput.value && cidadeInput.value && estadoSelect.value && cepInput.value && document.getElementById('numero').value;
+        }
+
+        function coletarEndereco() {
+            return {
+                cep: cepInput.value,
+                rua: ruaInput.value,
+                numero: document.getElementById('numero').value,
+                complemento: document.getElementById('complemento').value,
+                bairro: bairroInput.value,
+                cidade: cidadeInput.value,
+                estado: estadoSelect.value
+            };
+        }
+
+        function enviarParaPix() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'ConfirmarPagamentoPix.php';
+            const tipoCompra = checkoutForm.dataset.tipoCompra;
+            adicionarInput(form, 'tipo_compra', tipoCompra);
+            adicionarInput(form, 'total', document.getElementById('total_final').value);
+            adicionarInput(form, 'documento', document.getElementById('cpf').value.replace(/\D/g, ''));
+
+            if (tipoCompra === 'individual') {
+                adicionarInput(form, 'tipo_item', document.getElementById('tipo_item').value);
+                adicionarInput(form, 'id_item', document.getElementById('id_item').value);
+                adicionarInput(form, 'preco_dinheiro', document.getElementById('preco_dinheiro').value);
+            }
+
+            const endereco = coletarEndereco();
+            Object.keys(endereco).forEach(key => {
+                adicionarInput(form, `endereco[${key}]`, endereco[key]);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function redirecionarParaCartao() {
+            const params = new URLSearchParams();
+            const tipoCompra = checkoutForm.dataset.tipoCompra;
+            const documento = document.getElementById('cpf').value.replace(/\D/g, '');
+
+            if (tipoCompra === 'carrinho') {
+                params.append('carrinho', '1');
+            } else {
+                const tipoItem = document.getElementById('tipo_item').value;
+                const idItem = document.getElementById('id_item').value;
+                const preco = document.getElementById('preco_dinheiro').value;
+                params.append('preco_dinheiro', preco);
+                if (tipoItem === 'carta') {
+                    params.append('id_carta', idItem);
+                } else if (tipoItem === 'icone') {
+                    params.append('id_icone', idItem);
+                } else if (tipoItem === 'pacote') {
+                    params.append('id_pacote', idItem);
+                } else if (tipoItem === 'papel_fundo') {
+                    params.append('id_papel', idItem);
+                } else {
+                    params.append('tipo_item', tipoItem);
+                    params.append('id_item', idItem);
+                }
+            }
+
+            if (documento) {
+                params.append('documento', documento);
+            }
+
+            window.location.href = 'AdicionarCartão.php?' + params.toString();
+        }
+
+        function adicionarInput(form, name, value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        }
     </script>
 </body>
 </html>

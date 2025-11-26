@@ -7,84 +7,177 @@ if (!isset($_SESSION['id'])) {
 
 require_once '../Controller/ControllerCarrinho.php';
 require_once '../Controller/ControllerUsuario.php';
+require_once '../Model/BancoDeDados.php';
+require_once '../Service/MercadoPagoService.php';
 
 $userController = new ControllerUsuario();
 $carrinhoController = new ControllerCarrinho();
+$banco = BancoDeDados::getInstance('localhost', 'root', '', 'banco');
+$conn = $banco->getConnection();
+
 $userId = $_SESSION['id'];
 $user = $userController->readUser($userId);
 
-// Verificar se é compra do carrinho ou item individual
 $tipoCompra = $_POST['tipo_compra'] ?? 'individual';
-$isCarrinho = ($tipoCompra === 'carrinho');
-
-// Dados do endereço
-$endereco = [
-    'cep' => $_POST['cep'] ?? '',
-    'rua' => $_POST['rua'] ?? '',
-    'numero' => $_POST['numero'] ?? '',
-    'complemento' => $_POST['complemento'] ?? '',
-    'bairro' => $_POST['bairro'] ?? '',
-    'cidade' => $_POST['cidade'] ?? '',
-    'estado' => $_POST['estado'] ?? ''
-];
-
-if ($isCarrinho) {
-    $total = $_POST['total'] ?? 0;
-    $itensCarrinho = $carrinhoController->getItensCarrinho($userId);
-    
-    if ($itensCarrinho->num_rows == 0) {
-        $_SESSION['error'] = "Carrinho vazio!";
-        header("Location: Carrinho.php");
-        die();
-    }
-    
-    $descricaoCompra = "Compra do carrinho (" . $itensCarrinho->num_rows . " itens)";
-} else {
-    $idItem = $_POST['id_item'] ?? null;
-    $precoDinheiro = $_POST['preco_dinheiro'] ?? null;
-    $tipoItem = $_POST['tipo_item'] ?? 'carta';
-    
-    if (!$idItem || !$precoDinheiro) {
-        $_SESSION['error'] = "Dados de compra inválidos!";
-        header("Location: Loja.php");
-        die();
-    }
-    
-    $total = $precoDinheiro;
-    
-    // Buscar nome do item baseado no tipo
-    $conn = BancoDeDados::getInstance('localhost', 'root', '', 'banco')->getConnection();
-    $nomeItem = "Item";
-    
-    switch ($tipoItem) {
-        case 'carta':
-            $sql = "SELECT nome FROM cartas WHERE id = ?";
-            break;
-        case 'icone':
-            $sql = "SELECT nome FROM img_perfil WHERE id = ?";
-            break;
-        case 'pacote':
-            $sql = "SELECT nome FROM pacote WHERE id = ?";
-            break;
-    }
-    
-    if (isset($sql)) {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $idItem);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            $nomeItem = $row['nome'];
-        }
-        $stmt->close();
-    }
-    
-    $descricaoCompra = $nomeItem . " (" . ucfirst($tipoItem) . ")";
+$documento = preg_replace('/\D/', '', $_POST['documento'] ?? '');
+if (empty($documento)) {
+    $_SESSION['error'] = 'Informe o CPF para continuar com o pagamento PIX.';
+    header('Location: ConfirmarEndereco.php');
+    die();
 }
 
-// Gerar código PIX simulado
-$codigoPix = "00020126360014BR.GOV.BCB.PIX0114" . $userId . time() . "5204000053039865802BR5925Loja JDB Card Game6009SAO PAULO62070503***6304";
-$hashTransacao = md5($userId . time() . $total);
+$endereco = isset($_POST['endereco']) && is_array($_POST['endereco']) ? $_POST['endereco'] : [];
+if (empty($endereco)) {
+    $camposEndereco = ['cep', 'rua', 'numero', 'complemento', 'bairro', 'cidade', 'estado'];
+    foreach ($camposEndereco as $campo) {
+        if (isset($_POST[$campo])) {
+            $endereco[$campo] = $_POST[$campo];
+        }
+    }
+}
+$descricaoCompra = '';
+$resumoItens = [];
+$total = 0.0;
+$tipoItem = $_POST['tipo_item'] ?? null;
+$idItem = intval($_POST['id_item'] ?? 0);
+$precoDinheiro = floatval($_POST['preco_dinheiro'] ?? 0);
+$idPacoteMoedas = intval($_POST['id_pacote'] ?? 0);
+$quantidadeMoedas = intval($_POST['quantidade_moedas'] ?? 0);
+$redirectErro = 'Loja.php';
+
+switch ($tipoCompra) {
+    case 'carrinho':
+        $redirectErro = 'Carrinho.php';
+        $itensCarrinho = $carrinhoController->getItensCarrinho($userId);
+        if ($itensCarrinho->num_rows === 0) {
+            $_SESSION['error'] = 'Seu carrinho está vazio.';
+            header('Location: Carrinho.php');
+            die();
+        }
+        $totalCarrinho = $carrinhoController->calcularTotal($userId);
+        $desconto = isset($_SESSION['desconto']) ? floatval($_SESSION['desconto']) : 0;
+        $total = max($totalCarrinho - $desconto, 0);
+        while ($item = $itensCarrinho->fetch_assoc()) {
+            if ($item['tipo_pagamento'] !== 'dinheiro') {
+                continue;
+            }
+            $resumoItens[] = [
+                'nome' => $item['nome'],
+                'quantidade' => $item['quantidade'],
+                'valor' => $item['preco_unitario'] * $item['quantidade']
+            ];
+        }
+        $descricaoCompra = 'Compra do carrinho (' . count($resumoItens) . ' itens)';
+        break;
+    case 'moedas':
+        $redirectErro = 'ConfirmarPagamentoMoedas.php';
+        $idPacoteMoedas = $idPacoteMoedas ?: intval($_POST['id_item'] ?? 0);
+        $stmt = $conn->prepare('SELECT nome_pacote, quantidade_moedas, valor_dinheiro FROM pacotes_moedas WHERE id_pacote = ?');
+        $stmt->bind_param('i', $idPacoteMoedas);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $pacote = $result->fetch_assoc();
+        $stmt->close();
+        if (!$pacote) {
+            $_SESSION['error'] = 'Pacote de moedas inválido.';
+            header('Location: ConfirmarPagamentoMoedas.php');
+            die();
+        }
+        $descricaoCompra = 'Pacote de moedas: ' . $pacote['nome_pacote'];
+        $quantidadeMoedas = intval($pacote['quantidade_moedas']);
+        $total = floatval($pacote['valor_dinheiro']);
+        $resumoItens[] = [
+            'nome' => $pacote['nome_pacote'],
+            'quantidade' => 1,
+            'valor' => $total,
+            'moedas' => $quantidadeMoedas
+        ];
+        break;
+    default:
+        $redirectErro = 'Loja.php';
+        $dadosItem = buscarDadosItem($conn, $tipoItem, $idItem);
+        if (!$dadosItem) {
+            $_SESSION['error'] = 'Item inválido para pagamento.';
+            header('Location: ' . $redirectErro);
+            die();
+        }
+        $descricaoCompra = $dadosItem['nome'] . ' (' . ucfirst($tipoItem) . ')';
+        $total = floatval($dadosItem['preco']);
+        $precoDinheiro = $total;
+        $resumoItens[] = [
+            'nome' => $dadosItem['nome'],
+            'quantidade' => 1,
+            'valor' => $total
+        ];
+        break;
+}
+
+if ($total <= 0) {
+    $_SESSION['error'] = 'Valor do pagamento inválido.';
+    header('Location: ' . $redirectErro);
+    die();
+}
+
+try {
+    $mercadoPago = MercadoPagoService::getInstance();
+    $externalReference = 'PIX-' . strtoupper(uniqid());
+    $metadata = [
+        'tipo_compra' => $tipoCompra,
+        'user_id' => $userId,
+        'tipo_item' => $tipoItem,
+        'id_item' => $idItem,
+        'id_pacote_moedas' => $idPacoteMoedas,
+        'quantidade_moedas' => $quantidadeMoedas,
+        'external_reference' => $externalReference,
+    ];
+
+    $zipCode = preg_replace('/\D/', '', $endereco['cep'] ?? '');
+    $stateCode = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $endereco['estado'] ?? ''), 0, 2));
+    $addressPayload = null;
+    if (!empty($stateCode)) {
+        $addressPayload = array_filter([
+            'zip_code' => $zipCode,
+            'street_name' => $endereco['rua'] ?? '',
+            'street_number' => $endereco['numero'] ?? '',
+            'neighborhood' => $endereco['bairro'] ?? '',
+            'city' => $endereco['cidade'] ?? '',
+            'federal_unit' => $stateCode,
+        ], static fn($value) => $value !== null && $value !== '');
+    }
+
+    $pixPayment = $mercadoPago->createPixPayment(
+        $total,
+        $descricaoCompra,
+        [
+            'email' => $user->getEmail(),
+            'first_name' => $user->getNome(),
+            'last_name' => '',
+            'identification' => [
+                'type' => 'CPF',
+                'number' => $documento,
+            ],
+            'address' => $addressPayload,
+        ],
+        $metadata
+    );
+} catch (Exception $e) {
+    $_SESSION['error'] = 'Erro ao gerar pagamento PIX: ' . $e->getMessage();
+    header('Location: ' . $redirectErro);
+    die();
+}
+
+$paymentId = (string)($pixPayment['id'] ?? '');
+if (empty($paymentId)) {
+    $_SESSION['error'] = 'Não foi possível identificar o pagamento PIX.';
+    header('Location: ' . $redirectErro);
+    die();
+}
+
+$transactionData = $pixPayment['point_of_interaction']['transaction_data'] ?? [];
+$qrCodeBase64 = $transactionData['qr_code_base64'] ?? '';
+$qrCodeString = $transactionData['qr_code'] ?? '';
+$ticketUrl = $transactionData['ticket_url'] ?? '';
+$hashTransacao = $metadata['external_reference'];
 ?>
 
 <!DOCTYPE html>
@@ -97,11 +190,10 @@ $hashTransacao = md5($userId . time() . $total);
     <link rel="stylesheet" href="../Assets/loja.css">
     <style>
         .payment-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
         }
-        
         .qr-code-section {
             text-align: center;
             background: var(--card-bg);
@@ -109,20 +201,6 @@ $hashTransacao = md5($userId . time() . $total);
             border-radius: 10px;
             margin: 20px 0;
         }
-        
-        .qr-placeholder {
-            width: 200px;
-            height: 200px;
-            background: #f0f0f0;
-            border: 2px dashed #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 14px;
-            color: #666;
-        }
-        
         .pix-code {
             background: #f8f9fa;
             padding: 15px;
@@ -132,50 +210,38 @@ $hashTransacao = md5($userId . time() . $total);
             word-break: break-all;
             margin: 15px 0;
         }
-        
-        .copy-button {
-            margin-top: 10px;
-        }
-        
         .payment-info {
             background: var(--card-bg);
             padding: 20px;
             border-radius: 10px;
             margin: 20px 0;
         }
-        
         .endereco-info {
             background: #e9ecef;
             padding: 15px;
             border-radius: 5px;
             margin: 15px 0;
         }
-        
         .status-check {
             text-align: center;
             margin: 30px 0;
         }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .status-check button {
+            margin-top: 10px;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .qr-image {
+            max-width: 260px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            background: #fff;
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-left">
-            <a href="<?php echo $isCarrinho ? 'Carrinho.php' : 'Loja.php'; ?>" class="btn btn-secondary">Voltar</a>
+            <a href="<?php echo $tipoCompra === 'carrinho' ? 'Carrinho.php' : ($tipoCompra === 'moedas' ? 'LojaMoedas.php' : 'Loja.php'); ?>" class="btn btn-secondary">Voltar</a>
         </div>
         <div class="nav-right">
             <p class="user-coins">Suas moedas: <?php echo $user->getCoin(); ?></p>
@@ -186,115 +252,151 @@ $hashTransacao = md5($userId . time() . $total);
         <div class="payment-header">
             <h1 class="text-center">Pagamento via PIX</h1>
         </div>
-        
+
         <div class="payment-info">
             <h3>Resumo da Compra</h3>
             <p><strong>Descrição:</strong> <?php echo htmlspecialchars($descricaoCompra); ?></p>
             <p><strong>Valor Total:</strong> R$ <?php echo number_format($total, 2, ',', '.'); ?></p>
-            <p><strong>ID da Transação:</strong> <?php echo $hashTransacao; ?></p>
-            
-            <div class="endereco-info">
-                <h5>Endereço de Entrega:</h5>
-                <p><?php echo $endereco['rua'] . ', ' . $endereco['numero']; ?>
-                   <?php echo !empty($endereco['complemento']) ? ' - ' . $endereco['complemento'] : ''; ?></p>
-                <p><?php echo $endereco['bairro'] . ' - ' . $endereco['cidade'] . '/' . $endereco['estado']; ?></p>
-                <p>CEP: <?php echo $endereco['cep']; ?></p>
-            </div>
+            <p><strong>ID da Transação:</strong> <?php echo htmlspecialchars($hashTransacao); ?></p>
+            <ul>
+                <?php foreach ($resumoItens as $item): ?>
+                    <li><?php echo htmlspecialchars($item['nome']); ?> - <?php echo $item['quantidade']; ?>x (R$ <?php echo number_format($item['valor'], 2, ',', '.'); ?>)
+                        <?php if (!empty($item['moedas'])): ?>
+                            - <?php echo $item['moedas']; ?> moedas
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <?php if (!empty($endereco)): ?>
+                <div class="endereco-info">
+                    <h5>Endereço de Entrega:</h5>
+                    <p><?php echo htmlspecialchars(($endereco['rua'] ?? '') . ', ' . ($endereco['numero'] ?? '')); ?>
+                       <?php echo !empty($endereco['complemento']) ? ' - ' . htmlspecialchars($endereco['complemento']) : ''; ?></p>
+                    <p><?php echo htmlspecialchars(($endereco['bairro'] ?? '') . ' - ' . ($endereco['cidade'] ?? '') . '/' . ($endereco['estado'] ?? '')); ?></p>
+                    <p>CEP: <?php echo htmlspecialchars($endereco['cep'] ?? ''); ?></p>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="qr-code-section">
             <h3>Escaneie o QR Code</h3>
-            <div class="qr-placeholder">
-                QR Code PIX<br>
-                (Simulação)
-            </div>
-            
+            <?php if ($qrCodeBase64): ?>
+                <img src="data:image/png;base64,<?php echo $qrCodeBase64; ?>" alt="QR Code PIX" class="qr-image">
+            <?php else: ?>
+                <div class="pix-code"><?php echo htmlspecialchars($qrCodeString); ?></div>
+            <?php endif; ?>
+
             <p>Ou copie o código PIX abaixo:</p>
-            <div class="pix-code" id="pixCode"><?php echo $codigoPix; ?></div>
-            <button class="btn btn-info copy-button" onclick="copiarCodigo()">📋 Copiar Código PIX</button>
+            <div class="pix-code" id="pixCode"><?php echo htmlspecialchars($qrCodeString); ?></div>
+            <button class="btn btn-info" id="btnCopiar">📋 Copiar Código PIX</button>
+            <?php if ($ticketUrl): ?>
+                <div style="margin-top: 10px;">
+                    <a href="<?php echo $ticketUrl; ?>" target="_blank">Abrir QR Code em nova aba</a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="status-check">
-            <div class="loading"></div>
-            <p>Aguardando pagamento...</p>
-            <small>O status será atualizado automaticamente após a confirmação do pagamento</small>
+            <div id="status-text">Aguardando confirmação do pagamento...</div>
+            <button class="btn btn-outline-primary" id="btnVerificar">Já paguei, verificar agora</button>
         </div>
 
-        <form action="../Processamento/ProcessPagamentoPix.php" method="POST" id="formPagamento" style="display: none;">
+        <form action="../Processamento/ProcessPagamentoPix.php" method="POST" id="formPagamento">
+            <input type="hidden" name="payment_id" value="<?php echo $paymentId; ?>">
             <input type="hidden" name="tipo_compra" value="<?php echo $tipoCompra; ?>">
-            <input type="hidden" name="hash_transacao" value="<?php echo $hashTransacao; ?>">
             <input type="hidden" name="total" value="<?php echo $total; ?>">
-            
-            <!-- Dados do endereço -->
+            <input type="hidden" name="hash_transacao" value="<?php echo htmlspecialchars($hashTransacao); ?>">
             <?php foreach ($endereco as $key => $value): ?>
                 <input type="hidden" name="endereco[<?php echo $key; ?>]" value="<?php echo htmlspecialchars($value); ?>">
             <?php endforeach; ?>
-            
-            <?php if ($isCarrinho): ?>
-                <!-- Para carrinho, não precisamos de dados específicos do item -->
-            <?php else: ?>
+            <?php if ($tipoCompra === 'individual'): ?>
                 <input type="hidden" name="id_item" value="<?php echo $idItem; ?>">
-                <input type="hidden" name="tipo_item" value="<?php echo $tipoItem; ?>">
+                <input type="hidden" name="tipo_item" value="<?php echo htmlspecialchars($tipoItem); ?>">
+                <input type="hidden" name="preco_dinheiro" value="<?php echo $precoDinheiro; ?>">
+            <?php endif; ?>
+            <?php if ($tipoCompra === 'moedas'): ?>
+                <input type="hidden" name="id_pacote" value="<?php echo $idPacoteMoedas; ?>">
+                <input type="hidden" name="quantidade_moedas" value="<?php echo $quantidadeMoedas; ?>">
             <?php endif; ?>
         </form>
-
-        <div class="text-center" style="margin-top: 30px;">
-            <button class="btn btn-success btn-lg" onclick="simularPagamento()">
-                💰 Simular Pagamento Aprovado (Para Teste)
-            </button>
-        </div>
     </div>
 
     <script>
-        function copiarCodigo() {
+        const paymentId = '<?php echo $paymentId; ?>';
+        const statusText = document.getElementById('status-text');
+        const btnVerificar = document.getElementById('btnVerificar');
+        const formPagamento = document.getElementById('formPagamento');
+        let tentativas = 0;
+
+        document.getElementById('btnCopiar').addEventListener('click', function() {
             const codigo = document.getElementById('pixCode').textContent;
             navigator.clipboard.writeText(codigo).then(function() {
                 alert('Código PIX copiado para a área de transferência!');
             });
-        }
+        });
 
-        function simularPagamento() {
-            if (confirm('Simular que o pagamento foi aprovado?')) {
-                document.getElementById('formPagamento').submit();
+        async function verificarPagamento(manual = false) {
+            try {
+                const resposta = await fetch(`../Processamento/ProcessMercadoPagoStatus.php?payment_id=${paymentId}`);
+                if (!resposta.ok) {
+                    throw new Error('Falha ao consultar status');
+                }
+                const dados = await resposta.json();
+                if (dados.status === 'approved') {
+                    statusText.innerHTML = '<strong style="color:green;">Pagamento aprovado! Finalizando pedido...</strong>';
+                    formPagamento.submit();
+                    return;
+                }
+                statusText.textContent = `Status atual: ${dados.status}`;
+            } catch (error) {
+                statusText.textContent = 'Não foi possível verificar o pagamento automaticamente.';
+            }
+
+            if (!manual && tentativas < 60) {
+                tentativas++;
+                setTimeout(verificarPagamento, 5000);
             }
         }
 
-        // Simulação de verificação de pagamento (em produção seria uma consulta real)
-        let tentativas = 0;
-        const maxTentativas = 60; // 5 minutos (5 segundos * 60)
-        
-        function verificarPagamento() {
-            tentativas++;
-            
-            // Simula uma chance aleatória de "pagamento aprovado" após algumas tentativas
-            if (tentativas > 10 && Math.random() > 0.95) {
-                document.querySelector('.status-check').innerHTML = `
-                    <div style="color: green;">
-                        <h4>✅ Pagamento Aprovado!</h4>
-                        <p>Redirecionando...</p>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    document.getElementById('formPagamento').submit();
-                }, 2000);
-                return;
-            }
-            
-            if (tentativas < maxTentativas) {
-                setTimeout(verificarPagamento, 5000); // Verifica a cada 5 segundos
-            } else {
-                document.querySelector('.status-check').innerHTML = `
-                    <div style="color: orange;">
-                        <h4>⏰ Tempo limite excedido</h4>
-                        <p>Use o botão de simular pagamento ou tente novamente mais tarde.</p>
-                    </div>
-                `;
-            }
-        }
+        btnVerificar.addEventListener('click', function() {
+            verificarPagamento(true);
+        });
 
-        // Inicia a verificação após 10 segundos
         setTimeout(verificarPagamento, 10000);
     </script>
 </body>
 </html>
+
+<?php
+function buscarDadosItem(mysqli $conn, ?string $tipoItem, int $idItem): ?array
+{
+    if ($idItem <= 0 || !$tipoItem) {
+        return null;
+    }
+
+    switch ($tipoItem) {
+        case 'carta':
+            $sql = 'SELECT nome, preco_dinheiro as preco FROM cartas WHERE id = ?';
+            break;
+        case 'icone':
+            $sql = 'SELECT nome, preco_dinheiro as preco FROM img_perfil WHERE id = ?';
+            break;
+        case 'pacote':
+            $sql = 'SELECT nome, preco_dinheiro as preco FROM pacote WHERE id = ?';
+            break;
+        case 'papel_fundo':
+            $sql = 'SELECT nome, preco_dinheiro as preco FROM papel_fundo WHERE id = ?';
+            break;
+        default:
+            return null;
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $idItem);
+    $stmt->execute();
+    $resultado = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    return $resultado ?: null;
+}
+?>
